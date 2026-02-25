@@ -11,10 +11,8 @@ public partial class HastaneContext : DbContext
         : base(options)
     {
     }
-    /*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        // Program.cs içinde yapılandırıldığı için burası boş
-    }*/
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("ConnectionStrings");
 
     public virtual DbSet<Doktor> Doktors { get; set; }
 

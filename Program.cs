@@ -20,7 +20,7 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddDbContext<HastaneContext>(options =>
-    options.UseSqlServer(connectionString));
+        options.UseSqlServer(builder.Configuration.GetConnectionString(connectionString)));
 
 
 
