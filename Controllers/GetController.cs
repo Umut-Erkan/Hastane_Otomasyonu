@@ -31,10 +31,30 @@ namespace Hastane_Otomasyonu.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var doktor = _context.Doktors;
-            var isimler = doktor.Where(q => q.Alan == "Kardiyoloji").Select(q => q.İsim).ToList();
-            
-            return Ok(isimler);
+            try{
+                var doktor = _context.Doktors;
+
+                var isimler = doktor
+                .Where(q => q.Alan == "Kardiyoloji")
+                .Select(q => q.İsim)
+                .ToList();
+
+                if (isimler.Count > 0)
+                {
+                    return Ok(isimler);
+                    
+                }
+                else
+                {
+                    return NotFound(new { mesaj = "Kardiyoloji alanında herhangi bir doktor bulunamadı." });
+                }
+            }
+
+            catch (Exception ex)
+                {
+                    // 5. Olası bir veritabanı bağlantı hatasında sistemin çökmesini engelledik.
+                    return StatusCode(500, new { mesaj = "İşlem sırasında sunucuda bir hata oluştu.", detay = ex.Message });
+                }
         }
 
         /*[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

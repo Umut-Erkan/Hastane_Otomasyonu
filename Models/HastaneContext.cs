@@ -6,9 +6,6 @@ namespace Hastane.Models;
 
 public partial class HastaneContext : DbContext
 {
-    public HastaneContext()
-    {
-    }
 
     public HastaneContext(DbContextOptions<HastaneContext> options)
         : base(options)
@@ -28,7 +25,7 @@ public partial class HastaneContext : DbContext
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("DefaultConnection");
+        => optionsBuilder.UseSqlServer("ConnectionStrings");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
