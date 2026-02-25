@@ -36,7 +36,6 @@ public partial class HastaneContext : DbContext
         {
             entity.ToTable("Doktor");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Alan)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -92,7 +91,7 @@ public partial class HastaneContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OnlineRandevu_Hasta");
         });
-/*
+
         modelBuilder.Entity<Randevu>(entity =>
         {
             entity.ToTable("Randevu");
@@ -113,7 +112,7 @@ public partial class HastaneContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("ŞikayetFK");
         });
-*/
+
         modelBuilder.Entity<Tedavi>(entity =>
         {
             entity

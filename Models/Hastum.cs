@@ -14,6 +14,6 @@ public partial class Hastum
     public string? Şikayet { get; set; }
 
     public int? Id { get; set; }
-    // OnlineRandevu ile one to one ilişki
+
     public virtual OnlineRandevu? OnlineRandevu { get; set; }
 }

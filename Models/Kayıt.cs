@@ -12,9 +12,4 @@ public partial class Kayıt
     public int KayıtId { get; set; }
 
     public virtual OnlineRandevu? RandevuFkNavigation { get; set; }
-
-    public OnlineRandevu Fis( )
-    {
-        return RandevuFkNavigation;
-    }
 }
