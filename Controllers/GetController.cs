@@ -14,11 +14,11 @@ namespace Hastane_Otomasyonu.Controllers
 {   
     [ApiController]
     [Route("api/[controller]")]
-    public class Get : ControllerBase
+    public class GetController : ControllerBase
     {
         //private readonly ILogger<Get> _logger;
         private readonly HastaneContext _context;
-        public Get(HastaneContext context)
+        public GetController(HastaneContext context)
         {
             _context = context;
         }
