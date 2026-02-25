@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Umut ERKAN\\Desktop\\Hastane\\Hastane.csproj": {}
+    "C:\\Users\\Umut ERKAN\\Documents\\GitHub\\Hastane_Otomasyonu\\Hastane.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Umut ERKAN\\Desktop\\Hastane\\Hastane.csproj": {
+    "C:\\Users\\Umut ERKAN\\Documents\\GitHub\\Hastane_Otomasyonu\\Hastane.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Umut ERKAN\\Desktop\\Hastane\\Hastane.csproj",
+        "projectUniqueName": "C:\\Users\\Umut ERKAN\\Documents\\GitHub\\Hastane_Otomasyonu\\Hastane.csproj",
         "projectName": "Hastane",
-        "projectPath": "C:\\Users\\Umut ERKAN\\Desktop\\Hastane\\Hastane.csproj",
+        "projectPath": "C:\\Users\\Umut ERKAN\\Documents\\GitHub\\Hastane_Otomasyonu\\Hastane.csproj",
         "packagesPath": "C:\\Users\\Umut ERKAN\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Umut ERKAN\\Desktop\\Hastane\\obj\\",
+        "outputPath": "C:\\Users\\Umut ERKAN\\Documents\\GitHub\\Hastane_Otomasyonu\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

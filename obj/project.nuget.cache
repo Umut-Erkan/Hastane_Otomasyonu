@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HryX0wdCmPQ=",
+  "dgSpecHash": "wm81ttMZA0c=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Umut ERKAN\\Desktop\\Hastane\\Hastane.csproj",
+  "projectFilePath": "C:\\Users\\Umut ERKAN\\Documents\\GitHub\\Hastane_Otomasyonu\\Hastane.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Umut ERKAN\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\Umut ERKAN\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
