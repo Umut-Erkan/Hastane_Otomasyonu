@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Hastane.Models;
+using MyApiProject.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -20,11 +20,11 @@ namespace Hastane_Otomasyonu.Controllers
             
         }
         [HttpPost]
-        public IActionResult CreateHasta(Hastum hasta)
+        public IActionResult CreateHasta()
         {
             try
             {
-                _context.Hasta.Update(hasta);
+                //_context.Add();
                 
                 return default;
 

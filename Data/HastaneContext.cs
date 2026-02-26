@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Hastane.Models;
 
-namespace Hastane.Models;
+
+namespace MyApiProject.Data;
 
 public partial class HastaneContext : DbContext
 {
+    public HastaneContext()
+    {
+    }
 
     public HastaneContext(DbContextOptions<HastaneContext> options)
         : base(options)
     {
     }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("ConnectionStrings");
 
     public virtual DbSet<Doktor> Doktors { get; set; }
 
@@ -26,8 +29,10 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
     
-        
+        }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

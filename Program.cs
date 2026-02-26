@@ -1,4 +1,4 @@
-﻿using Hastane.Models;
+﻿using MyApiProject.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,30 +14,15 @@ if (string.IsNullOrEmpty(connectionString))
     throw new InvalidOperationException("Bağlantı metni bulunamadı! appsettings.json dosyasını kontrol et.");
 }
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-
-
 builder.Services.AddDbContext<HastaneContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString(connectionString)));
-
-
+        options.UseSqlServer(connectionString));  
 
 builder.Services.AddControllers();
 var app = builder.Build();
 
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
 
 app.MapControllers();
 
