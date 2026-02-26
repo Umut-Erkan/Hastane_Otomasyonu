@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hastane.Models;
+using MyApiProject.Models;
+using MyApiProject.Models;
 
 namespace Hastane_Otomasyonu.DTO
 {
     public class HastaDTO
     {
+        public int Tc { get; set; }
         public string? Name { get; set; }
 
         public string? Surname { get; set; }
@@ -20,7 +22,8 @@ namespace Hastane_Otomasyonu.DTO
         public static HastaDTO ConvertToDTO(Hastum hasta) // Veri get edilirken entity -> DTO için.
         {
             return new HastaDTO
-            {
+            {   
+                Tc = hasta.Tc,
                 Name = hasta.İsim,
                 Surname = hasta.Soyisim,
                 Şikayet = hasta.Şikayet,

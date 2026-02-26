@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using Hastane.Models;
-
+using MyApiProject.Models;
 
 namespace MyApiProject.Data;
 

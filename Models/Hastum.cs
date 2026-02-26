@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyApiProject.Models;
 
@@ -17,5 +18,6 @@ public partial class Hastum
 
     public virtual OnlineRandevu? OnlineRandevu { get; set; }
 
+    [NotMapped]
     public virtual Tedavi? Tedavi { get; set; }
 }

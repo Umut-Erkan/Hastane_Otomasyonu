@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using MyApiProject.Data;
-using Hastane.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Hastane_Otomasyonu.DTO;
 using Microsoft.VisualBasic;
+using MyApiProject.Models;
 
 namespace Hastane_Otomasyonu.Controllers
 {
@@ -32,10 +32,11 @@ namespace Hastane_Otomasyonu.Controllers
             {
                 var yeniEntity = new Hastum // DTO -> Entity
                 {
+                    Tc = dto.Tc,
                     İsim = dto.Name, // sağ taraf kullanıcıdan gelen DTO tipindeki veri
                     Soyisim = dto.Surname, // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
                     Şikayet = dto.Şikayet,// veriye dönüşür.
-                    OnlineRandevu = dto.Randevu
+                    //OnlineRandevu = dto.Randevu
                 };
 
                 _context.Hasta.Add(yeniEntity);
