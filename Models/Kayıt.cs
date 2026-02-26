@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Hastane.Models;
+namespace MyApiProject.Models;
 
 public partial class Kayıt
 {

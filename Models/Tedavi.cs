@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Hastane.Models;
+namespace MyApiProject.Models;
 
 public partial class Tedavi
 {
@@ -9,7 +9,7 @@ public partial class Tedavi
 
     public string? Tedavi1 { get; set; }
 
-    public int? TedaviId { get; set; }
+    public int TedaviId { get; set; }
 
-    public virtual Hastum? TedaviNavigation { get; set; }
+    public virtual Hastum TedaviNavigation { get; set; } = null!;
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Hastane.Models;
+namespace MyApiProject.Models;
 
 public partial class Hastum
 {
@@ -13,7 +13,9 @@ public partial class Hastum
 
     public string? Şikayet { get; set; }
 
-    public int? Id { get; set; }
+    public int Id { get; set; }
 
     public virtual OnlineRandevu? OnlineRandevu { get; set; }
+
+    public virtual Tedavi? Tedavi { get; set; }
 }
