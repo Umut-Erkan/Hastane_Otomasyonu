@@ -4,8 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using MyApiProject.Data;
+using Hastane.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Hastane_Otomasyonu.DTO;
+using Microsoft.VisualBasic;
 
 namespace Hastane_Otomasyonu.Controllers
 {
@@ -20,26 +23,32 @@ namespace Hastane_Otomasyonu.Controllers
             
         }
         [HttpPost]
-        public IActionResult CreateHasta()
+        // Dışarıdan gelen DTO'yu, veritabanına eklenecek Entity'e çeviren metot
+        // Dışardan hep DTO tipinde gelir veri
+        
+        public IActionResult CreateHasta([FromBody] HastaDTO dto)
         {
             try
             {
-                //_context.Add();
-                
-                return default;
+                var yeniEntity = new Hastum // DTO -> Entity
+                {
+                    İsim = dto.Name, // sağ taraf kullanıcıdan gelen DTO tipindeki veri
+                    Soyisim = dto.Surname, // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
+                    Şikayet = dto.Şikayet,// veriye dönüşür.
+                    OnlineRandevu = dto.Randevu
+                };
+
+                _context.Hasta.Add(yeniEntity);
+                _context.SaveChanges();
+
+                return Ok("Kayıt başarılı");
 
             }
             catch(Exception ex)
             {
-                 return NotFound(new { mesaj = "Hata.",hata = ex });
+                 return BadRequest(new { mesaj = "Hata.",hata = ex.StackTrace });
             }
         
         }
-
-        /*[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View("Error!");
-        }*/
     }
 }
