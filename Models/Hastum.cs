@@ -18,6 +18,5 @@ public partial class Hastum
 
     public virtual OnlineRandevu? OnlineRandevu { get; set; }
 
-    [NotMapped]
     public virtual Tedavi? Tedavi { get; set; }
 }

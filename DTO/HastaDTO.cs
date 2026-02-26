@@ -17,6 +17,7 @@ namespace Hastane_Otomasyonu.DTO
         public string? Şikayet { get; set; }
 
         public virtual OnlineRandevu? Randevu { get; set; } // Şimdilik burasını boş bırak
+        public virtual Tedavi? Tedavi { get; set; } // Şimdilik burasını boş bırak
 
 
         public static HastaDTO ConvertToDTO(Hastum hasta) // Veri get edilirken entity -> DTO için.
