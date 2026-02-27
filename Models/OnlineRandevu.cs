@@ -7,15 +7,23 @@ public partial class OnlineRandevu
 {
     public int Id { get; set; }
 
-    public int? HastaId { get; set; }
+    public string HastaŞikayet { get; set; } = null!;
 
-    public int? DoktorId { get; set; }
+    public int DoktorId { get; set; }
 
     public TimeOnly Saat { get; set; }
 
     public DateOnly Tarih { get; set; }
 
-    public virtual Doktor? Doktor { get; set; }
+    public string DoktorName { get; set; } = null!;
+
+    public string DoktorSurname { get; set; } = null!;
+
+    public string HastaName { get; set; } = null!;
+
+    public string HastaSurname { get; set; } = null!;
+
+    public virtual Doktor Doktor { get; set; } = null!;
 
     public virtual Hastum IdNavigation { get; set; } = null!;
 
