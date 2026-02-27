@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MyApiProject.Models;
-using MyApiProject.Models;
 
 namespace Hastane_Otomasyonu.DTO
 {
@@ -14,7 +13,7 @@ namespace Hastane_Otomasyonu.DTO
 
         public string? Surname { get; set; }
 
-        public string? Şikayet { get; set; }
+        public string? Şikayet { get; set; } //get; init; bak
 
         public virtual OnlineRandevu? Randevu { get; set; } // Şimdilik burasını boş bırak
         public virtual Tedavi? Tedavi { get; set; } // Şimdilik burasını boş bırak

@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hastane_Otomasyonu.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class CreateHastaController : ControllerBase
     {
@@ -31,7 +32,7 @@ namespace Hastane_Otomasyonu.Controllers
         {
             try
             {
-                var yeniEntity = new Hastum // DTO -> Entity
+                var NewEntity = new Hastum // DTO -> Entity
                 {
                     Tc = dto.Tc,
                     İsim = dto.Name, // sağ taraf kullanıcıdan gelen DTO tipindeki veri
@@ -39,16 +40,34 @@ namespace Hastane_Otomasyonu.Controllers
                     Şikayet = dto.Şikayet,// veriye dönüşür.
                 };
 
-                _context.Hasta.Add(yeniEntity);
+                bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
+                
+                
+                if (TcKontrol == true)
+                {
+                    return StatusCode(500, new
+                    {
+                        Baslik = "var olan entity",
+                        mesaj = "Var olan hasta eklenmeye çalışıldı"
+                    });
+                }
+
+                else
+                {
+                    
+                _context.Hasta.Add(NewEntity);
                 _context.SaveChanges();
 
                 return Ok("Kayıt başarılı");
 
+                }
             }
+
             catch(DbUpdateException ex) // Veri tabanı hatası
             {
                  return BadRequest(new { mesaj = "Hata.",hata = ex.StackTrace });
             }
+
             catch (Exception)
             {
                 // Veritabanı dışındaki diğer genel sistem hataları için

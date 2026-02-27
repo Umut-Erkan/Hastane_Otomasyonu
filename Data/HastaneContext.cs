@@ -29,9 +29,9 @@ public partial class HastaneContext : DbContext
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-    
-        }
+    {
+        
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -51,7 +51,7 @@ public partial class HastaneContext : DbContext
 
         modelBuilder.Entity<Hastum>(entity =>
         {
-            entity.HasKey(e => e.Tc);
+            entity.HasKey(e => e.Id).HasName("PK_Hasta_1");
 
             entity.Property(e => e.Soyisim)
                 .HasMaxLength(50)
@@ -118,18 +118,19 @@ public partial class HastaneContext : DbContext
 
         modelBuilder.Entity<Tedavi>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Tedavi");
+            entity.ToTable("Tedavi");
 
+            entity.Property(e => e.TedaviId)
+                .ValueGeneratedNever()
+                .HasColumnName("TedaviID");
             entity.Property(e => e.Ilaç).HasMaxLength(50);
             entity.Property(e => e.Tedavi1)
                 .HasMaxLength(100)
                 .HasColumnName("Tedavi");
-            entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
 
-            entity.HasOne(d => d.TedaviNavigation).WithMany()
-                .HasForeignKey(d => d.TedaviId)
+            entity.HasOne(d => d.TedaviNavigation).WithOne(p => p.Tedavi)
+                .HasForeignKey<Tedavi>(d => d.TedaviId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Tedavi_Hasta");
         });
 
