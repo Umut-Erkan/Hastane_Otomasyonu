@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using MyApiProject.Models;
 using Microsoft.EntityFrameworkCore;
+using MyApiProject.Models;
 
 namespace MyApiProject.Data;
 
@@ -82,13 +82,14 @@ public partial class HastaneContext : DbContext
         {
             entity.ToTable("OnlineRandevu");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.DoktorId).HasColumnName("DoktorID");
             entity.Property(e => e.DoktorName)
                 .HasMaxLength(20)
                 .IsFixedLength();
             entity.Property(e => e.DoktorSurname)
                 .HasMaxLength(20)
                 .IsFixedLength();
+            entity.Property(e => e.HastaId).HasColumnName("HastaID");
             entity.Property(e => e.HastaName)
                 .HasMaxLength(20)
                 .IsFixedLength();
@@ -97,15 +98,10 @@ public partial class HastaneContext : DbContext
                 .IsFixedLength();
             entity.Property(e => e.HastaŞikayet).HasMaxLength(100);
 
-            entity.HasOne(d => d.Doktor).WithMany(p => p.OnlineRandevus)
-                .HasForeignKey(d => d.DoktorId)
+            entity.HasOne(d => d.Hasta).WithMany(p => p.OnlineRandevus)
+                .HasForeignKey(d => d.HastaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_OnlineRandevu_Doktor");
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.OnlineRandevu)
-                .HasForeignKey<OnlineRandevu>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_OnlineRandevu_Hasta");
+                .HasConstraintName("FK_OnlineRandevu_Hasta1");
         });
 
         modelBuilder.Entity<Randevu>(entity =>

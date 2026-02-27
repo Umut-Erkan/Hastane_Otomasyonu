@@ -30,6 +30,8 @@ namespace Hastane_Otomasyonu.Controllers
             try
             {
                 // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
+                Doktor ExistingDoktor = _context.Doktors.FirstOrDefault(d => d.İsim == Randevudto.DoktorName && d.Soyisim == Randevudto.DoktorSurname);
+
                 Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Tc == Randevudto.Tc);
                 
                 //Şimdi Hastamın şikayeti, Girilen doktor ismi ile randevu oluşturcam.
@@ -37,15 +39,17 @@ namespace Hastane_Otomasyonu.Controllers
                 {
                     HastaName = ExistingHasta.İsim,
                     HastaSurname = ExistingHasta.Soyisim,
+                    HastaId = ExistingHasta.Id,
 
                     DoktorName = Randevudto.DoktorName,
                     DoktorSurname = Randevudto.DoktorSurname,
+                    DoktorId = ExistingDoktor.Id,
 
                     Saat = Randevudto.Saat,
                     Tarih = Randevudto.Tarih,
                     HastaŞikayet = ExistingHasta.Şikayet,
 
-                    IdNavigation = ExistingHasta
+
                 };
                 
                 _context.OnlineRandevus.Add(Randevu);
@@ -85,7 +89,7 @@ namespace Hastane_Otomasyonu.Controllers
 
     // RANDEVU DOKTORA ATANCAK
 
-    //Doktor ExistingDoktor = _context.Doktors.FirstOrDefault(d => d.İsim == Randevudto.DoktorName && d.Soyisim == Randevudto.DoktorSurname);
+    //
 
 
     //ExistingDoktor.OnlineRandevus.Add(Randevu);

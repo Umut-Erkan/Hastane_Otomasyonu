@@ -27,7 +27,7 @@ namespace Hastane_Otomasyonu.DTO
                 Name = hasta.İsim,
                 Surname = hasta.Soyisim,
                 Şikayet = hasta.Şikayet,
-                Randevu = hasta.OnlineRandevu
+                //Randevu = hasta.OnlineRandevu
             };
         }
 
