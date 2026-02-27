@@ -17,25 +17,36 @@ namespace Hastane_Otomasyonu.Controllers
 
         public RandevuController(HastaneContext context)
         {
-            
             _context = context;
         }
         
+
+        private Doktor DoktoruBul(string isim, string soyisim)
+        {
+            return _context.Doktors.FirstOrDefault(d => d.İsim == isim && d.Soyisim == soyisim);
+        }
+
+
         // RANDEVU ALMA
         [HttpPost]
-        public IActionResult RandevuAl([FromBody] RandevuDTO Randevudto)
+        public IActionResult RandevuAl([FromBody]  RandevuDTO Randevudto)
         // Kullanıcı bilgileri yine dışardan gelcek. DTO-> Entity (ama eklemek için değil, kullanmak için)
-        // Randevu bilgileri Entity. Okuncak ise Entity-> DTO lazım.
+        // Randevu bilgileri Entity. Okuncak ise Entity-> DTO lazım (Get).
         {
             try
             {
                 // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
-                Doktor ExistingDoktor = _context.Doktors.FirstOrDefault(d => d.İsim == Randevudto.DoktorName && d.Soyisim == Randevudto.DoktorSurname);
 
                 Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Tc == Randevudto.Tc);
+                Doktor ExistingDoktor = DoktoruBul(Randevudto.DoktorName, Randevudto.DoktorSurname);
                 
-                //Şimdi Hastamın şikayeti, Girilen doktor ismi ile randevu oluşturcam.
-                var Randevu = new OnlineRandevu
+                if (_context.Doktors.Any(d =>d.İsim == ExistingDoktor.İsim && d =>d.Soyisim == ExistingDoktor.Soyisim ))
+                {
+                    return StatusCode(500 , new { mesaj = "Zaten bu doktordan randevunuz var"});
+                }
+
+
+                OnlineRandevu Randevu = new OnlineRandevu
                 {
                     HastaName = ExistingHasta.İsim,
                     HastaSurname = ExistingHasta.Soyisim,
@@ -49,8 +60,9 @@ namespace Hastane_Otomasyonu.Controllers
                     Tarih = Randevudto.Tarih,
                     HastaŞikayet = ExistingHasta.Şikayet,
 
-
                 };
+
+                ExistingDoktor.Randevuları.Append(Randevu.Id);
                 
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
@@ -76,25 +88,24 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
-
-
     // RANDEVU DOKTORA ATANCAK
-
-    //
+    /*
+    public IActionResult DoktoraRandevuEkle([FromBody] RandevuDTO Randevudto)
+        {
+            var ExistingDoktor = DoktoruBul(Randevudto.DoktorName, Randevudto.DoktorSurname);
+            
+            if(_context.Doktors.Any(d =>d.İsim == ExistingDoktor.İsim)) //
+            {
+                _context.Doktors.
+            }
+            return default;
+        }
+    
 
 
     //ExistingDoktor.OnlineRandevus.Add(Randevu);
 
-
+*/
 
     }
 }
