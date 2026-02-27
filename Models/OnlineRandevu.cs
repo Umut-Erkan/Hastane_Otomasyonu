@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace MyApiProject.Models;
 
@@ -25,6 +26,7 @@ public partial class OnlineRandevu
 
     public virtual Doktor Doktor { get; set; } = null!;
 
+    [ValidateNever] // Zaten randevu alırken TC girilcek. O yüzden değerlendirmesine gerek yok
     public virtual Hastum IdNavigation { get; set; } = null!;
 
     public virtual ICollection<Kayıt> Kayıts { get; set; } = new List<Kayıt>();

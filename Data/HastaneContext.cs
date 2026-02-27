@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using MyApiProject.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MyApiProject.Data;
 
@@ -32,7 +32,6 @@ public partial class HastaneContext : DbContext
     {
         
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Doktor>(entity =>
@@ -84,9 +83,23 @@ public partial class HastaneContext : DbContext
             entity.ToTable("OnlineRandevu");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.DoktorName)
+                .HasMaxLength(20)
+                .IsFixedLength();
+            entity.Property(e => e.DoktorSurname)
+                .HasMaxLength(20)
+                .IsFixedLength();
+            entity.Property(e => e.HastaName)
+                .HasMaxLength(20)
+                .IsFixedLength();
+            entity.Property(e => e.HastaSurname)
+                .HasMaxLength(20)
+                .IsFixedLength();
+            entity.Property(e => e.HastaŞikayet).HasMaxLength(100);
 
             entity.HasOne(d => d.Doktor).WithMany(p => p.OnlineRandevus)
                 .HasForeignKey(d => d.DoktorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_OnlineRandevu_Doktor");
 
             entity.HasOne(d => d.IdNavigation).WithOne(p => p.OnlineRandevu)

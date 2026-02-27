@@ -17,31 +17,56 @@ namespace Hastane_Otomasyonu.Controllers
 
         public RandevuController(HastaneContext context)
         {
+            
             _context = context;
         }
         
         // RANDEVU ALMA
         [HttpPost]
-        public IActionResult RandevuAl([FromBody] HastaDTO dto , RandevuDTO Randevudto)
+        public IActionResult RandevuAl([FromBody] RandevuDTO Randevudto)
         // Kullanıcı bilgileri yine dışardan gelcek. DTO-> Entity (ama eklemek için değil, kullanmak için)
         // Randevu bilgileri Entity. Okuncak ise Entity-> DTO lazım.
-       
-        {   // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
-            Hastum existingEntity = _context.Hasta.FirstOrDefault(h=> h.Tc == dto.Tc);
-            
-            //Şimdi Hastamın şikayeti, Girilen doktor ismi ile randevu oluşturcam.
-            var Randevu = new OnlineRandevu
+        {
+            try
             {
-                DoktorId = Randevudto.DoktorId,
-                Saat = Randevudto.Saat,
-                Tarih = Randevudto.Tarih,
-                HastaId = existingEntity.Id
-            };
-            
-            _context.OnlineRandevus.Add(Randevu);
-            _context.SaveChanges();
+                // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
+                Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Tc == Randevudto.Tc);
+                
+                //Şimdi Hastamın şikayeti, Girilen doktor ismi ile randevu oluşturcam.
+                var Randevu = new OnlineRandevu
+                {
+                    HastaName = ExistingHasta.İsim,
+                    HastaSurname = ExistingHasta.Soyisim,
 
-            return StatusCode(200 , new { mesaj = "Başarılı"});
+                    DoktorName = Randevudto.DoktorName,
+                    DoktorSurname = Randevudto.DoktorSurname,
+
+                    Saat = Randevudto.Saat,
+                    Tarih = Randevudto.Tarih,
+                    HastaŞikayet = ExistingHasta.Şikayet,
+
+                    IdNavigation = ExistingHasta
+                };
+                
+                _context.OnlineRandevus.Add(Randevu);
+                _context.SaveChanges();
+
+                return StatusCode(200 , new { mesaj = "Başarılı"});
+            }
+            
+            catch (Exception ex)
+            {
+                // Hata mesajını düz bir metin (string) olarak alıyoruz
+                string Hata = ex.Message;
+                
+                // Veritabanı ile ilgili alt detaylar varsa onu da metne ekliyoruz
+                if (ex.InnerException != null)
+                {
+                    Hata += " | Detay: " + ex.InnerException.Message;
+                }
+
+                return StatusCode(500, Hata);
+            }
         }
         
 
@@ -60,8 +85,10 @@ namespace Hastane_Otomasyonu.Controllers
 
     // RANDEVU DOKTORA ATANCAK
 
+    //Doktor ExistingDoktor = _context.Doktors.FirstOrDefault(d => d.İsim == Randevudto.DoktorName && d.Soyisim == Randevudto.DoktorSurname);
 
 
+    //ExistingDoktor.OnlineRandevus.Add(Randevu);
 
 
 
