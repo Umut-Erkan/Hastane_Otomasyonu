@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Hastane_Otomasyonu.DTO;
@@ -19,13 +20,13 @@ namespace Hastane_Otomasyonu.Controllers
             _context = context;
         }
         
-
         private Doktor DoktoruBul(string isim, string soyisim)
         {
             return _context.Doktors.FirstOrDefault(d => 
             d.İsim == isim && 
             d.Soyisim == soyisim);
         }
+
 
 
         // RANDEVU ALMA
@@ -96,6 +97,9 @@ namespace Hastane_Otomasyonu.Controllers
         }
         
 
+
+
+
         // İSTENEN KAYIT SİLİNECEK
         [HttpDelete]
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
@@ -109,12 +113,19 @@ namespace Hastane_Otomasyonu.Controllers
             try
             {
             // DOKTORDAN VE HASTADAN SİLİNEN RANDEVUNUN ID'SİNİ SİL
-                Hastum IdSilincekHasta = _context.Hasta.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
-                Doktor IdSilincekDoktor = _context.Doktors.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
+                Hastum IdSilincekHasta = _context.Hasta.FirstOrDefault(r => r.RandevuId == DelDTO.RandevuID.ToString());
+                
+                // Randevu ıdlerini sırayla döndür
+                /*foreach (var item in IdSilincekHasta.RandevuId)
+                {
+                    if
+                }*/
+                
+                Doktor IdSilincekDoktor = _context.Doktors.FirstOrDefault(r => r.RandevuId == DelDTO.RandevuID.ToString());
                 
                 if (IdSilincekDoktor == null && IdSilincekDoktor == null)
                     {
-                        return StatusCode(500,"Doktor ya da Hastadan Id silinemedi");
+                        return StatusCode(500,"Doktor ya da hasta NULL");
                     }
 
                 IdSilincekDoktor.RandevuId.Remove(DelDTO.RandevuID);
@@ -122,10 +133,8 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.OnlineRandevus.Remove(DelKayıt);
 
 
-                return StatusCode(200, "randevu başarıyla silindi");
-
-
                 _context.SaveChanges();
+                return StatusCode(200, "randevu başarıyla silindi");
             }
 
             catch (NullReferenceException ex)

@@ -20,6 +20,8 @@ builder.Services.AddDbContext<HastaneContext>(options =>
 builder.Services.AddControllers();
 var app = builder.Build();
 
+builder.Services.AddAuthentication();
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
