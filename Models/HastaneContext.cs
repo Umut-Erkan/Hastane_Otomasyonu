@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hastane_Otomasyonu.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MyApiProject.Models;
 
-public partial class HastaneContext : DbContext
+public partial class HastaneContext : IdentityDbContext<User>
 {
     public HastaneContext()
     {
