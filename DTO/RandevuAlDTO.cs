@@ -6,12 +6,9 @@ using MyApiProject.Models;
 
 namespace Hastane_Otomasyonu.DTO
 {
-    public class RandevuDTO
+    public class RandevuAlDTO
     {
         public int Tc { get; set; }
-        public string? Name { get; set; }
-
-        public string? Surname { get; set; }
 
         public int Id { get; set; }
 
@@ -23,9 +20,6 @@ namespace Hastane_Otomasyonu.DTO
 
         public string DoktorSurname { get; set; }
 
-        public TimeOnly Saat { get; set; }
-
-        public DateOnly Tarih { get; set; }
 
         public virtual Doktor? Doktor { get; set; }
     }

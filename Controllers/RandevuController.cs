@@ -22,13 +22,15 @@ namespace Hastane_Otomasyonu.Controllers
 
         private Doktor DoktoruBul(string isim, string soyisim)
         {
-            return _context.Doktors.FirstOrDefault(d => d.İsim == isim && d.Soyisim == soyisim);
+            return _context.Doktors.FirstOrDefault(d => 
+            d.İsim == isim && 
+            d.Soyisim == soyisim);
         }
 
 
         // RANDEVU ALMA
         [HttpPost]
-        public IActionResult RandevuAl([FromBody]  RandevuDTO Randevudto)
+        public IActionResult RandevuAl([FromBody]  RandevuAlDTO Randevudto)
         // Kullanıcı bilgileri yine dışardan gelcek. DTO-> Entity (ama eklemek için değil, kullanmak için)
         // Randevu bilgileri Entity. Okuncak ise Entity-> DTO lazım (Get).
         {
@@ -37,9 +39,19 @@ namespace Hastane_Otomasyonu.Controllers
             {
                 // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
                 Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Tc == Randevudto.Tc);
+
+                if (ExistingDoktor == null)
+                {
+                    return StatusCode(404, new { mesaj = "Belirtilen isim ve soyisimde bir doktor bulunamadı." });
+                }
+
                 
                 // Randevu alıncak doktor   // Randevu listesinde ıd kısmı Mevcut hasta ile şeleşen randevunun doktoru
-                if (Randevudto.DoktorId == _context.OnlineRandevus.FirstOrDefault(r=> r.HastaId == ExistingHasta.Id).DoktorId)
+                bool zatenRandevusuVarMi = _context.OnlineRandevus.Any(r => 
+                    r.HastaId == ExistingHasta.Id && 
+                    r.DoktorId == ExistingDoktor.Id);
+                    
+                if (zatenRandevusuVarMi)
                 {
                     return StatusCode(500 , new { mesaj = "Zaten bu doktordan randevunuz var"});
                 }
