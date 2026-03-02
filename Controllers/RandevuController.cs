@@ -70,7 +70,7 @@ namespace Hastane_Otomasyonu.Controllers
                     HastaŞikayet = ExistingHasta.Şikayet,
 
                 };
-                
+
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
@@ -108,27 +108,24 @@ namespace Hastane_Otomasyonu.Controllers
             }
             try
             {
-            
-            
-
             // DOKTORDAN VE HASTADAN SİLİNEN RANDEVUNUN ID'SİNİ SİL
-            Hastum IdSilincekHasta = _context.Hasta.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
-            Doktor IdSilincekDoktor = _context.Doktors.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
-            
-            if (IdSilincekDoktor == null && IdSilincekDoktor == null)
-                {
-                    return StatusCode(500,"Doktor ya da Hastadan Id silinemedi");
-                }
+                Hastum IdSilincekHasta = _context.Hasta.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
+                Doktor IdSilincekDoktor = _context.Doktors.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
+                
+                if (IdSilincekDoktor == null && IdSilincekDoktor == null)
+                    {
+                        return StatusCode(500,"Doktor ya da Hastadan Id silinemedi");
+                    }
 
-            IdSilincekDoktor.RandevuId.Remove(DelDTO.RandevuID);
-            IdSilincekHasta.RandevuId.Remove(DelDTO.RandevuID);
-            _context.OnlineRandevus.Remove(DelKayıt);
-
-
-            return StatusCode(200, "randevu başarıyla silindi");
+                IdSilincekDoktor.RandevuId.Remove(DelDTO.RandevuID);
+                IdSilincekHasta.RandevuId.Remove(DelDTO.RandevuID);
+                _context.OnlineRandevus.Remove(DelKayıt);
 
 
-            _context.SaveChanges();
+                return StatusCode(200, "randevu başarıyla silindi");
+
+
+                _context.SaveChanges();
             }
 
             catch (NullReferenceException ex)
