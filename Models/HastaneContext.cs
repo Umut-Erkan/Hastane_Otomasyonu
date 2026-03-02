@@ -141,9 +141,7 @@ public partial class HastaneContext : DbContext
         {
             entity.ToTable("Tedavi");
 
-            entity.Property(e => e.TedaviId)
-                .ValueGeneratedNever()
-                .HasColumnName("TedaviID");
+            entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
             entity.Property(e => e.Ilaç).HasMaxLength(50);
             entity.Property(e => e.Tedavi1)
                 .HasMaxLength(100)

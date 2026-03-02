@@ -7,11 +7,11 @@ public partial class Hastum
 {
     public int Tc { get; set; }
 
-    public string? İsim { get; set; }
+    public string İsim { get; set; } = null!;
 
-    public string? Soyisim { get; set; }
+    public string Soyisim { get; set; } = null!;
 
-    public string? Şikayet { get; set; }
+    public string Şikayet { get; set; } = null!;
 
     public int Id { get; set; }
 

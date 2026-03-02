@@ -7,7 +7,7 @@ public partial class Tedavi
 {
     public string Ilaç { get; set; } = null!;
 
-    public string? Tedavi1 { get; set; }
+    public string Tedavi1 { get; set; } = null!;
 
     public int TedaviId { get; set; }
 
