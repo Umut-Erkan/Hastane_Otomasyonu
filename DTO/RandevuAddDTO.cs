@@ -6,7 +6,7 @@ using MyApiProject.Models;
 
 namespace Hastane_Otomasyonu.DTO
 {
-    public class RandevuAlDTO
+    public class RandevuAddDTO
     {
         public int Tc { get; set; }
 
