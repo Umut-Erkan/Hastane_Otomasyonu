@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using MyApiProject.Models;
 
-namespace MyApiProject.Data;
+namespace MyApiProject.Models;
 
 public partial class HastaneContext : DbContext
 {
@@ -42,8 +41,7 @@ public partial class HastaneContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.RandevuId)
-                .HasMaxLength(100)
-                .IsFixedLength()
+                .IsUnicode(false)
                 .HasColumnName("RandevuID");
             entity.Property(e => e.Soyisim).HasMaxLength(50);
             entity.Property(e => e.İsim).HasMaxLength(50);
@@ -53,7 +51,9 @@ public partial class HastaneContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Hasta_1");
 
-            entity.Property(e => e.RandevuId).HasColumnName("RandevuID");
+            entity.Property(e => e.RandevuId)
+                .IsUnicode(false)
+                .HasColumnName("RandevuID");
             entity.Property(e => e.Soyisim)
                 .HasMaxLength(50)
                 .IsUnicode(false);

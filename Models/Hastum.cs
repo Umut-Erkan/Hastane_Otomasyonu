@@ -15,7 +15,7 @@ public partial class Hastum
 
     public int Id { get; set; }
 
-    public int? RandevuId { get; set; }
+    public string? RandevuId { get; set; }
 
     public int? TedaviId { get; set; }
 

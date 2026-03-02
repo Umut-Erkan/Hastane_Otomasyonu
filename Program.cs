@@ -1,4 +1,4 @@
-﻿using MyApiProject.Data;
+﻿using MyApiProject.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

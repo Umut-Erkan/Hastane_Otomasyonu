@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Hastane_Otomasyonu.DTO;
 using Microsoft.AspNetCore.Mvc;
-using MyApiProject.Data;
 using MyApiProject.Models;
 
 namespace Hastane_Otomasyonu.Controllers
@@ -33,17 +32,17 @@ namespace Hastane_Otomasyonu.Controllers
         // Kullanıcı bilgileri yine dışardan gelcek. DTO-> Entity (ama eklemek için değil, kullanmak için)
         // Randevu bilgileri Entity. Okuncak ise Entity-> DTO lazım (Get).
         {
-            Doktor ExistingDoktor = DoktoruBul(Randevudto.DoktorName, Randevudto.DoktorSurname);
+            Doktor ExistingDoktor = DoktoruBul(Randevudto.DoktorName, Randevudto.DoktorSurname); 
             try
             {
                 // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
                 Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Tc == Randevudto.Tc);
                 
-                
-                /*if (_context.Doktors.Any(d =>d.İsim == ExistingDoktor.İsim && d.Soyisim == ExistingDoktor.Soyisim ))
+                // Randevu alıncak doktor   // Randevu listesinde ıd kısmı Mevcut hasta ile şeleşen randevunun doktoru
+                if (Randevudto.DoktorId == _context.OnlineRandevus.FirstOrDefault(r=> r.HastaId == ExistingHasta.Id).DoktorId)
                 {
                     return StatusCode(500 , new { mesaj = "Zaten bu doktordan randevunuz var"});
-                }*/
+                }
 
 
                 OnlineRandevu Randevu = new OnlineRandevu
@@ -51,19 +50,18 @@ namespace Hastane_Otomasyonu.Controllers
                     HastaName = ExistingHasta.İsim,
                     HastaSurname = ExistingHasta.Soyisim,
                     HastaId = ExistingHasta.Id,
-
                     DoktorName = Randevudto.DoktorName,
                     DoktorSurname = Randevudto.DoktorSurname,
                     DoktorId = ExistingDoktor.Id,
-
-                    Saat = Randevudto.Saat,
-                    Tarih = Randevudto.Tarih,
+                    Saat = TimeOnly.FromDateTime(DateTime.Now),
+                    Tarih = DateOnly.FromDateTime(DateTime.Now),
                     HastaŞikayet = ExistingHasta.Şikayet,
 
                 };
 
-                ExistingDoktor.RandevuId += Randevu.Id;//
-                
+                ExistingDoktor.RandevuId += "," + Randevu.Id.ToString();
+                ExistingHasta.RandevuId += "," + Randevu.Id.ToString();
+
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
@@ -72,10 +70,8 @@ namespace Hastane_Otomasyonu.Controllers
             
             catch (Exception ex)
             {
-                // Hata mesajını düz bir metin (string) olarak alıyoruz
                 string Hata = ex.Message;
                 
-                // Veritabanı ile ilgili alt detaylar varsa onu da metne ekliyoruz
                 if (ex.InnerException != null)
                 {
                     Hata += " | Detay: " + ex.InnerException.Message;
