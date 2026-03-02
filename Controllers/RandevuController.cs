@@ -33,17 +33,17 @@ namespace Hastane_Otomasyonu.Controllers
         // Kullanıcı bilgileri yine dışardan gelcek. DTO-> Entity (ama eklemek için değil, kullanmak için)
         // Randevu bilgileri Entity. Okuncak ise Entity-> DTO lazım (Get).
         {
+            Doktor ExistingDoktor = DoktoruBul(Randevudto.DoktorName, Randevudto.DoktorSurname);
             try
             {
                 // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
-
                 Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Tc == Randevudto.Tc);
-                Doktor ExistingDoktor = DoktoruBul(Randevudto.DoktorName, Randevudto.DoktorSurname);
                 
-                if (_context.Doktors.Any(d =>d.İsim == ExistingDoktor.İsim && d =>d.Soyisim == ExistingDoktor.Soyisim ))
+                
+                /*if (_context.Doktors.Any(d =>d.İsim == ExistingDoktor.İsim && d.Soyisim == ExistingDoktor.Soyisim ))
                 {
                     return StatusCode(500 , new { mesaj = "Zaten bu doktordan randevunuz var"});
-                }
+                }*/
 
 
                 OnlineRandevu Randevu = new OnlineRandevu
@@ -62,7 +62,7 @@ namespace Hastane_Otomasyonu.Controllers
 
                 };
 
-                ExistingDoktor.Randevuları.Append(Randevu.Id);
+                ExistingDoktor.RandevuId += Randevu.Id;//
                 
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();

@@ -11,7 +11,9 @@ public partial class Doktor
 
     public string Alan { get; set; } = null!;
 
-    public string? Randevuları { get; set; }
+    public string? RandevuId { get; set; }
 
     public int Id { get; set; }
+
+    public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 }

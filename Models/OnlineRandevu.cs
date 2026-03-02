@@ -25,6 +25,8 @@ public partial class OnlineRandevu
 
     public int HastaId { get; set; }
 
+    public virtual Doktor Doktor { get; set; } = null!;
+
     public virtual Hastum Hasta { get; set; } = null!;
 
     public virtual ICollection<Kayıt> Kayıts { get; set; } = new List<Kayıt>();

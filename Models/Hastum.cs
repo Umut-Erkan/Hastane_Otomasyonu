@@ -15,6 +15,10 @@ public partial class Hastum
 
     public int Id { get; set; }
 
+    public int? RandevuId { get; set; }
+
+    public int? TedaviId { get; set; }
+
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 
     public virtual Tedavi? Tedavi { get; set; }

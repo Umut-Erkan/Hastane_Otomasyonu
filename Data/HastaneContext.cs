@@ -41,9 +41,10 @@ public partial class HastaneContext : DbContext
             entity.Property(e => e.Alan)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Randevuları)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.RandevuId)
+                .HasMaxLength(100)
+                .IsFixedLength()
+                .HasColumnName("RandevuID");
             entity.Property(e => e.Soyisim).HasMaxLength(50);
             entity.Property(e => e.İsim).HasMaxLength(50);
         });
@@ -52,15 +53,21 @@ public partial class HastaneContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_Hasta_1");
 
+            entity.Property(e => e.RandevuId).HasColumnName("RandevuID");
             entity.Property(e => e.Soyisim)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
             entity.Property(e => e.İsim)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Şikayet)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.Tedavi).WithMany(p => p.Hasta)
+                .HasForeignKey(d => d.TedaviId)
+                .HasConstraintName("FK_Hasta_Tedavi");
         });
 
         modelBuilder.Entity<Kayıt>(entity =>
@@ -97,6 +104,11 @@ public partial class HastaneContext : DbContext
                 .HasMaxLength(20)
                 .IsFixedLength();
             entity.Property(e => e.HastaŞikayet).HasMaxLength(100);
+
+            entity.HasOne(d => d.Doktor).WithMany(p => p.OnlineRandevus)
+                .HasForeignKey(d => d.DoktorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_OnlineRandevu_Doktor");
 
             entity.HasOne(d => d.Hasta).WithMany(p => p.OnlineRandevus)
                 .HasForeignKey(d => d.HastaId)
@@ -136,11 +148,6 @@ public partial class HastaneContext : DbContext
             entity.Property(e => e.Tedavi1)
                 .HasMaxLength(100)
                 .HasColumnName("Tedavi");
-
-            entity.HasOne(d => d.TedaviNavigation).WithOne(p => p.Tedavi)
-                .HasForeignKey<Tedavi>(d => d.TedaviId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Tedavi_Hasta");
         });
 
         OnModelCreatingPartial(modelBuilder);

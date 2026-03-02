@@ -11,5 +11,5 @@ public partial class Tedavi
 
     public int TedaviId { get; set; }
 
-    public virtual Hastum TedaviNavigation { get; set; } = null!;
+    public virtual ICollection<Hastum> Hasta { get; set; } = new List<Hastum>();
 }
