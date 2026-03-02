@@ -70,11 +70,13 @@ namespace Hastane_Otomasyonu.Controllers
                     HastaŞikayet = ExistingHasta.Şikayet,
 
                 };
+                
+                _context.OnlineRandevus.Add(Randevu);
+                _context.SaveChanges();
 
                 ExistingDoktor.RandevuId += "," + Randevu.Id.ToString();
                 ExistingHasta.RandevuId += "," + Randevu.Id.ToString();
 
-                _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
                 return StatusCode(200 , new { mesaj = "Başarılı"});
