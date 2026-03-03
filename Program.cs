@@ -41,13 +41,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // Gizli anahtarımızı byte dizisine çevirip sisteme veriyoruz
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:jwtKey"]))
         };
-    });
+        
+        
+    }
+    );
     
 
 
 
 builder.Services.AddControllers();
 var app = builder.Build();
+
 
 
 

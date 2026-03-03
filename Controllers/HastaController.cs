@@ -14,19 +14,20 @@ namespace Hastane_Otomasyonu.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CreateHastaController : ControllerBase
+    public class HastaController : ControllerBase
     {
         private readonly HastaneContext _context;
 
-        public CreateHastaController(HastaneContext context)
+        public HastaController(HastaneContext context)
         {
             _context = context;
             
         }
+
+
         [HttpPost]
         // Dışarıdan gelen DTO'yu, veritabanına eklenecek Entity'e çeviren metot
         // Dışardan hep DTO tipinde gelir veri
-        
         public IActionResult CreateHasta([FromBody] HastaDTO dto)
         {
             try
@@ -38,7 +39,6 @@ namespace Hastane_Otomasyonu.Controllers
                     Soyisim = dto.Surname, // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
                     Şikayet = dto.Şikayet,// veriye dönüşür.
                 };
-
                 bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
                 
                 
@@ -52,13 +52,11 @@ namespace Hastane_Otomasyonu.Controllers
                 }
 
                 else
-                {
-                    
+                {   
                 _context.Hasta.Add(NewEntity);
                 _context.SaveChanges();
 
                 return Ok("Kayıt başarılı");
-
                 }
             }
 
@@ -77,6 +75,25 @@ namespace Hastane_Otomasyonu.Controllers
                 });
             }
         
+        }
+
+
+
+        [HttpGet]
+        public IActionResult RandevuGöster([FromBody] HastaDTO hastadto)
+        {
+            var Hastamız = _context.Hasta.FirstOrDefault(h => h.Tc == hastadto.Tc);
+            if (Hastamız == null)
+            {
+                return StatusCode(500,"Kayıtlı hasta bulunamadı");
+            }
+            
+            else if(Hastamız.RandevuId == null)
+            {
+                return StatusCode(200, "Hastanın randevusu yok");
+            };
+            
+            return new ObjectResult ($"Hastanın randevularını ID'leri: {Hastamız.RandevuId}"){StatusCode = 200};
         }
     }
 }
