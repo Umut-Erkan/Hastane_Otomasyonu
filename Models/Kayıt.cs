@@ -7,9 +7,9 @@ public partial class Kayıt
 {
     public int? RandevuFk { get; set; }
 
-    public string? YönlendirmeFişi { get; set; }
+    public string YönlendirmeFişi { get; set; }
 
     public int KayıtId { get; set; }
 
-    public virtual OnlineRandevu? RandevuFkNavigation { get; set; }
+    public virtual OnlineRandevu RandevuFkNavigation { get; set; }
 }

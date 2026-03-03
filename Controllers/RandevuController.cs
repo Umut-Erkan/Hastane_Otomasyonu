@@ -69,7 +69,7 @@ namespace Hastane_Otomasyonu.Controllers
                     DoktorId = ExistingDoktor.Id,
                     Saat = TimeOnly.FromDateTime(DateTime.Now),
                     Tarih = DateOnly.FromDateTime(DateTime.Now),
-                    HastaŞikayet = ExistingHasta.Şikayet,
+                    HastaŞikayet = AddDTO.Şikayet
 
                 };
 
@@ -78,6 +78,8 @@ namespace Hastane_Otomasyonu.Controllers
 
                 ExistingDoktor.RandevuId += "," + Randevu.Id.ToString();
                 ExistingHasta.RandevuId += "," + Randevu.Id.ToString();
+
+                
 
                 _context.SaveChanges();
 

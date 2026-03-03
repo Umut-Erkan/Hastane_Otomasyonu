@@ -5,21 +5,23 @@ namespace MyApiProject.Models;
 
 public partial class Hastum
 {
-    public int Tc { get; set; }
+    public long Tc { get; set; }
 
-    public string İsim { get; set; } = null!;
+    public string İsim { get; set; }
 
-    public string Soyisim { get; set; } = null!;
-
-    public string Şikayet { get; set; } = null!;
+    public string Soyisim { get; set; }
 
     public int Id { get; set; }
 
-    public string? RandevuId { get; set; }
+    public string RandevuId { get; set; }
 
     public int? TedaviId { get; set; }
 
+    public string Password { get; set; }
+
+    public string Eposta { get; set; }
+
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 
-    public virtual Tedavi? Tedavi { get; set; }
+    public virtual Tedavi Tedavi { get; set; }
 }

@@ -5,13 +5,13 @@ namespace MyApiProject.Models;
 
 public partial class Doktor
 {
-    public string İsim { get; set; } = null!;
+    public string İsim { get; set; }
 
-    public string Soyisim { get; set; } = null!;
+    public string Soyisim { get; set; }
 
-    public string Alan { get; set; } = null!;
+    public string Alan { get; set; }
 
-    public string? RandevuId { get; set; }
+    public string RandevuId { get; set; }
 
     public int Id { get; set; }
 
