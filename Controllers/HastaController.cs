@@ -37,8 +37,8 @@ namespace Hastane_Otomasyonu.Controllers
                     Tc = dto.Tc,
                     İsim = dto.Name, // sağ taraf kullanıcıdan gelen DTO tipindeki veri
                     Soyisim = dto.Surname,
-                     // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
-                                            // veriye dönüşür.
+                    Password = dto.Password, // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
+                    Eposta = dto.Eposta                        // veriye dönüşür.
                 };
                 bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
                 
