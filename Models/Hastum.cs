@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hastane_Otomasyonu.Models;
 
 namespace MyApiProject.Models;
 
-public partial class Hastum
+public partial class Hastum : User
 {
     public long Tc { get; set; }
 
