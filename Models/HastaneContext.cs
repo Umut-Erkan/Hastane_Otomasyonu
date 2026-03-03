@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hastane_Otomasyonu.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MyApiProject.Models;
@@ -30,9 +28,9 @@ public partial class HastaneContext : DbContext
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-3GQK4RG\\SQLEXPRESS;Database=Hastane;Trusted_Connection=True;TrustServerCertificate=True;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Doktor>(entity =>
@@ -40,31 +38,43 @@ public partial class HastaneContext : DbContext
             entity.ToTable("Doktor");
 
             entity.Property(e => e.Alan)
+                .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.RandevuId)
                 .IsUnicode(false)
                 .HasColumnName("RandevuID");
-            entity.Property(e => e.Soyisim).HasMaxLength(50);
-            entity.Property(e => e.İsim).HasMaxLength(50);
+            entity.Property(e => e.Soyisim)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.İsim)
+                .IsRequired()
+                .HasMaxLength(50);
         });
 
         modelBuilder.Entity<Hastum>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Hasta_1");
 
+            entity.Property(e => e.Eposta)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Password)
+                .IsRequired()
+                .HasMaxLength(10)
+                .IsFixedLength();
             entity.Property(e => e.RandevuId)
                 .IsUnicode(false)
                 .HasColumnName("RandevuID");
             entity.Property(e => e.Soyisim)
+                .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
             entity.Property(e => e.İsim)
+                .IsRequired()
                 .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.Şikayet)
-                .HasMaxLength(100)
                 .IsUnicode(false);
 
             entity.HasOne(d => d.Tedavi).WithMany(p => p.Hasta)
@@ -93,19 +103,25 @@ public partial class HastaneContext : DbContext
 
             entity.Property(e => e.DoktorId).HasColumnName("DoktorID");
             entity.Property(e => e.DoktorName)
+                .IsRequired()
                 .HasMaxLength(20)
                 .IsFixedLength();
             entity.Property(e => e.DoktorSurname)
+                .IsRequired()
                 .HasMaxLength(20)
                 .IsFixedLength();
             entity.Property(e => e.HastaId).HasColumnName("HastaID");
             entity.Property(e => e.HastaName)
+                .IsRequired()
                 .HasMaxLength(20)
                 .IsFixedLength();
             entity.Property(e => e.HastaSurname)
+                .IsRequired()
                 .HasMaxLength(20)
                 .IsFixedLength();
-            entity.Property(e => e.HastaŞikayet).HasMaxLength(100);
+            entity.Property(e => e.HastaŞikayet)
+                .IsRequired()
+                .HasMaxLength(100);
 
             entity.HasOne(d => d.Doktor).WithMany(p => p.OnlineRandevus)
                 .HasForeignKey(d => d.DoktorId)
@@ -144,8 +160,11 @@ public partial class HastaneContext : DbContext
             entity.ToTable("Tedavi");
 
             entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
-            entity.Property(e => e.Ilaç).HasMaxLength(50);
+            entity.Property(e => e.Ilaç)
+                .IsRequired()
+                .HasMaxLength(50);
             entity.Property(e => e.Tedavi1)
+                .IsRequired()
                 .HasMaxLength(100)
                 .HasColumnName("Tedavi");
         });

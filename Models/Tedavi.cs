@@ -5,9 +5,9 @@ namespace MyApiProject.Models;
 
 public partial class Tedavi
 {
-    public string Ilaç { get; set; } = null!;
+    public string Ilaç { get; set; }
 
-    public string Tedavi1 { get; set; } = null!;
+    public string Tedavi1 { get; set; }
 
     public int TedaviId { get; set; }
 

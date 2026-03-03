@@ -12,6 +12,8 @@ namespace Hastane_Otomasyonu.DTO
 
         public int Id { get; set; }
 
+        public string Şikayet { get; set; }
+
         public string DoktorName { get; set; }
 
         public string DoktorSurname { get; set; }
