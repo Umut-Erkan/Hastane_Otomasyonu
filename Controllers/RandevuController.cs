@@ -100,7 +100,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-        // İSTENEN KAYIT SİLİNECEK
+        // İSTENEN RANDEVU SİLME
         [Authorize]
         [HttpDelete]
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
