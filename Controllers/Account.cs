@@ -16,5 +16,5 @@ namespace Hastane_Otomasyonu.Controllers
         
     }
 
-   Token.Generator.Create
+   //Token.Generator.Create
 }
