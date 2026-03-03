@@ -13,23 +13,15 @@ namespace Hastane_Otomasyonu.DTO
 
         public string? Surname { get; set; }
 
+        public string Password { get; set; }
+
+        public string Eposta { get; set; }
+
         public string? Şikayet { get; set; } //get; init; bak
 
         public virtual OnlineRandevu? Randevu { get; set; } // Şimdilik burasını boş bırak
         public virtual Tedavi? Tedavi { get; set; } // Şimdilik burasını boş bırak
 
-
-        public static HastaDTO ConvertToDTO(Hastum hasta) // Veri get edilirken entity -> DTO için.
-        {
-            return new HastaDTO
-            {   
-                Tc = hasta.Tc,
-                Name = hasta.İsim,
-                Surname = hasta.Soyisim,
-                Şikayet = hasta.Şikayet,
-                //Randevu = hasta.OnlineRandevu
-            };
         }
 
     }
-}
