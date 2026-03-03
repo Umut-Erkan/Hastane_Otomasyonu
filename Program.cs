@@ -1,4 +1,5 @@
 ﻿using MyApiProject.Models;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Hastane_Otomasyonu.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;   
+using Microsoft.AspNetCore.Authentication.JwtBearer;  
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,7 +25,8 @@ builder.Services.AddDbContext<HastaneContext>(options =>
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddBearerToken(options =>
+
+    .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -34,25 +35,28 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true, // Token'ın süresi dolmuş mu kontrol et (Çok önemli!)
             ValidateIssuerSigningKey = true, // Şifreleme anahtarının doğru olup olmadığını kontrol et
 
-            ValidIssuer = "jwtIssuer", // Bizim belirlediğimiz dağıtıcı adı
-            ValidAudience = "jwtIssuer", // Basitlik için Audience'ı da aynı yapıyoruz
+            ValidIssuer = builder.Configuration["JwtSettings:jwtIssuer"], // Bizim belirlediğimiz dağıtıcı adı
+            ValidAudience = builder.Configuration["JwtSettings:Audience"], // Basitlik için Audience'ı da aynı yapıyoruz
             
             // Gizli anahtarımızı byte dizisine çevirip sisteme veriyoruz
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:jwtKey"]))
         };
-    }
-    );
+    });
+    
+
+
 
 builder.Services.AddControllers();
 var app = builder.Build();
+
+
+
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
