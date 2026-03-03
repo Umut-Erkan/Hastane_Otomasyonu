@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Hastane_Otomasyonu.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyApiProject.Models;
 
@@ -99,8 +100,8 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-
         // İSTENEN KAYIT SİLİNECEK
+        [Authorize]
         [HttpDelete]
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
         {

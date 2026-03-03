@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Hastane_Otomasyonu.Identity
 {
-    public class User:IdentityUser
+    public class UserModel
     {
-        public string Firstname{ get; set; }
-        public string Lastname{ get; set; }
-        public string Key{ get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Role { get; set; 
     }
-}
+}};

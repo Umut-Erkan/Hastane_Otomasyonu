@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MyApiProject.Models;
 
-public partial class HastaneContext : IdentityDbContext<User>
+public partial class HastaneContext : DbContext
 {
     public HastaneContext()
     {
