@@ -52,6 +52,15 @@ namespace Hastane_Otomasyonu.Controllers
                     });
                 }
 
+                else if (dto.Tc.ToString().Length != 11)
+                {
+                    return new ObjectResult("Tc'nin 11 haneli olması lazım"){StatusCode = 400};
+                }
+                else if (dto.Password.Count() < 10 || !dto.Password.Any(char.IsUpper))
+                {
+                    return new ObjectResult("Şifre 10 haneden küçük ya da Büyük karakter yok"){StatusCode = 400};
+                }
+
                 else
                 {   
                 _context.Hasta.Add(NewEntity);
