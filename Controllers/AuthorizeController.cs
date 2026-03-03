@@ -13,8 +13,10 @@ namespace Hastane_Otomasyonu.Controllers
     [Route("api/[controller]")]
     public class AuthorizeController : ControllerBase
     {
+        
         private UserModel GetCurrentUser()
         {
+            Console.WriteLine();
             var identity = HttpContext.User.Identity as ClaimsIdentity;
            
             if (identity != null)
@@ -28,18 +30,13 @@ namespace Hastane_Otomasyonu.Controllers
                     Role = userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value
                 };
             }
-
-            return new UserModel
-                {
-                    Username = "Umut Erkan",
-                    Role = "İdentity == null geldi"
-                };
+            return null;
         }
 
-
+        
           //For admin Only
         [HttpGet]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         public IActionResult AdminEndPoint()
         {
             var currentUser = GetCurrentUser();
