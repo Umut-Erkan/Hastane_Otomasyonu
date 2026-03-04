@@ -9,6 +9,8 @@ using Hastane_Otomasyonu.DTO;
 using Microsoft.VisualBasic;
 using MyApiProject.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Hastane_Otomasyonu.Business;
 
 namespace Hastane_Otomasyonu.Controllers
 {
@@ -17,11 +19,12 @@ namespace Hastane_Otomasyonu.Controllers
     public class HastaController : ControllerBase
     {
         private readonly HastaneContext _context;
+        private readonly TokenService _tokenService;
 
-        public HastaController(HastaneContext context)
+        public HastaController(HastaneContext context , TokenService tokenService)
         {
             _context = context;
-            
+            _tokenService = tokenService;
         }
 
 
@@ -42,6 +45,7 @@ namespace Hastane_Otomasyonu.Controllers
                 };
                 bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
                 
+                var token = _tokenService.GenerateToken(NewEntity);
                 
                 if (TcKontrol == true)
                 {
@@ -66,7 +70,7 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.Hasta.Add(NewEntity);
                 _context.SaveChanges();
 
-                return Ok("Kayıt başarılı");
+                return Ok(token);
                 }
             }
 
@@ -88,7 +92,7 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-
+        [Authorize (Roles = "Hasta")]
         [HttpGet]
         public IActionResult RandevuGöster([FromBody] HastaDTO hastadto)
         {

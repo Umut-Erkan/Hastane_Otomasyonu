@@ -6,6 +6,8 @@ namespace MyApiProject.Models;
 
 public partial class Hastum : User
 {
+
+
     public long Tc { get; set; }
 
     public string İsim { get; set; }
@@ -17,7 +19,7 @@ public partial class Hastum : User
     public string RandevuId { get; set; }
 
     public int? TedaviId { get; set; }
-
+    
     public string Password { get; set; }
 
     public string Eposta { get; set; }
@@ -25,4 +27,8 @@ public partial class Hastum : User
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 
     public virtual Tedavi Tedavi { get; set; }
+
+
+    public string Role { get; set; } = "Hasta";
+
 }

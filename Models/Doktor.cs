@@ -16,4 +16,7 @@ public partial class Doktor
     public int Id { get; set; }
 
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
+
+    public string Role { get; set; } = "Doktor";
+
 }
