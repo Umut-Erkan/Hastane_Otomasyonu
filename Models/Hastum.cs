@@ -4,10 +4,8 @@ using Hastane_Otomasyonu.Models;
 
 namespace MyApiProject.Models;
 
-public partial class Hastum 
+public partial class Hastum : IUser
 {
-
-
     public long Tc { get; set; }
 
     public string İsim { get; set; }

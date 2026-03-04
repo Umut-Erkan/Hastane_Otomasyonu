@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MyApiProject.Models;
 
-public partial class Doktor
+public partial class Doktor 
 {
     public string İsim { get; set; }
 

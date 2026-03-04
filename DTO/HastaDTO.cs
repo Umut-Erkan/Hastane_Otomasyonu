@@ -18,6 +18,7 @@ namespace Hastane_Otomasyonu.DTO
         public string Eposta { get; set; }
 
         public string? Şikayet { get; set; } //get; init; bak
+        public string Role { get; set; }
 
         public virtual OnlineRandevu? Randevu { get; set; } // Şimdilik burasını boş bırak
         public virtual Tedavi? Tedavi { get; set; } // Şimdilik burasını boş bırak

@@ -9,6 +9,7 @@ using Hastane_Otomasyonu.Models;
 using Microsoft.IdentityModel.Tokens;
 using MyApiProject.Models;
 
+
 namespace Hastane_Otomasyonu.Business
 {
     public class TokenService
@@ -19,7 +20,7 @@ namespace Hastane_Otomasyonu.Business
         _config = config;
     }
 
-    public string GenerateToken(User user)
+    public string GenerateToken(IUser user)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:jwtKey"]));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);

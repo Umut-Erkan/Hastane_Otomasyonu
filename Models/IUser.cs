@@ -14,13 +14,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Hastane_Otomasyonu.Models
 {
-    public class User 
+    public interface IUser 
     {
-        public string İsim { get; set; }
-        public string Soyisim { get; set; }
-        public string Password { get; set; }
         public string Eposta { get; set; }
-        public long Tc { get; set; }
         public string Role { get; set; }
     }
 }
