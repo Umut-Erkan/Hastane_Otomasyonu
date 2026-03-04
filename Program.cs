@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Hastane_Otomasyonu.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;  
 using System.Text;
+using Hastane_Otomasyonu.Business;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ if (string.IsNullOrEmpty(connectionString))
 builder.Services.AddDbContext<HastaneContext>(options =>
         options.UseSqlServer(connectionString));  
 
+
+builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
