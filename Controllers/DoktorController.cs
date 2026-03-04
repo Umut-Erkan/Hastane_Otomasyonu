@@ -87,21 +87,17 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [Authorize (Roles = "Doktor")]
-        [HttpGet ("bilgi")]
+        [HttpPost ("bilgi")]
         public IActionResult RandevuGöster([FromBody] DoktorDTO doktordto)
         {
-            var Hastamız = _context.Hasta.FirstOrDefault(h => h.Tc == doktordto.Tc);
+            var Hastamız = _context.Doktors.FirstOrDefault(h => h.İsim == doktordto.Name);
             if (Hastamız == null)
             {
                 return StatusCode(500,"Kayıtlı hasta bulunamadı");
             }
             
-            else if(Hastamız.RandevuId == null)
-            {
-                return StatusCode(200, Hastamız.Eposta);
-            };
             
-            return new ObjectResult ($"Hastanın randevularını ID'leri: {Hastamız.RandevuId}"){StatusCode = 200};
+            return new ObjectResult ($"Hastanın randevularını ID'leri: {Hastamız.Eposta}"){StatusCode = 200};
         }
     }
 }
