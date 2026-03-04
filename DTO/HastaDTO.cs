@@ -8,7 +8,7 @@ namespace Hastane_Otomasyonu.DTO
 {
     public class HastaDTO
     {
-        public int Tc { get; set; }
+        public long Tc { get; set; }
         public string? Name { get; set; }
 
         public string? Surname { get; set; }
