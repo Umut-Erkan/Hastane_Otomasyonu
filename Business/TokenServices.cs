@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Hastane_Otomasyonu.Models;
 using Microsoft.IdentityModel.Tokens;
+using MyApiProject.Models;
 
 namespace Hastane_Otomasyonu.Business
 {

@@ -4,7 +4,7 @@ using Hastane_Otomasyonu.Models;
 
 namespace MyApiProject.Models;
 
-public partial class Hastum : User
+public partial class Hastum 
 {
 
 
