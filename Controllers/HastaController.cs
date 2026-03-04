@@ -124,7 +124,7 @@ namespace Hastane_Otomasyonu.Controllers
             
             else if(Hastamız.RandevuId == null)
             {
-                return StatusCode(200, "Hastanın randevusu yok");
+                return StatusCode(200, Hastamız.Eposta);
             };
             
             return new ObjectResult ($"Hastanın randevularını ID'leri: {Hastamız.RandevuId}"){StatusCode = 200};
