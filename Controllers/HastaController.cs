@@ -41,12 +41,15 @@ namespace Hastane_Otomasyonu.Controllers
                     İsim = dto.Name, // sağ taraf kullanıcıdan gelen DTO tipindeki veri
                     Soyisim = dto.Surname,
                     Password = dto.Password, // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
-                    Eposta = dto.Eposta                        // veriye dönüşür.
+                    Eposta = dto.Eposta,                        // veriye dönüşür.
+                    Role = "Hasta"
                 };
+
                 bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
+                Console.Write("Hasta oluşturuldu ve TC si kontrol edildi" , TcKontrol);
                 
-                var token = _tokenService.GenerateToken(User.);
                 
+
                 if (TcKontrol == true)
                 {
                     return StatusCode(500, new
@@ -69,6 +72,9 @@ namespace Hastane_Otomasyonu.Controllers
                 {   
                 _context.Hasta.Add(NewEntity);
                 _context.SaveChanges();
+                
+                var token = _tokenService.GenerateToken(NewEntity);
+                Console.Write("Token oluşturuldu");
 
                 return Ok(token);
                 }
@@ -76,20 +82,34 @@ namespace Hastane_Otomasyonu.Controllers
 
             catch(DbUpdateException ex) // Veri tabanı hatası
             {
-                 return BadRequest(new { mesaj = "Hata.",hata = ex.StackTrace });
+                 return BadRequest(new 
+    { 
+                mesaj = "Veritabanına kaydederken hata oluştu.",
+                hata = ex.Message,
+                detay = ex.InnerException?.Message 
+            });
             }
 
-            catch (Exception)
+            catch(NullReferenceException ex) 
             {
-                // Veritabanı dışındaki diğer genel sistem hataları için
-                return StatusCode(500, new 
-                { 
-                    Baslik = "Sunucu Hatası", 
-                    Mesaj = "Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin." 
-                });
+                return BadRequest(new { mesaj = "Hata.", hata = ex }); // <-- Hata burada!
             }
+
+            catch (Exception ex)
+                {
+                return StatusCode(500, new 
+                        { 
+                            Baslik = "Sunucu Hatası", 
+                            Mesaj = $"Bilinmeyen bir hata: {ex.Message}",
+                            Detay = ex.InnerException?.Message,
+                            Stack = ex.StackTrace 
+                        }
+                );
+            }
+            }
+
+            
         
-        }
 
 
         [Authorize (Roles = "Hasta")]
