@@ -45,7 +45,7 @@ namespace Hastane_Otomasyonu.Controllers
                 };
                 bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
                 
-                var token = _tokenService.GenerateToken(NewEntity);
+                var token = _tokenService.GenerateToken(User.);
                 
                 if (TcKontrol == true)
                 {
