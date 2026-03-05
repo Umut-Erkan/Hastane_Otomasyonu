@@ -34,23 +34,23 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [HttpPost]
-        // Dışarıdan gelen DTO'yu, veritabanına eklenecek Entity'e çeviren metot
-        // Dışardan hep DTO tipinde gelir veri
-        public IActionResult CreateHasta([FromBody] HastaDTO dto)
+        public IActionResult CreateHasta([FromBody] HastaDTO dto) 
         {
             try
             {
                 var NewEntity = new Hastum // DTO -> Entity
                 {
                     Tc = dto.Tc,
-                    İsim = dto.Name, // sağ taraf kullanıcıdan gelen DTO tipindeki veri
+                    İsim = dto.Name, 
                     Soyisim = dto.Surname,
-                    Password = dto.Password,//_Hash.HashPassword(dto.Password), // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
+                    Password = _Hash.HashPassword(dto.Password), // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
                     Eposta = dto.Eposta,                        // veriye dönüşür.
                     Role = "Hasta",
                     Token = "PlaceHolder"
                 };
 
+               
+               
                 if (NewEntity.Token == null)
                 {
                   _logger.LogInformation("Token'e koyduğum place holder çalışmıyor");   
@@ -62,9 +62,7 @@ namespace Hastane_Otomasyonu.Controllers
 
                 bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
                 Console.Write("Hasta oluşturuldu ve TC si kontrol edildi" , TcKontrol);
-                
-                
-
+               
                 if (TcKontrol == true)
                 {
                     return StatusCode(500, new
@@ -92,33 +90,40 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.SaveChanges();
                 
                 
-                Console.Write("Token oluşturuldu");
+                Console.Write("TOKEN: " , token);
+                _logger.LogInformation(token);
 
                 return Ok("Token oluşturuldu, Hastanın özelliklerinden erişebilirsiniz");
                 }
             }
 
-            catch(DbUpdateException ex) // Veri tabanı hatası
+
+
+            catch (DbUpdateException ex) 
             {
-                 return BadRequest(new 
-    { 
-                mesaj = "Veritabanına kaydederken hata oluştu.",
-                hata = ex.Message,
-                detay = ex.InnerException?.Message 
+                // InnerException null olabilir, o yüzden ?. kullanıyoruz
+                return BadRequest(new 
+                { 
+                    mesaj = "Veritabanına kaydederken hata oluştu.",
+                    hata = ex.Message,
+                    detay = ex.InnerException?.Message 
+                });
+            }
+
+            catch (NullReferenceException ex) 
+            {
+                // ex.Message alıyoruz, ex'in kendisini değil
+                return BadRequest(new { mesaj = "Beklenmedik bir veri boşluğu oluştu.", hata = ex.Message });
+            }
+
+           catch (Exception ex)
+{
+            // InnerException'ı değil, onun mesajını alıyoruz
+            return BadRequest(new { 
+                mesaj = "Bir hata oluştu.", 
+                hataDetayi = ex.Message,
+                ekBilgi = ex.InnerException?.Message
             });
-            }
-
-            catch(NullReferenceException ex) 
-            {
-                return BadRequest(new { mesaj = "Hata.", hata = ex }); // <-- Hata burada!
-            }
-
-            catch (Exception ex)
-            {
-                return BadRequest(new { 
-                    mesaj = "Hata.", 
-                    hataDetayi = ex.InnerException 
-                }); 
             }
             }
 
@@ -129,6 +134,7 @@ namespace Hastane_Otomasyonu.Controllers
         [Authorize (Roles = "Hasta")]
         [HttpGet]
         public IActionResult RandevuGöster([FromBody] HastaDTO hastadto)
+        
         {
             var Hastamız = _context.Hasta.FirstOrDefault(h => h.Tc == hastadto.Tc);
             if (Hastamız == null)
@@ -143,5 +149,4 @@ namespace Hastane_Otomasyonu.Controllers
             
             return new ObjectResult ($"Hastanın randevularını ID'leri: {Hastamız.RandevuId}"){StatusCode = 200};
         }
-    }
-}
+    }}

@@ -8,7 +8,7 @@ namespace Hastane_Otomasyonu.Business
 {
     public class PasswordHashing
     {
-            public string HashPassword(string password)
+        public string HashPassword(string password)
         {
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
