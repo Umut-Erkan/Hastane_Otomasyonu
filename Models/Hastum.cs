@@ -22,6 +22,8 @@ public partial class Hastum : IUser
 
     public string Eposta { get; set; }
 
+    public string Token { get; set; }
+
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 
     public virtual Tedavi Tedavi { get; set; }
