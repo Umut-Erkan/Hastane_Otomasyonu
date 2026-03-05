@@ -21,10 +21,14 @@ namespace Hastane_Otomasyonu.Controllers
         private readonly HastaneContext _context;
         private readonly TokenService _tokenService;
 
+        private PasswordHashing _Hash;
+
         public HastaController(HastaneContext context , TokenService tokenService)
         {
             _context = context;
             _tokenService = tokenService;
+
+            PasswordHashing _Hash = new PasswordHashing();
         }
 
 
@@ -40,7 +44,7 @@ namespace Hastane_Otomasyonu.Controllers
                     Tc = dto.Tc,
                     İsim = dto.Name, // sağ taraf kullanıcıdan gelen DTO tipindeki veri
                     Soyisim = dto.Surname,
-                    Password = dto.Password, // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
+                    Password = _Hash.HashPassword(dto.Password), // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
                     Eposta = dto.Eposta,                        // veriye dönüşür.
                     Role = "Hasta"
                 };
