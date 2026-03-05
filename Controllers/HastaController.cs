@@ -20,13 +20,14 @@ namespace Hastane_Otomasyonu.Controllers
     {
         private readonly HastaneContext _context;
         private readonly TokenService _tokenService;
-
+        private readonly ILogger<HastaController> _logger;
         private PasswordHashing _Hash;
 
-        public HastaController(HastaneContext context , TokenService tokenService)
+        public HastaController(HastaneContext context , TokenService tokenService , ILogger<HastaController> logger)
         {
             _context = context;
             _tokenService = tokenService;
+            _logger = logger;
 
             PasswordHashing _Hash = new PasswordHashing();
         }
@@ -44,10 +45,20 @@ namespace Hastane_Otomasyonu.Controllers
                     Tc = dto.Tc,
                     İsim = dto.Name, // sağ taraf kullanıcıdan gelen DTO tipindeki veri
                     Soyisim = dto.Surname,
-                    Password = _Hash.HashPassword(dto.Password), // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
+                    Password = dto.Password,//_Hash.HashPassword(dto.Password), // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
                     Eposta = dto.Eposta,                        // veriye dönüşür.
-                    Role = "Hasta"
+                    Role = "Hasta",
+                    Token = "PlaceHolder"
                 };
+
+                if (NewEntity.Token == null)
+                {
+                  _logger.LogInformation("Token'e koyduğum place holder çalışmıyor");   
+                }
+                else
+                {
+                    _logger.LogInformation("Token'de geçici olarak place holder duruyor.");
+                }
 
                 bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
                 Console.Write("Hasta oluşturuldu ve TC si kontrol edildi" , TcKontrol);
@@ -74,13 +85,16 @@ namespace Hastane_Otomasyonu.Controllers
 
                 else
                 {   
+                var token = _tokenService.GenerateToken(NewEntity);
+
+                NewEntity.Token = token;
                 _context.Hasta.Add(NewEntity);
                 _context.SaveChanges();
                 
-                var token = _tokenService.GenerateToken(NewEntity);
+                
                 Console.Write("Token oluşturuldu");
 
-                return Ok(token);
+                return Ok("Token oluşturuldu, Hastanın özelliklerinden erişebilirsiniz");
                 }
             }
 
@@ -100,15 +114,11 @@ namespace Hastane_Otomasyonu.Controllers
             }
 
             catch (Exception ex)
-                {
-                return StatusCode(500, new 
-                        { 
-                            Baslik = "Sunucu Hatası", 
-                            Mesaj = $"Bilinmeyen bir hata: {ex.Message}",
-                            Detay = ex.InnerException?.Message,
-                            Stack = ex.StackTrace 
-                        }
-                );
+            {
+                return BadRequest(new { 
+                    mesaj = "Hata.", 
+                    hataDetayi = ex.InnerException 
+                }); 
             }
             }
 
