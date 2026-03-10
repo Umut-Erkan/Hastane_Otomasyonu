@@ -125,7 +125,7 @@ namespace Hastane_Otomasyonu.Controllers
 
         // İSTENEN RANDEVU SİLME
         //[Authorize]
-       /* [HttpDelete]
+        [HttpDelete]
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
         {
             OnlineRandevu DelKayıt = _context.OnlineRandevus.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
@@ -170,7 +170,7 @@ namespace Hastane_Otomasyonu.Controllers
             {
                 return StatusCode(500, new{mesaj = "Hata", hata = ex.Message});
             }
-        }*/
+        }
 
     }
 }
