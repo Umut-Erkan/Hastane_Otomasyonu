@@ -122,10 +122,11 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-
+        /*
         // İSTENEN RANDEVU SİLME
         //[Authorize]
         [HttpDelete]
+        
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
         {
             OnlineRandevu DelKayıt = _context.OnlineRandevus.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
@@ -139,7 +140,13 @@ namespace Hastane_Otomasyonu.Controllers
             // DOKTORDAN VE HASTADAN SİLİNEN RANDEVUNUN ID'SİNİ SİL
                 Hastum IdSilincekHasta = _context.Hasta.FirstOrDefault(r => r.RandevuId.Concat(DelDTO.RandevuID));
                 
-                Doktor IdSilincekDoktor = _context.Doktors.FirstOrDefault(r => r.RandevuId.Concat(DelDTO.RandevuID));
+                var tumRandevular = _context.Doktors
+                .SelectMany(h => h.RandevuId)
+                .Where(r => r.RandevuID = DelDTO.RandevuID) // Örneğin sadece gelecek randevular
+                .ToList();
+                                
+                
+                
                 
                 if (IdSilincekDoktor == null && IdSilincekHasta == null)
                     {
@@ -170,7 +177,8 @@ namespace Hastane_Otomasyonu.Controllers
             {
                 return StatusCode(500, new{mesaj = "Hata", hata = ex.Message});
             }
-        }
+        }*/
 
+        }
     }
-}
+
