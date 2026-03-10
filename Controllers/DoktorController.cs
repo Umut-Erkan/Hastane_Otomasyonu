@@ -28,24 +28,17 @@ namespace Hastane_Otomasyonu.Controllers
             _tokenService = tokenService;
         }
         
+
+
+
         [HttpPost ("key-al")]
         public IActionResult DoktorKeyAl([FromBody] DoktorDTO dto)
         {
             try
             {
-                var NewEntity = new Doktor // DTO -> Entity
-                { 
-                    //Tc = dto.Tc,
-                    Eposta = dto.Eposta,                        
-                    Role = "Doktor"
-                };
+                Doktor Key = _context.Doktors.FirstOrDefault(r => r.Eposta == dto.Eposta);
 
-                
-                   
-                //_context.Hasta.Add(NewEntity);
-                //_context.SaveChanges();
-                
-                var token = _tokenService.GenerateToken(NewEntity);
+                var token = _tokenService.GenerateToken(Key);
                 Console.Write("Token oluşturuldu");
 
                 return Ok(token);
@@ -85,17 +78,17 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [Authorize (Roles = "Doktor")]
-        [HttpPost ("bilgi")]
+        [HttpPost ("DoktorRandevu")]
         public IActionResult RandevuGöster([FromBody] DoktorDTO doktordto)
         {
-            var Hastamız = _context.Doktors.FirstOrDefault(h => h.İsim == doktordto.Name);
-            if (Hastamız == null)
+            var Doktorumuz = _context.Doktors.FirstOrDefault(h => h.İsim == doktordto.Name);
+            if (Doktorumuz == null)
             {
                 return StatusCode(500,"Kayıtlı hasta bulunamadı");
             }
             
             
-            return new ObjectResult ($"Hastanın randevularını ID'leri: {Hastamız.Eposta}"){StatusCode = 200};
+            return new ObjectResult ($"Doktorun randevularını ID'leri: {Doktorumuz.RandevuId}"){StatusCode = 200};
         }
     }
 }
