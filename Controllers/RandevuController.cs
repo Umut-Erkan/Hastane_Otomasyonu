@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Hastane_Otomasyonu.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MyApiProject.Models;
 
 namespace Hastane_Otomasyonu.Controllers
@@ -21,6 +22,7 @@ namespace Hastane_Otomasyonu.Controllers
             _context = context;
         }
         
+
         private Doktor DoktoruBul(string isim, string soyisim)
         {
             return _context.Doktors.FirstOrDefault(d => 
@@ -31,12 +33,12 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         // RANDEVU ALMA
+        [Authorize (Roles = "Hasta")]
         [HttpPost]
         public IActionResult RandevuAl([FromBody]  RandevuAddDTO AddDTO)
-        // Kullanıcı bilgileri yine dışardan gelcek. DTO-> Entity (ama eklemek için değil, kullanmak için)
-        // Randevu bilgileri Entity. Okuncak ise Entity-> DTO lazım (Get).
         {
             Doktor ExistingDoktor = DoktoruBul(AddDTO.DoktorName, AddDTO.DoktorSurname); 
+
             try
             {
                 // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
@@ -76,14 +78,32 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
-                ExistingDoktor.RandevuId += "," + Randevu.Id.ToString();
-                ExistingHasta.RandevuId += "," + Randevu.Id.ToString();
+                ExistingDoktor.RandevuId.Add(Randevu.Id);
+                ExistingHasta.RandevuId.Add(Randevu.Id);
 
                 
 
                 _context.SaveChanges();
 
                 return StatusCode(200 , new { mesaj = "Başarılı"});
+            }
+
+
+
+
+            catch (DbUpdateException ex) 
+            {
+                return BadRequest(new 
+                { 
+                    mesaj = "Veritabanına kaydederken hata oluştu.",
+                    hata = ex.Message,
+                    detay = ex.InnerException?.Message 
+                });
+            }
+
+            catch (NullReferenceException ex) 
+            {
+                return BadRequest(new { mesaj = "Beklenmedik bir veri boşluğu oluştu.", hata = ex.Message });
             }
             
             catch (Exception ex)
@@ -102,8 +122,9 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
+
         // İSTENEN RANDEVU SİLME
-        [Authorize]
+        //[Authorize]
         [HttpDelete]
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
         {
@@ -116,20 +137,25 @@ namespace Hastane_Otomasyonu.Controllers
             try
             {
             // DOKTORDAN VE HASTADAN SİLİNEN RANDEVUNUN ID'SİNİ SİL
-                Hastum IdSilincekHasta = _context.Hasta.FirstOrDefault(r => r.RandevuId == DelDTO.RandevuID.ToString());
+                Hastum IdSilincekHasta = _context.Hasta.FirstOrDefault(r => r.RandevuId.Concat(DelDTO.RandevuID));
                 
-                // Randevu ıdlerini sırayla döndür
-                /*foreach (var item in IdSilincekHasta.RandevuId)
-                {
-                    if
-                }*/
+                Doktor IdSilincekDoktor = _context.Doktors.FirstOrDefault(r => r.RandevuId.Concat(DelDTO.RandevuID));
                 
-                Doktor IdSilincekDoktor = _context.Doktors.FirstOrDefault(r => r.RandevuId == DelDTO.RandevuID.ToString());
-                
-                if (IdSilincekDoktor == null && IdSilincekDoktor == null)
+                if (IdSilincekDoktor == null && IdSilincekHasta == null)
                     {
-                        return StatusCode(500,"Doktor ya da hasta NULL");
+                        return StatusCode(500,"Doktor ve Hasta NULL");
                     }
+
+                else if (IdSilincekHasta == null)
+                    {
+                        return StatusCode(500,"hasta NULL");
+                    }
+
+                else if (IdSilincekDoktor == null)
+                    {
+                        return StatusCode(500,"Doktor NULL");
+                    }
+
 
                 IdSilincekDoktor.RandevuId.Remove(DelDTO.RandevuID);
                 IdSilincekHasta.RandevuId.Remove(DelDTO.RandevuID);

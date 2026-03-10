@@ -34,7 +34,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [HttpPost]
-        public IActionResult CreateHasta([FromBody] HastaDTO dto) 
+        public IActionResult CreateHasta([FromBody] HastaAddDTO dto) 
         {
             try
             {
@@ -43,7 +43,7 @@ namespace Hastane_Otomasyonu.Controllers
                     Tc = dto.Tc,
                     İsim = dto.Name, 
                     Soyisim = dto.Surname,
-                    Password = _Hash.HashPassword(dto.Password), // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
+                    Password = dto.Password, // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
                     Eposta = dto.Eposta,                        // veriye dönüşür.
                     Role = "Hasta",
                     Token = "PlaceHolder"
@@ -76,16 +76,13 @@ namespace Hastane_Otomasyonu.Controllers
                 {
                     return new ObjectResult("Tc'nin 11 haneli olması lazım"){StatusCode = 400};
                 }
-                else if (dto.Password.Count() < 10 || !dto.Password.Any(char.IsUpper))
-                {
-                    return new ObjectResult("Şifre 10 haneden küçük ya da Büyük karakter yok"){StatusCode = 400};
-                }
 
                 else
                 {   
                 var token = _tokenService.GenerateToken(NewEntity);
 
                 NewEntity.Token = token;
+
                 _context.Hasta.Add(NewEntity);
                 _context.SaveChanges();
                 
@@ -112,7 +109,6 @@ namespace Hastane_Otomasyonu.Controllers
 
             catch (NullReferenceException ex) 
             {
-                // ex.Message alıyoruz, ex'in kendisini değil
                 return BadRequest(new { mesaj = "Beklenmedik bir veri boşluğu oluştu.", hata = ex.Message });
             }
 
@@ -132,11 +128,12 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [Authorize (Roles = "Hasta")]
-        [HttpGet]
-        public IActionResult RandevuGöster([FromBody] HastaDTO hastadto)
+        [HttpPost ("HastaSorgula")]
+        public IActionResult RandevuGöster([FromBody] HastaShowDTO hastadto)
         
         {
             var Hastamız = _context.Hasta.FirstOrDefault(h => h.Tc == hastadto.Tc);
+
             if (Hastamız == null)
             {
                 return StatusCode(500,"Kayıtlı hasta bulunamadı");
@@ -144,7 +141,7 @@ namespace Hastane_Otomasyonu.Controllers
             
             else if(Hastamız.RandevuId == null)
             {
-                return StatusCode(200, Hastamız.Eposta);
+                return StatusCode(500, $"{Hastamız.İsim} {Hastamız.Soyisim}'in henüz randevusu yok.");
             };
             
             return new ObjectResult ($"Hastanın randevularını ID'leri: {Hastamız.RandevuId}"){StatusCode = 200};

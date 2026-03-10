@@ -8,7 +8,7 @@ namespace Hastane_Otomasyonu.DTO
 {
     public class RandevuAddDTO
     {
-        public int Tc { get; set; }
+        public long Tc { get; set; }
 
         public int Id { get; set; }
 
