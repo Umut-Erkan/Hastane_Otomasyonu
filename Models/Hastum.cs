@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Hastane_Otomasyonu.Models;
 namespace MyApiProject.Models;
 
-public partial class Hastum
+public partial class Hastum : IUser
 {
     public long Tc { get; set; }
 
@@ -21,7 +21,7 @@ public partial class Hastum
 
     public string Eposta { get; set; }
 
-    public string Role { get; set; }
+    public string Role { get; set; } = "Hasta";
 
     public string Token { get; set; }
 
