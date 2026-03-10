@@ -41,9 +41,19 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.Eposta)
+                .IsRequired()
+                .HasMaxLength(50);
+            entity.Property(e => e.Password)
+                .IsRequired()
+                .HasMaxLength(10)
+                .IsFixedLength();
             entity.Property(e => e.RandevuId)
                 .IsUnicode(false)
                 .HasColumnName("RandevuID");
+            entity.Property(e => e.Role)
+                .HasMaxLength(10)
+                .IsFixedLength();
             entity.Property(e => e.Soyisim)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -63,15 +73,23 @@ public partial class HastaneContext : DbContext
             entity.Property(e => e.Password)
                 .IsRequired()
                 .HasMaxLength(10)
-                .IsFixedLength();
+                .IsUnicode(false);
             entity.Property(e => e.RandevuId)
                 .IsUnicode(false)
                 .HasColumnName("RandevuID");
+            entity.Property(e => e.Role)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
             entity.Property(e => e.Soyisim)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
+            entity.Property(e => e.Token)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .IsUnicode(false);
             entity.Property(e => e.İsim)
                 .IsRequired()
                 .HasMaxLength(50)
