@@ -23,6 +23,8 @@ namespace Hastane_Otomasyonu.Controllers
         private readonly ILogger<HastaController> _logger;
         private PasswordHashing _Hash;
 
+        // Dependency Injection (DI) ??
+
         public HastaController(HastaneContext context , TokenService tokenService , ILogger<HastaController> logger)
         {
             _context = context;
