@@ -24,6 +24,8 @@ builder.Services.AddDbContext<HastaneContext>(options =>
         options.UseSqlServer(connectionString));  
 
 
+
+// TOKEN
 builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -52,6 +54,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 builder.Services.AddControllers();
+
+
+
+// SWAGGER
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen();
+
+
+
 var app = builder.Build();
 
 
@@ -65,5 +77,15 @@ app.UseAuthorization();
 
 
 app.MapControllers();
+
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    
+    app.UseSwaggerUI();
+}
+
 
 app.Run();

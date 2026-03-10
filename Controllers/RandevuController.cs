@@ -34,7 +34,7 @@ namespace Hastane_Otomasyonu.Controllers
 
         // RANDEVU ALMA
         [Authorize (Roles = "Hasta")]
-        [HttpPost]
+        [HttpPost ("Randevu Al")]
         public IActionResult RandevuAl([FromBody]  RandevuAddDTO AddDTO)
         {
             Doktor ExistingDoktor = DoktoruBul(AddDTO.DoktorName, AddDTO.DoktorSurname); 

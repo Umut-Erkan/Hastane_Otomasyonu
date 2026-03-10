@@ -21,11 +21,13 @@ namespace Hastane_Otomasyonu.Controllers
 
         private readonly HastaneContext _context;
         private readonly TokenService _tokenService;
-
+        private PasswordHashing _Hash;
         public DoktorController(HastaneContext context , TokenService tokenService)
         {
             _context = context;
             _tokenService = tokenService;
+
+            _Hash = new PasswordHashing();
         }
         
 
@@ -90,5 +92,8 @@ namespace Hastane_Otomasyonu.Controllers
             
             return new ObjectResult ($"Doktorun randevularını ID'leri: {Doktorumuz.RandevuId}"){StatusCode = 200};
         }
-    }
+
+        }
+
+    
 }
