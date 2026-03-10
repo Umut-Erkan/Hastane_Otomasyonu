@@ -29,7 +29,9 @@ namespace Hastane_Otomasyonu.Controllers
             _tokenService = tokenService;
             _logger = logger;
 
-            PasswordHashing _Hash = new PasswordHashing();
+            _Hash = new PasswordHashing();
+
+            //PasswordHashing _Hash = new PasswordHashing(); Neden bu şekilde composition ile yapınca olmuyor?
         }
 
 
@@ -43,14 +45,14 @@ namespace Hastane_Otomasyonu.Controllers
                     Tc = dto.Tc,
                     İsim = dto.Name, 
                     Soyisim = dto.Surname,
-                    Password = dto.Password, // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
+                    Password = _Hash.HashPassword(dto.Password) , // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
                     Eposta = dto.Eposta,                        // veriye dönüşür.
                     Role = "Hasta",
                     Token = "PlaceHolder"
                 };
 
                
-               
+
                 if (NewEntity.Token == null)
                 {
                   _logger.LogInformation("Token'e koyduğum place holder çalışmıyor");   
