@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
-using Hastane_Otomasyonu.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;  
 using System.Text;
 using Hastane_Otomasyonu.Business;
