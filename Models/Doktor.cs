@@ -24,6 +24,8 @@ public partial class Doktor : IUser
     public string Eposta { get; set; }
 
     public string Role { get; set; } = "Doktor";
+    
+    public string Token { get; set; }
 
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 }

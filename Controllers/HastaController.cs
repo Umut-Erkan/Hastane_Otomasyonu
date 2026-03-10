@@ -37,7 +37,7 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost ("Hasta Kayıt")]
         public IActionResult CreateHasta([FromBody] HastaAddDTO dto) 
         {
             try
@@ -117,7 +117,8 @@ namespace Hastane_Otomasyonu.Controllers
             }
 
            catch (Exception ex)
-{
+           
+            {
             // InnerException'ı değil, onun mesajını alıyoruz
             return BadRequest(new { 
                 mesaj = "Bir hata oluştu.", 
@@ -125,6 +126,7 @@ namespace Hastane_Otomasyonu.Controllers
                 ekBilgi = ex.InnerException?.Message
             });
             }
+            
             }
 
             
