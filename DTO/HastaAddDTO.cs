@@ -6,7 +6,7 @@ using MyApiProject.Models;
 
 namespace Hastane_Otomasyonu.DTO
 {
-    public class HastaDTO
+    public class HastaAddDTO
     {
         public long Tc { get; set; }
         public string? Name { get; set; }

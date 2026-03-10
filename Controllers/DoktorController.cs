@@ -29,8 +29,6 @@ namespace Hastane_Otomasyonu.Controllers
         }
         
         [HttpPost ("key-al")]
-        // Dışarıdan gelen DTO'yu, veritabanına eklenecek Entity'e çeviren metot
-        // Dışardan hep DTO tipinde gelir veri
         public IActionResult DoktorKeyAl([FromBody] DoktorDTO dto)
         {
             try

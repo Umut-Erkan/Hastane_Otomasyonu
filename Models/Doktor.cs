@@ -13,7 +13,7 @@ public partial class Doktor : IUser
 
     public string Alan { get; set; }
 
-    public string RandevuId { get; set; }
+    public List<int> RandevuId { get; set; }
 
     public int Id { get; set; }
 
