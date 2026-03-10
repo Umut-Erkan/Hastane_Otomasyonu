@@ -78,8 +78,8 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
-                ExistingDoktor.RandevuId.Add(Randevu.Id);
-                ExistingHasta.RandevuId.Add(Randevu.Id);
+                ExistingDoktor.RandevuId.Append(Randevu.Id);
+                ExistingHasta.RandevuId.Append(Randevu.Id);
 
                 
 
