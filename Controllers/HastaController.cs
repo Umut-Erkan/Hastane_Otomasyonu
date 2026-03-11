@@ -23,17 +23,16 @@ namespace Hastane_Otomasyonu.Controllers
         private readonly ILogger<HastaController> _logger;
         private PasswordHashing _Hash;
 
-        // Dependency Injection (DI) ??
-
-        public HastaController(HastaneContext context , TokenService tokenService , ILogger<HastaController> logger)
+        
+        public HastaController(HastaneContext context , TokenService tokenService , ILogger<HastaController> logger , PasswordHashing hash)
         {
             _context = context;
+            
             _tokenService = tokenService;
+            
             _logger = logger;
-
-            _Hash = new PasswordHashing();
-
-            //PasswordHashing _Hash = new PasswordHashing(); Neden bu şekilde composition ile yapınca olmuyor?
+            
+            _Hash = hash;
         }
 
 
