@@ -98,7 +98,6 @@ namespace Hastane_Otomasyonu.Controllers
             }
 
 
-
             catch (DbUpdateException ex) 
             {
                 // InnerException null olabilir, o yüzden ?. kullanıyoruz
