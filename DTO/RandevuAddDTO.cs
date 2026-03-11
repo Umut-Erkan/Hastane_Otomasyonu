@@ -18,6 +18,5 @@ namespace Hastane_Otomasyonu.DTO
 
         public string DoktorSurname { get; set; }
 
-        public virtual Doktor? Doktor { get; set; }
     }
 }

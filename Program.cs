@@ -13,6 +13,9 @@ using Hastane_Otomasyonu.Business;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
+// CONNECTION
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrEmpty(connectionString))
@@ -22,6 +25,7 @@ if (string.IsNullOrEmpty(connectionString))
 
 builder.Services.AddDbContext<HastaneContext>(options =>
         options.UseSqlServer(connectionString));  
+
 
 
 
@@ -51,11 +55,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     );
     
 
-
-
 builder.Services.AddControllers();
 
-
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<PasswordHashing>();
 
 // SWAGGER
 builder.Services.AddEndpointsApiExplorer();
@@ -64,9 +67,9 @@ builder.Services.AddSwaggerGen();
 
 
 
+
+
 var app = builder.Build();
-
-
 
 
 app.UseHttpsRedirection();
@@ -77,7 +80,6 @@ app.UseAuthorization();
 
 
 app.MapControllers();
-
 
 
 if (app.Environment.IsDevelopment())

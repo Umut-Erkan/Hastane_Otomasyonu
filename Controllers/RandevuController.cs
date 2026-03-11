@@ -78,6 +78,9 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
+                ExistingDoktor.RandevuId = ExistingDoktor.RandevuId != null ? ExistingDoktor.RandevuId : new List<int>();
+                ExistingHasta.RandevuId = ExistingHasta.RandevuId != null ? ExistingHasta.RandevuId : new List<int>();  
+
                 ExistingDoktor.RandevuId.Append(Randevu.Id);
                 ExistingHasta.RandevuId.Append(Randevu.Id);
 
@@ -87,7 +90,6 @@ namespace Hastane_Otomasyonu.Controllers
 
                 return StatusCode(200 , new { mesaj = "Başarılı"});
             }
-
 
 
 
@@ -122,7 +124,8 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-        /*
+
+        
         // İSTENEN RANDEVU SİLME
         //[Authorize]
         [HttpDelete]
@@ -130,54 +133,22 @@ namespace Hastane_Otomasyonu.Controllers
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
         {
             OnlineRandevu DelKayıt = _context.OnlineRandevus.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
-
-            if (DelKayıt == null)
-            {
-                return StatusCode(404, "Silinecek randevu bulunamadı");
-            }
             try
             {
-            // DOKTORDAN VE HASTADAN SİLİNEN RANDEVUNUN ID'SİNİ SİL
-                Hastum IdSilincekHasta = _context.Hasta.FirstOrDefault(r => r.RandevuId.Concat(DelDTO.RandevuID));
-                
-                var tumRandevular = _context.Doktors
-                .SelectMany(h => h.RandevuId)
-                .Where(r => r.RandevuID = DelDTO.RandevuID) // Örneğin sadece gelecek randevular
-                .ToList();
-                                
-                
-                
-                
-                if (IdSilincekDoktor == null && IdSilincekHasta == null)
-                    {
-                        return StatusCode(500,"Doktor ve Hasta NULL");
-                    }
-
-                else if (IdSilincekHasta == null)
-                    {
-                        return StatusCode(500,"hasta NULL");
-                    }
-
-                else if (IdSilincekDoktor == null)
-                    {
-                        return StatusCode(500,"Doktor NULL");
-                    }
-
-
-                IdSilincekDoktor.RandevuId.Remove(DelDTO.RandevuID);
-                IdSilincekHasta.RandevuId.Remove(DelDTO.RandevuID);
-                _context.OnlineRandevus.Remove(DelKayıt);
-
+                if (DelKayıt == null)
+                {
+                    return StatusCode(404, "Silinecek randevu bulunamadı");
+                }
 
                 _context.SaveChanges();
-                return StatusCode(200, "randevu başarıyla silindi");
+                return StatusCode(200, $"{DelDTO.RandevuID} nolu randevu başarıyla silindi");
             }
 
             catch (NullReferenceException ex)
             {
                 return StatusCode(500, new{mesaj = "Hata", hata = ex.Message});
             }
-        }*/
+        }
 
         }
     }

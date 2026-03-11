@@ -35,12 +35,12 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-        client.DefauItRequestHeaders.Authorizat 
+        /*client.DefauItRequestHeaders.Authorizat 
         deneme = new AuthenticationHeaderValue(Admin)
 
 
         [Authorize (Roles = "admin")]
-        [HttpPost ("DoktorOluştur")]
+        [HttpPost ("DoktorOluştur")]*/
 
         public IActionResult DoktorOluştur ([FromBody] DoktorDTO doktordto)
         {
