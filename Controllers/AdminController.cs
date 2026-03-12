@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyApiProject.Models;
-using Hastane_Otomasyonu.Admin;
+
 
 namespace Hastane_Otomasyonu.Controllers
 {
@@ -30,18 +30,26 @@ namespace Hastane_Otomasyonu.Controllers
 
             _Hash = new PasswordHashing();
 
-            AdminS admin = new AdminS(); 
+        }
+
+
+        [Authorize (Roles = "Admin")]
+        [HttpHead]
+        [HttpPost ("Create Admin")]
+        public IActionResult Selamla ([FromBody] DoktorDTO doktordto)
+        {
+            return StatusCode(200,"merhaba");
         }
 
 
 
-        /*client.DefauItRequestHeaders.Authorizat 
-        deneme = new AuthenticationHeaderValue(Admin)
+
+
+
 
 
         [Authorize (Roles = "admin")]
-        [HttpPost ("DoktorOluştur")]*/
-
+        [HttpPost ("Create Doktor")]
         public IActionResult DoktorOluştur ([FromBody] DoktorDTO doktordto)
         {
             try
@@ -52,12 +60,17 @@ namespace Hastane_Otomasyonu.Controllers
                     İsim = doktordto.Name, 
                     Soyisim = doktordto.Surname,
                     Password = _Hash.HashPassword(doktordto.Password) ,  
-                    Eposta = doktordto.Eposta,                        
+                    Eposta = doktordto.Eposta,   
+                    Alan = doktordto.Alan,  
+
                     Role = "Doktor",
                     Token = "PlaceHolder"
                 };
+                _context.Doktors.Add(NewEntity);
+                _context.SaveChanges();
 
                 bool TcKontrol = _context.Doktors.Any(h=> h.Tc == NewEntity.Tc);
+
                 if (TcKontrol)
                 {
                     return StatusCode(400 , "Zaten bu doktor sistemde tanımlı");
@@ -66,13 +79,11 @@ namespace Hastane_Otomasyonu.Controllers
                 var token = _tokenService.GenerateToken(NewEntity);
                 NewEntity.Token = token;
 
-                _context.Doktors.Add(NewEntity);
+                
                 _context.SaveChanges();
 
                 return Ok("Doktor oluşturuldu.");
             }
-
-
 
             catch (DbUpdateException ex) 
             {

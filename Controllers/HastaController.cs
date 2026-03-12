@@ -83,11 +83,13 @@ namespace Hastane_Otomasyonu.Controllers
 
                 else
                 {   
-                var token = _tokenService.GenerateToken(NewEntity);
+                
+                _context.Hasta.Add(NewEntity);
+                _context.SaveChanges();
 
+                var token = _tokenService.GenerateToken(NewEntity);
                 NewEntity.Token = token;
 
-                _context.Hasta.Add(NewEntity);
                 _context.SaveChanges();
                 
                 
@@ -130,14 +132,14 @@ namespace Hastane_Otomasyonu.Controllers
            
 
 
-        [Authorize] // Çalışıyor
+        [Authorize] // Çalışıyor // Token sahibinin id si dönüyor
         [HttpGet ("HastaSorgula")]
         public IActionResult RandevuGöster()
         
         {
             var jti = User.Claims.FirstOrDefault(c => c.Type == "jti").Value;
-            //var userId = User.Claims.FirstOrDefault(c => c.Type == "sub").Value;
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
             
-            return StatusCode(200,$"çalışıyor {jti}");
+            return StatusCode(200,$"çalışıyor {jti}, {userId}");
         }
     }}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Hastane_Otomasyonu.DTO;
 using Microsoft.AspNetCore.Authorization;
@@ -42,14 +43,14 @@ namespace Hastane_Otomasyonu.Controllers
             try
             {
                 // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
-                Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Tc == AddDTO.Tc);
+                string HastaId = User.Claims.FirstOrDefault(c=> c.Type == ClaimTypes.NameIdentifier).Value;
+                Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Id.ToString() == HastaId);
 
                 if (ExistingDoktor == null)
                 {
                     return StatusCode(404, new { mesaj = "Belirtilen isim ve soyisimde bir doktor bulunamadı." });
                 }
 
-                
                 // Randevu alıncak doktor   // Randevu listesinde ıd kısmı Mevcut hasta ile şeleşen randevunun doktoru
                 bool zatenRandevusuVarMi = _context.OnlineRandevus.Any(r => 
                     r.HastaId == ExistingHasta.Id && 
@@ -59,7 +60,6 @@ namespace Hastane_Otomasyonu.Controllers
                 {
                     return StatusCode(500 , new { mesaj = "Zaten bu doktordan randevunuz var"});
                 }
-
 
                 OnlineRandevu Randevu = new OnlineRandevu
                 {
@@ -78,15 +78,8 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
-                
-                
-
-                _context.SaveChanges();
-
                 return StatusCode(200 , new { mesaj = "Başarılı"});
             }
-
-
 
             catch (DbUpdateException ex) 
             {
@@ -122,7 +115,7 @@ namespace Hastane_Otomasyonu.Controllers
 
         
         // İSTENEN RANDEVU SİLME
-        //[Authorize]
+        [Authorize (Roles = "Admin")]
         [HttpDelete]
         
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)

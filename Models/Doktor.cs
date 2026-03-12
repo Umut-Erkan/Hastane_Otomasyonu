@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Hastane_Otomasyonu.Models;
 
-
 namespace MyApiProject.Models;
 
 public partial class Doktor : IUser
@@ -21,8 +20,8 @@ public partial class Doktor : IUser
 
     public string Eposta { get; set; }
 
-    public string Role { get; set; } = "Doktor";
-    
+    public string Role { get; set; }
+
     public string Token { get; set; }
 
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();

@@ -38,7 +38,7 @@ namespace Hastane_Otomasyonu.Business
             _config["JwtSettings:jwtIssuer"],
             _config["JwtSettings:Audience"],
             claims,
-            expires: DateTime.Now.AddMinutes(15),
+            expires: DateTime.Now.AddMinutes(90),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);

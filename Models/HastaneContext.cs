@@ -15,6 +15,8 @@ public partial class HastaneContext : DbContext
     {
     }
 
+    public virtual DbSet<Admin> Admins { get; set; }
+
     public virtual DbSet<Doktor> Doktors { get; set; }
 
     public virtual DbSet<Hastum> Hasta { get; set; }
@@ -27,9 +29,38 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){}
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Admin>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("Admin");
+
+            entity.Property(e => e.Eposta)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.Password)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Role)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Token)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<Doktor>(entity =>
         {
             entity.ToTable("Doktor");
@@ -46,11 +77,16 @@ public partial class HastaneContext : DbContext
                 .HasMaxLength(10)
                 .IsFixedLength();
             entity.Property(e => e.Role)
+                .IsRequired()
                 .HasMaxLength(10)
                 .IsFixedLength();
             entity.Property(e => e.Soyisim)
                 .IsRequired()
                 .HasMaxLength(50);
+            entity.Property(e => e.Token)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .IsUnicode(false);
             entity.Property(e => e.İsim)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -66,7 +102,7 @@ public partial class HastaneContext : DbContext
                 .IsUnicode(false);
             entity.Property(e => e.Password)
                 .IsRequired()
-                .HasMaxLength(10)
+                .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.Role)
                 .IsRequired()
