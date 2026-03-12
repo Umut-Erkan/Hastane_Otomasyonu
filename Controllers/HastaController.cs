@@ -11,6 +11,9 @@ using MyApiProject.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Hastane_Otomasyonu.Business;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace Hastane_Otomasyonu.Controllers
 {
@@ -50,9 +53,7 @@ namespace Hastane_Otomasyonu.Controllers
                     Eposta = dto.Eposta,                        // veriye dönüşür.
                     Role = "Hasta",
                     Token = "PlaceHolder"
-                };
-
-               
+                };               
 
                 if (NewEntity.Token == null)
                 {
@@ -97,7 +98,6 @@ namespace Hastane_Otomasyonu.Controllers
                 }
             }
 
-
             catch (DbUpdateException ex) 
             {
                 // InnerException null olabilir, o yüzden ?. kullanıyoruz
@@ -127,27 +127,25 @@ namespace Hastane_Otomasyonu.Controllers
             
             }
 
-            
-        
+           
 
 
-        [Authorize (Roles = "Hasta")]
-        [HttpPost ("HastaSorgula")]
-        public IActionResult RandevuGöster([FromBody] HastaShowDTO hastadto)
+        [Authorize]
+        [HttpGet ("HastaSorgula")]
+        public IActionResult RandevuGöster([FromHeader] Dictionary<string, string> JTI)
         
         {
-            var Hastamız = _context.Hasta.FirstOrDefault(h => h.Tc == hastadto.Tc);
+            var token = JTI["Token"]; // JWT tokene erişiyoruz
 
-            if (Hastamız == null)
-            {
-                return StatusCode(500,"Kayıtlı hasta bulunamadı");
-            }
-            
-            else if(Hastamız.RandevuId == null)
-            {
-                return StatusCode(500, $"{Hastamız.İsim} {Hastamız.Soyisim}'in henüz randevusu yok.");
-            };
-            
-            return new ObjectResult ($"Hastanın randevularını ID'leri: {Hastamız.RandevuId}"){StatusCode = 200};
+            var tokenMetni = token.Replace("Bearer ", "");
+
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadJwtToken(tokenMetni);
+
+            var email = jsonToken.Claims.First(c => c.Type == "emailaddress").Value;
+            var rol = jsonToken.Claims.First(c => c.Type == "role").Value;
+            var jti = jsonToken.Claims.First(c => c.Type == "jti").Value;
+
+            return Ok(new { Mesaj = $"Hoşgeldin {email}, Rolün: {rol}" });
         }
     }}

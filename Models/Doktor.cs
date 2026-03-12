@@ -13,8 +13,6 @@ public partial class Doktor : IUser
 
     public string Alan { get; set; }
 
-    public List<int> RandevuId { get; set; }
-
     public int Id { get; set; }
 
     public long Tc { get; set; }

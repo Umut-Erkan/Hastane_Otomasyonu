@@ -45,9 +45,6 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(10)
                 .IsFixedLength();
-            entity.Property(e => e.RandevuId)
-                .IsUnicode(false)
-                .HasColumnName("RandevuID");
             entity.Property(e => e.Role)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -71,9 +68,6 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(10)
                 .IsUnicode(false);
-            entity.Property(e => e.RandevuId)
-                .IsUnicode(false)
-                .HasColumnName("RandevuID");
             entity.Property(e => e.Role)
                 .IsRequired()
                 .HasMaxLength(100)
