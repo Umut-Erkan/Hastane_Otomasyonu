@@ -130,22 +130,14 @@ namespace Hastane_Otomasyonu.Controllers
            
 
 
-        [Authorize]
+        [Authorize] // Çalışıyor
         [HttpGet ("HastaSorgula")]
-        public IActionResult RandevuGöster([FromHeader] Dictionary<string, string> JTI)
+        public IActionResult RandevuGöster()
         
         {
-            var token = JTI["Token"]; // JWT tokene erişiyoruz
-
-            var tokenMetni = token.Replace("Bearer ", "");
-
-            var handler = new JwtSecurityTokenHandler();
-            var jsonToken = handler.ReadJwtToken(tokenMetni);
-
-            var email = jsonToken.Claims.First(c => c.Type == "emailaddress").Value;
-            var rol = jsonToken.Claims.First(c => c.Type == "role").Value;
-            var jti = jsonToken.Claims.First(c => c.Type == "jti").Value;
-
-            return Ok(new { Mesaj = $"Hoşgeldin {email}, Rolün: {rol}" });
+            var jti = User.Claims.FirstOrDefault(c => c.Type == "jti").Value;
+            //var userId = User.Claims.FirstOrDefault(c => c.Type == "sub").Value;
+            
+            return StatusCode(200,$"çalışıyor {jti}");
         }
     }}

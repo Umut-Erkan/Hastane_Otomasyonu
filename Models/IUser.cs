@@ -17,5 +17,6 @@ namespace Hastane_Otomasyonu.Models
     {
         public string Eposta { get; set; }
         public string Role { get; set; }
+        public int Id { get; set; }
     }
 }
