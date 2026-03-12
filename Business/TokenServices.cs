@@ -28,7 +28,9 @@ namespace Hastane_Otomasyonu.Business
         var claims = new[]
         {
             new Claim(ClaimTypes.Email, user.Eposta),
-            new Claim(ClaimTypes.Role, user.Role)
+            new Claim(ClaimTypes.Role, user.Role),
+
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()) // JİT üretmek için
         };
 
         var token = new JwtSecurityToken(

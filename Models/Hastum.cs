@@ -13,8 +13,6 @@ public partial class Hastum : IUser
 
     public int Id { get; set; }
 
-    public List<int> RandevuId { get; set; }
-
     public int? TedaviId { get; set; }
 
     public string Password { get; set; }

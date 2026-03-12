@@ -78,12 +78,7 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
-                ExistingDoktor.RandevuId = ExistingDoktor.RandevuId != null ? ExistingDoktor.RandevuId : new List<int>();
-                ExistingHasta.RandevuId = ExistingHasta.RandevuId != null ? ExistingHasta.RandevuId : new List<int>();  
-
-                ExistingDoktor.RandevuId.Append(Randevu.Id);
-                ExistingHasta.RandevuId.Append(Randevu.Id);
-
+                
                 
 
                 _context.SaveChanges();

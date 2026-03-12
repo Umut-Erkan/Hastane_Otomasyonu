@@ -90,7 +90,7 @@ namespace Hastane_Otomasyonu.Controllers
             }
             
             
-            return new ObjectResult ($"Doktorun randevularını ID'leri: {Doktorumuz.RandevuId}"){StatusCode = 200};
+            return new ObjectResult ("Doktorun randevularını ID'leri"){StatusCode = 200};
         }
 
         }
