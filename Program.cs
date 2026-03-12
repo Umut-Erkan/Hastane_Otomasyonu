@@ -60,6 +60,8 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PasswordHashing>();
 
+builder.Services.AddHttpContextAccessor();
+
 // SWAGGER
 builder.Services.AddEndpointsApiExplorer();
 
