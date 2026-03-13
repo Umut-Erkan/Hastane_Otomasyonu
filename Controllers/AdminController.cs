@@ -33,20 +33,6 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-        [HttpGet ("Create Admin")]
-        [ServiceFilter(typeof(ActionFilter))]
-        public IActionResult Selamla ([FromBody] DoktorDTO doktordto)
-        {
-            return StatusCode(200,"merhaba");
-        }
-
-
-
-
-
-
-
-
         
         [ServiceFilter(typeof(ActionFilter))]
         [HttpPost ("Create Doktor")]
@@ -66,8 +52,7 @@ namespace Hastane_Otomasyonu.Controllers
                     Role = "Doktor",
                     Token = "PlaceHolder"
                 };
-                _context.Doktors.Add(NewEntity);
-                _context.SaveChanges();
+                
 
                 bool TcKontrol = _context.Doktors.Any(h=> h.Tc == NewEntity.Tc);
 
@@ -75,6 +60,9 @@ namespace Hastane_Otomasyonu.Controllers
                 {
                     return StatusCode(400 , "Zaten bu doktor sistemde tanımlı");
                 }
+
+                _context.Doktors.Add(NewEntity);
+                _context.SaveChanges();
 
                 var token = _tokenService.GenerateToken(NewEntity);
                 NewEntity.Token = token;
