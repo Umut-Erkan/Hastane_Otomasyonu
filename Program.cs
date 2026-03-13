@@ -56,8 +56,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     );
     
 
-builder.Services.AddControllers(Options =>
-    Options.Filters.Add<ActionFilter>());
+builder.Services.AddControllers();
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PasswordHashing>();
