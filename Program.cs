@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;  
 using System.Text;
 using Hastane_Otomasyonu.Business;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,10 +56,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     );
     
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(Options =>
+    Options.Filters.Add<ActionFilter>());
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PasswordHashing>();
+builder.Services.AddScoped<ActionFilter>();
 
 builder.Services.AddHttpContextAccessor();
 

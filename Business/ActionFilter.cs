@@ -7,21 +7,25 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Hastane_Otomasyonu.Business
 {
-    [AttributeUsage(validOn: AttributeTargets.Class | AttributeTargets.Method)]
-    public class ActionFilter : Attribute
+    public class ActionFilter : IAuthorizationFilter
     {   
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        public ActionFilter(IHttpContextAccessor httpContextAccessor)
+        private readonly IConfiguration _config;
+        
+        public ActionFilter(IConfiguration config)
     {
-        _httpContextAccessor = httpContextAccessor;
+        _config = config;
     }
-        // Kapamak için kullanacağımız secret
-        private const string Secret = "Super_Secret_Value_123";
+        
+        public void OnAuthorization(AuthorizationFilterContext context)
+        {
+            string secret = context.HttpContext.Request.Headers["Secret"]; // kullanıcının headerindeki Secret karşılığı
 
-        // Secret'i requestin headerinden al
+            if(secret != _config["AdminSecurity:SecretKey"]) // Gelen Secret'i benim istediğimle karşılaştırma
+            {
+                 context.Result = new ForbidResult();
+            }
 
-        var response = _httpContextAccessor.HttpContext.Response;
-
-
+        }
+        
     }
 }
