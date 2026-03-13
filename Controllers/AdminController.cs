@@ -33,7 +33,6 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-        [HttpHead]
         [HttpGet ("Create Admin")]
         [ServiceFilter(typeof(ActionFilter))]
         public IActionResult Selamla ([FromBody] DoktorDTO doktordto)
@@ -48,7 +47,8 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-        [Authorize (Roles = "admin")]
+        
+        [ServiceFilter(typeof(ActionFilter))]
         [HttpPost ("Create Doktor")]
         public IActionResult DoktorOluştur ([FromBody] DoktorDTO doktordto)
         {
@@ -59,7 +59,7 @@ namespace Hastane_Otomasyonu.Controllers
                     Tc = doktordto.Tc,
                     İsim = doktordto.Name, 
                     Soyisim = doktordto.Surname,
-                    Password = _Hash.HashPassword(doktordto.Password) ,  
+                    Password = _Hash.HashPassword(doktordto.Password).ToString() ,  
                     Eposta = doktordto.Eposta,   
                     Alan = doktordto.Alan,  
 
@@ -82,7 +82,7 @@ namespace Hastane_Otomasyonu.Controllers
                 
                 _context.SaveChanges();
 
-                return Ok("Doktor oluşturuldu.");
+                return Ok($"{NewEntity.İsim}, {NewEntity.Soyisim} sisteme eklendi.");
             }
 
             catch (DbUpdateException ex) 
@@ -104,7 +104,6 @@ namespace Hastane_Otomasyonu.Controllers
            catch (Exception ex)
            
             {
-            // InnerException'ı değil, onun mesajını alıyoruz
             return BadRequest(new { 
                 mesaj = "Bir hata oluştu.", 
                 hataDetayi = ex.Message,
