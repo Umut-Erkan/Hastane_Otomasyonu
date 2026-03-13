@@ -33,9 +33,9 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-        [Authorize (Roles = "Admin")]
         [HttpHead]
-        [HttpPost ("Create Admin")]
+        [HttpGet ("Create Admin")]
+        [ServiceFilter(typeof(ActionFilter))]
         public IActionResult Selamla ([FromBody] DoktorDTO doktordto)
         {
             return StatusCode(200,"merhaba");
