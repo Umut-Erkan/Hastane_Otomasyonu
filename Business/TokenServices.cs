@@ -36,7 +36,7 @@ namespace Hastane_Otomasyonu.Business
         return (Token: Convert.ToBase64String(randomNumber), Expiration: turkeyTime.AddDays(7));
     }
 
-
+ 
     public string GenerateAccessToken(IUser user)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:jwtKey"]));
@@ -55,8 +55,9 @@ namespace Hastane_Otomasyonu.Business
             _config["JwtSettings:jwtIssuer"],
             _config["JwtSettings:Audience"],
             claims,
-            expires: DateTime.UtcNow.AddHours(3).AddMinutes(5), 
+            expires: DateTime.UtcNow.AddMinutes(2),
             signingCredentials: credentials);
+
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
