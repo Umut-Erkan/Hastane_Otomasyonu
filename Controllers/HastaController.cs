@@ -39,7 +39,7 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-        [HttpPost ("Hasta Kayıt")]
+        [HttpPost ("Hasta Kayıt")] // Hasta ilk kez kayıt oluyor
         public IActionResult CreateHasta([FromBody] HastaAddDTO dto) 
         {
             try
@@ -52,17 +52,12 @@ namespace Hastane_Otomasyonu.Controllers
                     Password = _Hash.HashPassword(dto.Password) , // sol taraftaki veritabanına ekliyceğimiz Hastum'un sahip olduğu 
                     Eposta = dto.Eposta,                        // veriye dönüşür.
                     Role = "Hasta",
-                    Token = "PlaceHolder"
+                    AccessToken = "PlaceHolder",
+                    RefreshToken = "PlaceHolder",
+                    RefreshTokenEndDate = DateTime.Now
                 };               
 
-                if (NewEntity.Token == null)
-                {
-                  _logger.LogInformation("Token'e koyduğum place holder çalışmıyor");   
-                }
-                else
-                {
-                    _logger.LogInformation("Token'de geçici olarak place holder duruyor.");
-                }
+                
 
                 bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
                 Console.Write("Hasta oluşturuldu ve TC si kontrol edildi" , TcKontrol);
@@ -87,22 +82,26 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.Hasta.Add(NewEntity);
                 _context.SaveChanges();
 
-                var token = _tokenService.GenerateAccessToken(NewEntity);
-                NewEntity.Token = token;
+                var AccessToken = _tokenService.GenerateAccessToken(NewEntity);
+                NewEntity.AccessToken = AccessToken;
+                
+                var tarih = new JwtSecurityTokenHandler().ReadJwtToken(AccessToken).ValidTo;  
+
+                var RefreshToken = _tokenService.GenerateRefreshToken();
+                NewEntity.RefreshToken = RefreshToken.Token;
+                NewEntity.RefreshTokenEndDate = RefreshToken.Expiration;
 
                 _context.SaveChanges();
                 
                 
-                Console.Write("TOKEN: " , token);
-                _logger.LogInformation(token);
 
-                return Ok("Token oluşturuldu, Hastanın özelliklerinden erişebilirsiniz");
+                return Ok($"{tarih} kullanıcının Acces token bitiş tarihidir, Hastanın özelliklerinden erişebilirsiniz");
                 }
             }
 
             catch (DbUpdateException ex) 
             {
-                // InnerException null olabilir, o yüzden ?. kullanıyoruz
+                
                 return BadRequest(new 
                 { 
                     mesaj = "Veritabanına kaydederken hata oluştu.",
@@ -130,9 +129,7 @@ namespace Hastane_Otomasyonu.Controllers
             }
 
            
-
-
-        [Authorize] // Çalışıyor // Token sahibinin id si dönüyor
+        [Authorize(Roles = "Hasta")] // Çalışıyor // Token sahibinin id si dönüyor
         [HttpGet ("HastaSorgula")]
         public IActionResult RandevuGöster()
         

@@ -1,4 +1,4 @@
-﻿using MyApiProject.Models;
+using MyApiProject.Models;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -27,9 +27,6 @@ if (string.IsNullOrEmpty(connectionString))
 builder.Services.AddDbContext<HastaneContext>(options =>
         options.UseSqlServer(connectionString));  
 
-
-
-
 // TOKEN
 builder.Services.AddScoped<TokenService>();
 
@@ -55,7 +52,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     }
     );
     
-
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<TokenService>();
@@ -63,7 +59,6 @@ builder.Services.AddScoped<PasswordHashing>();
 builder.Services.AddScoped<ActionFilter>();
 
 builder.Services.AddHttpContextAccessor();
-
 // SWAGGER
 builder.Services.AddEndpointsApiExplorer();
 
@@ -71,17 +66,15 @@ builder.Services.AddSwaggerGen();
 
 
 
-
-
 var app = builder.Build();
+
 
 
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
-
-
 
 app.MapControllers();
 
