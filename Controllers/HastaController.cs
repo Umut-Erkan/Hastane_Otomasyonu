@@ -87,7 +87,7 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.Hasta.Add(NewEntity);
                 _context.SaveChanges();
 
-                var token = _tokenService.GenerateToken(NewEntity);
+                var token = _tokenService.GenerateAccessToken(NewEntity);
                 NewEntity.Token = token;
 
                 _context.SaveChanges();

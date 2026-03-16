@@ -40,7 +40,7 @@ namespace Hastane_Otomasyonu.Controllers
             {
                 Doktor Key = _context.Doktors.FirstOrDefault(r => r.Eposta == dto.Eposta);
 
-                var token = _tokenService.GenerateToken(Key);
+                var token = _tokenService.GenerateAccessToken(Key);
                 Console.Write("Token oluşturuldu");
 
                 return Ok(token);

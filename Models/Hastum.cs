@@ -24,6 +24,8 @@ public partial class Hastum : IUser
 
     public string Token { get; set; }
 
+    public virtual User IdNavigation { get; set; }
+
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 
     public virtual Tedavi Tedavi { get; set; }
