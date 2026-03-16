@@ -85,7 +85,8 @@ namespace Hastane_Otomasyonu.Controllers
                 var AccessToken = _tokenService.GenerateAccessToken(NewEntity);
                 NewEntity.AccessToken = AccessToken;
                 
-                var tarih = new JwtSecurityTokenHandler().ReadJwtToken(AccessToken).ValidTo;  
+                // ValidTo her zaman UTC döndürür. Türkiye saatinde göstermek için +3 ekliyoruz
+                var tarih = new JwtSecurityTokenHandler().ReadJwtToken(AccessToken).ValidTo.AddHours(3).ToString("dd.MM.yyyy HH:mm:ss");
 
                 var RefreshToken = _tokenService.GenerateRefreshToken();
                 NewEntity.RefreshToken = RefreshToken.Token;
@@ -126,9 +127,10 @@ namespace Hastane_Otomasyonu.Controllers
             });
             }
             
-            }
+        }
 
            
+        
         [Authorize(Roles = "Hasta")] // Çalışıyor // Token sahibinin id si dönüyor
         [HttpGet ("HastaSorgula")]
         public IActionResult RandevuGöster()
