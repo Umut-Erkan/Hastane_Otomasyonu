@@ -64,7 +64,7 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.Doktors.Add(NewEntity);
                 _context.SaveChanges();
 
-                var token = _tokenService.GenerateToken(NewEntity);
+                var token = _tokenService.GenerateAccessToken(NewEntity);
                 NewEntity.Token = token;
 
                 

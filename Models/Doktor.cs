@@ -24,5 +24,7 @@ public partial class Doktor : IUser
 
     public string Token { get; set; }
 
+    public virtual User IdNavigation { get; set; }
+
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 }
