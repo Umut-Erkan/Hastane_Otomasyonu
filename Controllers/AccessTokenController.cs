@@ -27,7 +27,7 @@ namespace Hastane_Otomasyonu.Controllers
         {
             // Doktor ve Hastum farklı tipler olduğundan '??' kullanabilmek için ikisi de IUser'a cast ediliyor
             IUser user = (IUser)_context.Doktors.FirstOrDefault(x => x.RefreshToken == refreshToken) ?? 
-                         (IUser)_context.Hasta.FirstOrDefault(x => x.RefreshToken == refreshToken);
+                         (IUser)_context.Hastum.FirstOrDefault(x => x.RefreshToken == refreshToken);
 
             if (user == null)
                 return Unauthorized(new { mesaj = "Geçersiz Refresh Token" });

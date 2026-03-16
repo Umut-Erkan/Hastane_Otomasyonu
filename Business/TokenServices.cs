@@ -62,37 +62,8 @@ namespace Hastane_Otomasyonu.Business
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public bool VerifyAccessToken(JwtSecurityToken token)
-    {
-        if(token.ValidTo < DateTime.UtcNow) //Tokenin tarihi geçtiyse
-        {
-            var userIdString = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var role = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-            
+// Access Tokenin ömrü bitince zaten geçerliliği kalmıyor. Dolayısıyla revoke etmek (yetkisini düşürmek) gerekmez.
 
-            if(role == "Doktor")
-            {
-                var owner = _context.Doktors.FirstOrDefault(x => x.Id == int.Parse(userIdString));
-                
-                if(owner.AccessToken == null) // Token sahibinin token kısmı Null ise
-            {
-                return false;
-            }
-            }
-
-            else if(role == "Hasta")
-            {
-                var owner = _context.Hasta.FirstOrDefault(x => x.Id == int.Parse(userIdString));
-                
-                if(owner.AccessToken == null)
-            {
-                return false;
-            }
-            }
-            return true;
-        }   
-        return true;
-    }
 
     public string RegenerateAccessToken(IUser user)
     {
