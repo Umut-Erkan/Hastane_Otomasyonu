@@ -33,7 +33,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-        [HttpPost ("key-al")]
+        [HttpPost ("key-al")] 
         public IActionResult DoktorKeyAl([FromBody] DoktorDTO dto)
         {
             try

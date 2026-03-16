@@ -50,7 +50,7 @@ namespace Hastane_Otomasyonu.Controllers
                     Alan = doktordto.Alan,  
 
                     Role = "Doktor",
-                    Token = "PlaceHolder"
+                    AccessToken = "PlaceHolder"
                 };
                 
 
@@ -65,7 +65,7 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.SaveChanges();
 
                 var token = _tokenService.GenerateAccessToken(NewEntity);
-                NewEntity.Token = token;
+                NewEntity.AccessToken = token;
 
                 
                 _context.SaveChanges();

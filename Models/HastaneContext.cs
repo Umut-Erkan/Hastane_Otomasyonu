@@ -29,10 +29,7 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
         
     }
 
@@ -67,7 +64,10 @@ public partial class HastaneContext : DbContext
         {
             entity.ToTable("Doktor");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.AccessToken)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .IsUnicode(false);
             entity.Property(e => e.Alan)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -80,6 +80,11 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.RefreshToken)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .IsUnicode(false);
+            entity.Property(e => e.RefreshTokenEndDate).HasColumnType("datetime");
             entity.Property(e => e.Role)
                 .IsRequired()
                 .HasMaxLength(10)
@@ -88,26 +93,20 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Token)
-                .IsRequired()
-                .HasMaxLength(1000)
-                .IsUnicode(false);
             entity.Property(e => e.İsim)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Doktor)
-                .HasForeignKey<Doktor>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Doktor_User");
         });
 
         modelBuilder.Entity<Hastum>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Hasta_1");
 
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.AccessToken)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .IsUnicode(false);
             entity.Property(e => e.Eposta)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -116,6 +115,11 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
+            entity.Property(e => e.RefreshToken)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .IsUnicode(false);
+            entity.Property(e => e.RefreshTokenEndDate).HasColumnType("datetime");
             entity.Property(e => e.Role)
                 .IsRequired()
                 .HasMaxLength(100)
@@ -125,19 +129,10 @@ public partial class HastaneContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
-            entity.Property(e => e.Token)
-                .IsRequired()
-                .HasMaxLength(1000)
-                .IsUnicode(false);
             entity.Property(e => e.İsim)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-
-            entity.HasOne(d => d.IdNavigation).WithOne(p => p.Hastum)
-                .HasForeignKey<Hastum>(d => d.Id)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Hasta_User");
 
             entity.HasOne(d => d.Tedavi).WithMany(p => p.Hasta)
                 .HasForeignKey(d => d.TedaviId)
@@ -229,11 +224,6 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100)
                 .HasColumnName("Tedavi");
-        });
-
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.ToTable("User");
         });
 
         OnModelCreatingPartial(modelBuilder);

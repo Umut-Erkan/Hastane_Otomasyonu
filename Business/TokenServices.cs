@@ -24,14 +24,18 @@ namespace Hastane_Otomasyonu.Business
         _context = context;
     }
 
-    public string GenerateRefreshToken()
+    public (string Token, DateTime Expiration) GenerateRefreshToken()
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
-        
-        return Convert.ToBase64String(randomNumber);
+
+        // Türkiye saati (UTC+3) için;
+        DateTime turkeyTime = DateTime.UtcNow.AddHours(3);
+
+        return (Token: Convert.ToBase64String(randomNumber), Expiration: turkeyTime.AddDays(7));
     }
+
 
     public string GenerateAccessToken(IUser user)
     {
@@ -51,7 +55,7 @@ namespace Hastane_Otomasyonu.Business
             _config["JwtSettings:jwtIssuer"],
             _config["JwtSettings:Audience"],
             claims,
-            expires: DateTime.Now.AddMinutes(90),
+            expires: DateTime.UtcNow.AddHours(3).AddMinutes(5), 
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
@@ -59,30 +63,51 @@ namespace Hastane_Otomasyonu.Business
 
     public bool VerifyAccessToken(JwtSecurityToken token)
     {
-        if(token.ValidTo < DateTime.UtcNow)
+        if(token.ValidTo < DateTime.UtcNow) //Tokenin tarihi geçtiyse
         {
             var userIdString = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            
             var role = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-            var owner = _context.Users.Find(int.Parse(userIdString));
             
 
             if(role == "Doktor")
             {
-                owner = _context.Doktors.Find(Id == int.Parse(userIdString));
-            }
-            else if(role == "Hasta")
-            {
-                owner = _context.Hasta.Find(Id == int.Parse(userIdString));
-            }
-            
-            if(owner == null && owner.Token == null)
+                var owner = _context.Doktors.FirstOrDefault(x => x.Id == int.Parse(userIdString));
+                
+                if(owner.AccessToken == null) // Token sahibinin token kısmı Null ise
             {
                 return false;
+            }
+            }
+
+            else if(role == "Hasta")
+            {
+                var owner = _context.Hasta.FirstOrDefault(x => x.Id == int.Parse(userIdString));
+                
+                if(owner.AccessToken == null)
+            {
+                return false;
+            }
             }
             return true;
         }   
         return true;
+    }
+
+    public string RegenerateAccessToken(IUser user)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(user.AccessToken);
+
+        if (VerifyAccessToken(jwtToken) == false) // AccessToken geçerli değilse
+        {
+            if(user.RefreshToken != null) // Normalde frontendden gelen refresh token ile veritabanındaki refresh token eşleşirse
+                                        // ama ben backendde  sadece null mu diye kontrol ettim
+            {    
+                // Yeni access token üret
+                return GenerateAccessToken(user);
+            }
+        }
+        return null;
     }
 
 

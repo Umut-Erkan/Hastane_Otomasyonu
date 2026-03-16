@@ -10,10 +10,9 @@ namespace Hastane_Otomasyonu.Business
     {
         public string HashPassword(string password)
         {
-            byte[] salt;
-            new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
+            byte[] salt = RandomNumberGenerator.GetBytes(16);
 
-            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100000);
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100000, HashAlgorithmName.SHA256);
             byte[] hash = pbkdf2.GetBytes(20);
             
             byte[] hashBytes = new byte[36];

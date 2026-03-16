@@ -22,9 +22,11 @@ public partial class Doktor : IUser
 
     public string Role { get; set; }
 
-    public string Token { get; set; }
+    public string AccessToken { get; set; }
 
-    public virtual User IdNavigation { get; set; }
+    public string RefreshToken { get; set; }
+
+    public DateTime RefreshTokenEndDate { get; set; }
 
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 }

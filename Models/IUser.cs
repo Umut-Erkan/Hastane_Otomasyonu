@@ -18,5 +18,8 @@ namespace Hastane_Otomasyonu.Models
         public string Eposta { get; set; }
         public string Role { get; set; }
         public int Id { get; set; }
+        public string AccessToken { get; set; }
+        public string RefreshToken { get; set; }
+        public DateTime RefreshTokenEndDate { get; set; }
     }
 }

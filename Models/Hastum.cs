@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hastane_Otomasyonu.Models;
 
 namespace MyApiProject.Models;
-using Hastane_Otomasyonu.Models;
 
 public partial class Hastum : IUser
 {
@@ -22,9 +22,11 @@ public partial class Hastum : IUser
 
     public string Role { get; set; }
 
-    public string Token { get; set; }
+    public string AccessToken { get; set; }
 
-    public virtual User IdNavigation { get; set; }
+    public string RefreshToken { get; set; }
+
+    public DateTime RefreshTokenEndDate { get; set; }
 
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 
