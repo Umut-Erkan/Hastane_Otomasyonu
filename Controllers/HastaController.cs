@@ -130,12 +130,17 @@ namespace Hastane_Otomasyonu.Controllers
 
         [HttpDelete("Logout")]
         [Authorize(Roles = "Hasta")]
-        public IActionResult Logout(int id)
+        public IActionResult Logout()
         {
-            
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(context.HttpContext.Request.Headers["Authorization"])
-            var NameIdentifier = token.Claims.FirstOrDefault(c => c.Type == "NameIdentifier").Value;
-            var Hasta = _context.Hasta.FirstOrDefault(h => h.Id == NameIdentifier);
+            var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+            var rawToken = authHeader.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase).Trim();
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(rawToken);
+
+            var NameIdentifier = token.Claims
+                .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value; // Token içindeki NameIdentifier değeri 
+
+
+            var Hasta = _context.Hasta.FirstOrDefault(h => h.Id == int.Parse(NameIdentifier));
             
             if (Hasta == null)
             {
