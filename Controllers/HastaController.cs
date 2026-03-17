@@ -14,6 +14,7 @@ using Hastane_Otomasyonu.Business;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using Hastane_Otomasyonu.Filters;
 
 namespace Hastane_Otomasyonu.Controllers
 {
@@ -130,7 +131,7 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
            
-        
+        [ServiceFilter(typeof(RefreshTokenFilter))]
         [Authorize(Roles = "Hasta")] // Çalışıyor // Token sahibinin id si dönüyor
         [HttpGet ("HastaSorgula")]
         public IActionResult RandevuGöster()

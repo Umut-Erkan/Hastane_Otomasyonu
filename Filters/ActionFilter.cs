@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Hastane_Otomasyonu.Business
+namespace Hastane_Otomasyonu.Filters
 {
     public class ActionFilter : IAuthorizationFilter
     {   
@@ -26,6 +26,7 @@ namespace Hastane_Otomasyonu.Business
             }
 
         }
+        
         
     }
 }
