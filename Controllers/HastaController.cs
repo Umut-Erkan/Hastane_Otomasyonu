@@ -58,8 +58,6 @@ namespace Hastane_Otomasyonu.Controllers
                     RefreshTokenEndDate = DateTime.Now
                 };               
 
-                
-
                 bool TcKontrol = _context.Hasta.Any(h=> h.Tc == NewEntity.Tc);
                 Console.Write("Hasta oluşturuldu ve TC si kontrol edildi" , TcKontrol);
                
@@ -127,7 +125,25 @@ namespace Hastane_Otomasyonu.Controllers
                 ekBilgi = ex.InnerException?.Message
             });
             }
+        }
+
+
+        [HttpDelete("Logout")]
+        [Authorize(Roles = "Hasta")]
+        public IActionResult Logout(int id)
+        {
             
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(context.HttpContext.Request.Headers["Authorization"])
+            var NameIdentifier = token.Claims.FirstOrDefault(c => c.Type == "NameIdentifier").Value;
+            var Hasta = _context.Hasta.FirstOrDefault(h => h.Id == NameIdentifier);
+            
+            if (Hasta == null)
+            {
+                return StatusCode(404, "Hasta bulunamadı");
+            }
+            _context.Remove(Hasta);
+            _context.SaveChanges();
+            return Ok("Logout başarılı");
         }
 
            
