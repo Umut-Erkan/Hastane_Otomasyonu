@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Hastane_Otomasyonu.Business;
 using Microsoft.Extensions.Options;
+using Hastane_Otomasyonu.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
