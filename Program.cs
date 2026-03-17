@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;  
 using System.Text;
 using Hastane_Otomasyonu.Business;
+using Hastane_Otomasyonu.Filters;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,6 +61,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PasswordHashing>();
 builder.Services.AddScoped<ActionFilter>();
+builder.Services.AddScoped<RefreshTokenFilter>();
 
 builder.Services.AddHttpContextAccessor();
 // SWAGGER

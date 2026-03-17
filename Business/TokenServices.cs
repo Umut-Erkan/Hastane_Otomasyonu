@@ -33,7 +33,7 @@ namespace Hastane_Otomasyonu.Business
         // Türkiye saati (UTC+3) için;
         DateTime turkeyTime = DateTime.UtcNow.AddHours(3);
 
-        return (Token: Convert.ToBase64String(randomNumber), Expiration: turkeyTime.AddMinutes(5));
+        return (Token: Convert.ToBase64String(randomNumber), Expiration: turkeyTime.AddMinutes(2));
     }
 
  
@@ -55,7 +55,7 @@ namespace Hastane_Otomasyonu.Business
             _config["JwtSettings:jwtIssuer"],
             _config["JwtSettings:Audience"],
             claims,
-            expires: DateTime.UtcNow.AddMinutes(2),
+            expires: DateTime.UtcNow.AddMinutes(90),
             signingCredentials: credentials);
 
 
