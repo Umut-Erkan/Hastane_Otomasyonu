@@ -39,7 +39,7 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-        [HttpPost ("Hasta Kayıt")] // Hasta ilk kez kayıt oluyor
+        [HttpPost ("Login")] // Hasta ilk kez kayıt oluyor
         public IActionResult CreateHasta([FromBody] HastaAddDTO dto) 
         {
             try

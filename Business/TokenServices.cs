@@ -33,7 +33,7 @@ namespace Hastane_Otomasyonu.Business
         // Türkiye saati (UTC+3) için;
         DateTime turkeyTime = DateTime.UtcNow.AddHours(3);
 
-        return (Token: Convert.ToBase64String(randomNumber), Expiration: turkeyTime.AddDays(7));
+        return (Token: Convert.ToBase64String(randomNumber), Expiration: turkeyTime.AddMinutes(5));
     }
 
  
@@ -64,23 +64,6 @@ namespace Hastane_Otomasyonu.Business
 
 // Access Tokenin ömrü bitince zaten geçerliliği kalmıyor. Dolayısıyla revoke etmek (yetkisini düşürmek) gerekmez.
 
-
-    public string RegenerateAccessToken(IUser user)
-    {
-        var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(user.AccessToken);
-
-        if (VerifyAccessToken(jwtToken) == false) // AccessToken geçerli değilse
-        {
-            if(user.RefreshToken != null) // Normalde frontendden gelen refresh token ile veritabanındaki refresh token eşleşirse
-                                        // ama ben backendde  sadece null mu diye kontrol ettim
-            {    
-                // Yeni access token üret
-                return GenerateAccessToken(user);
-            }
-        }
-        return null;
-    }
 
 
     // Access tokenin ömrü bitince 
