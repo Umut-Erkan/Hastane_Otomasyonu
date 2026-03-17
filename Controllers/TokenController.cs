@@ -23,6 +23,7 @@ namespace Hastane_Otomasyonu.Controllers
             _context = context;
         }
 
+
         [HttpPost("AccessTokenRefresh")]
         public IActionResult RegenerateAccessToken([FromBody] string refreshToken)
         {
@@ -56,6 +57,7 @@ namespace Hastane_Otomasyonu.Controllers
                 expiresIn = "30 dakika"
             });
         }   
+
 
 
         [HttpPost("RefreshToken")]
