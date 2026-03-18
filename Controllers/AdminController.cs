@@ -51,7 +51,9 @@ namespace Hastane_Otomasyonu.Controllers
                     Alan = doktordto.Alan,  
 
                     Role = "Doktor",
-                    AccessToken = "PlaceHolder"
+                    AccessToken = "PlaceHolder",
+                    RefreshToken = "PlaceHolder",
+                    RefreshTokenEndDate = DateTime.Now
                 };
                 
 
@@ -68,6 +70,10 @@ namespace Hastane_Otomasyonu.Controllers
                 var token = _tokenService.GenerateAccessToken(NewEntity);
                 NewEntity.AccessToken = token;
 
+                var RefreshToken = _tokenService.GenerateRefreshToken();
+                NewEntity.RefreshToken = RefreshToken.Token;
+                NewEntity.RefreshTokenEndDate = RefreshToken.Expiration;
+
                 
                 _context.SaveChanges();
 
@@ -76,7 +82,6 @@ namespace Hastane_Otomasyonu.Controllers
 
             catch (DbUpdateException ex) 
             {
-                // InnerException null olabilir, o yüzden ?. kullanıyoruz
                 return BadRequest(new 
                 { 
                     mesaj = "Veritabanına kaydederken hata oluştu.",
