@@ -34,6 +34,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         // RANDEVU ALMA
+        [ServiceFilter(typeof(RefreshTokenFilter))]
         [Authorize (Roles = "Hasta")]
         [HttpPost ("Randevu Al")]
         public IActionResult RandevuAl([FromBody]  RandevuAddDTO AddDTO)
@@ -43,7 +44,10 @@ namespace Hastane_Otomasyonu.Controllers
             try
             {
                 // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
-                string HastaId = User.Claims.FirstOrDefault(c=> c.Type == ClaimTypes.NameIdentifier).Value;
+                var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
+                var rawToken = authHeader.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase).Trim();
+                var token = new JwtSecurityTokenHandler().ReadJwtToken(rawToken);
+                string HastaId = token.Claims.FirstOrDefault(c=> c.Type == ClaimTypes.NameIdentifier).Value;
                 Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Id.ToString() == HastaId);
 
                 if (ExistingDoktor == null)
@@ -114,8 +118,9 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         
-        // İSTENEN RANDEVU SİLME
-        [Authorize (Roles = "Admin")]
+        // ISTENEN RANDEVU SILME
+        [ServiceFilter(typeof(RefreshTokenFilter))]
+        [Authorize (Roles = "Hasta")]
         [HttpDelete]
         
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
