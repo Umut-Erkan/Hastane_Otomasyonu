@@ -15,7 +15,9 @@ public partial class Tedavi
 
     public string Tanı { get; set; }
 
+    public int HastaId { get; set; }
+
     public virtual Doktor Doktor { get; set; }
 
-    public virtual ICollection<Hastum> Hasta { get; set; } = new List<Hastum>();
+    public virtual Hastum Hasta { get; set; }
 }

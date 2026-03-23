@@ -32,6 +32,8 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
+
+
         [ServiceFilter(typeof(RefreshTokenFilter))] // Refresh token kontrolü ile hangi doktor olduğunu anlıyoruz.
         [HttpPost("Tedavi yaz")]
         public IActionResult TedaviYaz([FromBody] TedaviYazDTO tedaviDTO, [FromHeader(Name = "Authorization")] string token, HastaneContext context)
@@ -63,7 +65,8 @@ namespace Hastane_Otomasyonu.Controllers
                     Tanı = tedaviDTO.Tanı,
                     Tedavi1 = tedaviDTO.Tedavi,
                     Recete = tedaviDTO.Recete,
-                    DoktorId = doktor.Id
+                    DoktorId = doktor.Id,
+                    HastaId = hasta.Id
                 };
 
                 _context.Tedavis.Add(tedavi);
@@ -71,59 +74,22 @@ namespace Hastane_Otomasyonu.Controllers
 
                 //Bu yeni entity’in ID’sini (TedaviID) seçtiği hastanınn TedaviID sütununa ekliycek
 
-                hasta.TedaviId = tedavi.TedaviId;
-                _context.SaveChanges();
 
+                // Tedavi yazılında mevcut randevuyu sil
 
+                var silinecekRandevular = _context.OnlineRandevus
+                    .FirstOrDefault(r => r.DoktorId == doktor.Id && r.HastaId == hasta.Id);
 
-
-                return Ok(new { mesaj = $"Hasta: {hasta.İsim} {hasta.Soyisim} tedavisi yazıldı." });
-            }
-
-
-
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
+                if (silinecekRandevular != null)
                 {
-                    Baslik = "Sunucu Hatası",
-                    Mesaj = $"Bilinmeyen bir hata: {ex.Message}",
-                    Detay = ex.InnerException?.Message,
-                    Stack = ex.StackTrace
+                    _context.OnlineRandevus.Remove(silinecekRandevular);
+                    _context.SaveChanges();
                 }
-                );
-            }
-        }
 
-
-        [HttpPost("key-al")]
-        public IActionResult DoktorKeyAl([FromBody] DoktorDTO dto)
-        {
-            try
-            {
-                Doktor Key = _context.Doktors.FirstOrDefault(r => r.Eposta == dto.Eposta);
-
-                var token = _tokenService.GenerateAccessToken(Key);
-                Console.Write("Token oluşturuldu");
-
-                return Ok(token);
-
+                return Ok(new { mesaj = $"Hasta: {hasta.İsim} {hasta.Soyisim} tedavisi {doktor.İsim} {doktor.Soyisim} tarafından yazıldı, Randevusu sistemden silindi." });
             }
 
-            catch (DbUpdateException ex) // Veri tabanı hatası
-            {
-                return BadRequest(new
-                {
-                    mesaj = "Veritabanına kaydederken hata oluştu.",
-                    hata = ex.Message,
-                    detay = ex.InnerException?.Message
-                });
-            }
 
-            catch (NullReferenceException ex)
-            {
-                return BadRequest(new { mesaj = "Hata.", hata = ex }); // <-- Hata burada!
-            }
 
             catch (Exception ex)
             {
