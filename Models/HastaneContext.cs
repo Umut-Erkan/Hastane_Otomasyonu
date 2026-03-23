@@ -29,10 +29,10 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder){
-        
-    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
 
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Admin>(entity =>
@@ -217,13 +217,23 @@ public partial class HastaneContext : DbContext
             entity.ToTable("Tedavi");
 
             entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
-            entity.Property(e => e.Ilaç)
+            entity.Property(e => e.DoktorId).HasColumnName("DoktorID");
+            entity.Property(e => e.Recete)
                 .IsRequired()
                 .HasMaxLength(50);
+            entity.Property(e => e.Tanı)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsFixedLength();
             entity.Property(e => e.Tedavi1)
                 .IsRequired()
                 .HasMaxLength(100)
                 .HasColumnName("Tedavi");
+
+            entity.HasOne(d => d.Doktor).WithMany(p => p.Tedavis)
+                .HasForeignKey(d => d.DoktorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Tedavi_Doktor");
         });
 
         OnModelCreatingPartial(modelBuilder);

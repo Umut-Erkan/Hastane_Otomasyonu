@@ -29,4 +29,6 @@ public partial class Doktor : IUser
     public DateTime RefreshTokenEndDate { get; set; }
 
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
+
+    public virtual ICollection<Tedavi> Tedavis { get; set; } = new List<Tedavi>();
 }
