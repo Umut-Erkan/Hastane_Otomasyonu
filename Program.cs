@@ -1,17 +1,17 @@
-using MyApiProject.Models;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Hastane_Otomasyonu.Business;
+using Hastane_Otomasyonu.Filters;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;  
-using System.Text;
-using Hastane_Otomasyonu.Business;
 using Microsoft.Extensions.Options;
-using Hastane_Otomasyonu.Filters;
+using Microsoft.IdentityModel.Tokens;
+using MyApiProject.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +26,7 @@ if (string.IsNullOrEmpty(connectionString))
 }
 
 builder.Services.AddDbContext<HastaneContext>(options =>
-        options.UseSqlServer(connectionString));  
+        options.UseSqlServer(connectionString));
 
 // TOKEN
 builder.Services.AddScoped<TokenService>();
@@ -44,23 +44,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
             ValidIssuer = builder.Configuration["JwtSettings:jwtIssuer"], // Bizim belirlediğimiz dağıtıcı adı
             ValidAudience = builder.Configuration["JwtSettings:Audience"], // Basitlik için Audience'ı da aynı yapıyoruz
-            
+
             // Gizli anahtarımızı byte dizisine çevirip sisteme veriyoruz
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:jwtKey"])),
 
             // Varsayılan 5 dakikalık toleransı sıfırlıyoruz → Token TAM olarak belirtilen anda sona erer
             ClockSkew = TimeSpan.Zero
         };
-        
-        
+
+
     }
     );
-    
+
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PasswordHashing>();
 builder.Services.AddScoped<ActionFilter>();
+builder.Services.AddScoped<RefreshTokenFilter>();
 
 builder.Services.AddHttpContextAccessor();
 // SWAGGER
@@ -86,7 +87,7 @@ app.MapControllers();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    
+
     app.UseSwaggerUI();
 }
 

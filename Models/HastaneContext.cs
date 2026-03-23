@@ -15,8 +15,6 @@ public partial class HastaneContext : DbContext
     {
     }
 
-    public virtual DbSet<Admin> Admins { get; set; }
-
     public virtual DbSet<Doktor> Doktors { get; set; }
 
     public virtual DbSet<Hastum> Hasta { get; set; }
@@ -24,8 +22,6 @@ public partial class HastaneContext : DbContext
     public virtual DbSet<Kayıt> Kayıts { get; set; }
 
     public virtual DbSet<OnlineRandevu> OnlineRandevus { get; set; }
-
-    public virtual DbSet<Randevu> Randevus { get; set; }
 
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
@@ -35,31 +31,6 @@ public partial class HastaneContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Admin>(entity =>
-        {
-            entity
-                .HasNoKey()
-                .ToTable("Admin");
-
-            entity.Property(e => e.Eposta)
-                .IsRequired()
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.Id).ValueGeneratedOnAdd();
-            entity.Property(e => e.Password)
-                .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Role)
-                .IsRequired()
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Token)
-                .IsRequired()
-                .HasMaxLength(1000)
-                .IsUnicode(false);
-        });
-
         modelBuilder.Entity<Doktor>(entity =>
         {
             entity.ToTable("Doktor");
@@ -128,15 +99,10 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
             entity.Property(e => e.İsim)
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-
-            entity.HasOne(d => d.Tedavi).WithMany(p => p.Hasta)
-                .HasForeignKey(d => d.TedaviId)
-                .HasConstraintName("FK_Hasta_Tedavi");
         });
 
         modelBuilder.Entity<Kayıt>(entity =>
@@ -191,33 +157,13 @@ public partial class HastaneContext : DbContext
                 .HasConstraintName("FK_OnlineRandevu_Hasta1");
         });
 
-        modelBuilder.Entity<Randevu>(entity =>
-        {
-            entity.ToTable("Randevu");
-
-            entity.Property(e => e.DoktorFk)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("DoktorFK");
-            entity.Property(e => e.HastaBilgisiFk)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("HastaBilgisiFK");
-            entity.Property(e => e.Poliklinik)
-                .HasMaxLength(15)
-                .IsUnicode(false);
-            entity.Property(e => e.ŞikayetFk)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("ŞikayetFK");
-        });
-
         modelBuilder.Entity<Tedavi>(entity =>
         {
             entity.ToTable("Tedavi");
 
             entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
             entity.Property(e => e.DoktorId).HasColumnName("DoktorID");
+            entity.Property(e => e.HastaId).HasColumnName("HastaID");
             entity.Property(e => e.Recete)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -234,6 +180,11 @@ public partial class HastaneContext : DbContext
                 .HasForeignKey(d => d.DoktorId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Tedavi_Doktor");
+
+            entity.HasOne(d => d.Hasta).WithMany(p => p.Tedavis)
+                .HasForeignKey(d => d.HastaId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Tedavi_Hasta");
         });
 
         OnModelCreatingPartial(modelBuilder);
