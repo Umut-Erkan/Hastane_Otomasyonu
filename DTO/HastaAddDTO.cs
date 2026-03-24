@@ -9,9 +9,9 @@ namespace Hastane_Otomasyonu.DTO
     public class HastaAddDTO
     {
         public long Tc { get; set; }
-        public string? Name { get; set; }
+        public string Name { get; set; }
 
-        public string? Surname { get; set; }
+        public string Surname { get; set; }
 
         public string Password { get; set; }
 
@@ -20,9 +20,9 @@ namespace Hastane_Otomasyonu.DTO
         public string? Şikayet { get; set; } //get; init; bak
         public string Role { get; set; }
 
-        public virtual OnlineRandevu? Randevu { get; set; } 
-        public virtual Tedavi? Tedavi { get; set; } 
-
-        }
+        public virtual OnlineRandevu? Randevu { get; set; }
+        public virtual Tedavi? Tedavi { get; set; }
 
     }
+
+}

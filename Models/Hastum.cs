@@ -14,8 +14,6 @@ public partial class Hastum : IUser
 
     public int Id { get; set; }
 
-    public int? TedaviId { get; set; }
-
     public string Password { get; set; }
 
     public string Eposta { get; set; }
@@ -30,5 +28,5 @@ public partial class Hastum : IUser
 
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 
-    public virtual Tedavi Tedavi { get; set; }
+    public virtual ICollection<Tedavi> Tedavis { get; set; } = new List<Tedavi>();
 }
