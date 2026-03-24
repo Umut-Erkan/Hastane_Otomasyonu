@@ -1,22 +1,30 @@
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using Hastane_Otomasyonu.Controllers;
 using Hastane_Otomasyonu.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using MyApiProject.Models;
 using Xunit;
 
+
 namespace Tests;
 
-public class UnitTest1
+public class UnitTest1 
 {
 
     private readonly RandevuController _controller;
     private readonly HastaneContext _context;
-
     public UnitTest1() // Constructor
     {
-        _context = new HastaneContext();
+        var options = new DbContextOptionsBuilder<HastaneContext>()
+                .UseInMemoryDatabase(databaseName: "TestDB_" + Guid.NewGuid().ToString())
+                .Options;
+                
+        _context = new HastaneContext(options);
         _controller = new RandevuController(_context);
     }
 
@@ -27,20 +35,23 @@ public class UnitTest1
     }
 
     [Fact]
-    public void RandevuController_RandevuAl_ReturnsOkResult()
+    public async Task RandevuController_RandevuAl_ReturnsOkResult()
     {
         var Deneme = new RandevuAddDTO
         {
             Tc = 83414522672,
             DoktorName = "Veli",
             DoktorSurname = "Yorulmaz",
-            Şikayet = "Baş ağrısı",
-            Id = _context.Hasta.FirstOrDefault(h => h.Tc == 83414522672).Id
+            Şikayet = "Beyin sarsıntısı",
+            Id = 13
         };
 
-        Microsoft.AspNetCore.Mvc.IActionResult result = _controller.RandevuAl(Deneme);
 
-        var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(200, okResult.StatusCode);
+            var result = _controller.RandevuAl(Deneme); // Bad request geliyor
+            var okResult = Assert.IsType<OkObjectResult>(result); 
+
+            Assert.Equal(200, okResult.StatusCode);
+            
+        
     }
 }
