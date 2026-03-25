@@ -48,7 +48,6 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.BosZamanId).HasColumnName("BosZamanID");
             entity.Property(e => e.Eposta)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -204,7 +203,7 @@ public partial class HastaneContext : DbContext
                 .HasColumnType("xml")
                 .HasColumnName("Zaman");
 
-            entity.HasOne(d => d.Doktor).WithMany(p => p.Zamen)
+            entity.HasOne(d => d.Doktor).WithMany(p => p.Zaman)
                 .HasForeignKey(d => d.DoktorId)
                 .HasConstraintName("FK_Zaman_Doktor");
         });

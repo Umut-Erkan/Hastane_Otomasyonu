@@ -78,6 +78,16 @@ namespace Hastane_Otomasyonu.Controllers
 
                 _context.SaveChanges();
 
+                // OLUŞTURULAN DOKTORUN ID'SİNİ ZAMAN TABLOSUNA EKLE
+                var Doktor = _context.Doktors.FirstOrDefault(h => h.Tc == NewEntity.Tc);
+
+                var zamanListesi = _context.Zamen.ToList();
+                foreach (var zaman in zamanListesi)
+                {
+                    zaman.DoktorId = Doktor.Id;
+                    _context.SaveChanges();
+                }
+
                 return Ok($"{NewEntity.İsim}, {NewEntity.Soyisim} sisteme eklendi.");
             }
 
