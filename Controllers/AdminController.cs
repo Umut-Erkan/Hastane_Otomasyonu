@@ -53,8 +53,7 @@ namespace Hastane_Otomasyonu.Controllers
                     Role = "Doktor",
                     AccessToken = "PlaceHolder",
                     RefreshToken = "PlaceHolder",
-                    RefreshTokenEndDate = DateTime.Now,
-                    Zaman = _context.Zamen.ToList()
+                    RefreshTokenEndDate = DateTime.Now
                 };
 
 
@@ -78,15 +77,10 @@ namespace Hastane_Otomasyonu.Controllers
 
                 _context.SaveChanges();
 
-                // OLUŞTURULAN DOKTORUN ID'SİNİ ZAMAN TABLOSUNA EKLE
+                // OLUŞTURULAN DOKTORUN ID'SİNİ APPOINTMENT TABLOSUNA EKLE
                 var Doktor = _context.Doktors.FirstOrDefault(h => h.Tc == NewEntity.Tc);
 
-                var zamanListesi = _context.Zamen.ToList();
-                foreach (var zaman in zamanListesi)
-                {
-                    zaman.DoktorId = Doktor.Id;
-                    _context.SaveChanges();
-                }
+                _context.AppointmentSlots.Update()
 
                 return Ok($"{NewEntity.İsim}, {NewEntity.Soyisim} sisteme eklendi.");
             }
