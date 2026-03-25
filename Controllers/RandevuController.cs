@@ -57,7 +57,6 @@ namespace Hastane_Otomasyonu.Controllers
                     return StatusCode(404, new { mesaj = "Belirtilen isim ve soyisimde bir doktor bulunamadı." });
                 }
 
-                // Randevu alıncak doktor   // Randevu listesinde ıd kısmı Mevcut hasta ile şeleşen randevunun doktoru
                 bool zatenRandevusuVarMi = _context.OnlineRandevus.Any(r =>
                     r.HastaId == ExistingHasta.Id &&
                     r.DoktorId == ExistingDoktor.Id);
@@ -75,11 +74,15 @@ namespace Hastane_Otomasyonu.Controllers
                     DoktorName = AddDTO.DoktorName,
                     DoktorSurname = AddDTO.DoktorSurname,
                     DoktorId = ExistingDoktor.Id,
-                    Saat = TimeOnly.FromDateTime(DateTime.Now),
-                    Tarih = DateOnly.FromDateTime(DateTime.Now),
+                    Saat = AddDTO.Saat,
+                    Tarih = AddDTO.Tarih,
                     HastaŞikayet = AddDTO.Şikayet
 
                 };
+
+                // KULLANICININ GİRDİĞİ TARİH VE SAATİ DOKTORUN MEASİLERİNDEN SİL
+                var zaman = AddDTO.Tarih.DayOfWeek.ToString() + " " + AddDTO.Saat.ToString() + AddDTO.Saat.AddHours(1).ToString();
+                _context.Zamen.Remove(zaman);
 
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();

@@ -24,15 +24,40 @@ namespace Hastane_Otomasyonu.Controllers
         private readonly HastaneContext _context;
         private readonly TokenService _tokenService;
         private PasswordHashing _Hash;
-        public DoktorController(HastaneContext context, TokenService tokenService)
+        private readonly ILogger<DoktorController> _logger;
+
+        public DoktorController(HastaneContext context, TokenService tokenService, ILogger<DoktorController> logger)
         {
             _context = context;
             _tokenService = tokenService;
+            _logger = logger;
 
             _Hash = new PasswordHashing();
         }
 
+        [HttpGet("Mesai")]
+        public IActionResult Mesai()
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
+            Doktor doktor = _context.Doktors.FirstOrDefault(h => h.Id == int.Parse(userId));
+
+            var bosZaman = _context.Zamen.Where(h => h.DoktorId == int.Parse(userId)).ToList();
+
+            if (bosZaman.Count() == 0)
+            {
+                return StatusCode(404, "Mesai bulunamadı");
+            }
+
+            // bosZaman direkt her şeyi veriyor anlamadım !!!!!!!!!!!!!!!!!!! 
+            var sonuc = bosZaman.Select(z => new
+            {
+                z.Id,
+                z.Zaman1
+            });
+
+            return StatusCode(200, sonuc);
+        }
 
 
         [ServiceFilter(typeof(RefreshTokenFilter))] // Refresh token kontrolü ile hangi doktor olduğunu anlıyoruz.

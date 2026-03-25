@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Hastane_Otomasyonu.Models;
 
 namespace MyApiProject.Models;
 
-public partial class Doktor
+public partial class Doktor : IUser
 {
     public string İsim { get; set; }
 
@@ -26,8 +27,6 @@ public partial class Doktor
     public string RefreshToken { get; set; }
 
     public DateTime RefreshTokenEndDate { get; set; }
-
-    public int? BosZamanId { get; set; }
 
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 
