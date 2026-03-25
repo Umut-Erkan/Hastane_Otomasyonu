@@ -15,6 +15,7 @@ public partial class HastaneContext : DbContext
     {
     }
 
+
     public virtual DbSet<Doktor> Doktors { get; set; }
 
     public virtual DbSet<Hastum> Hasta { get; set; }
@@ -25,12 +26,16 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
+
+    public virtual DbSet<Zaman> Zamen { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         modelBuilder.Entity<Doktor>(entity =>
         {
             entity.ToTable("Doktor");
@@ -43,6 +48,7 @@ public partial class HastaneContext : DbContext
                 .IsRequired()
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.BosZamanId).HasColumnName("BosZamanID");
             entity.Property(e => e.Eposta)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -185,6 +191,22 @@ public partial class HastaneContext : DbContext
                 .HasForeignKey(d => d.HastaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Tedavi_Hasta");
+        });
+
+
+        modelBuilder.Entity<Zaman>(entity =>
+        {
+            entity.ToTable("Zaman");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.DoktorId).HasColumnName("DoktorID");
+            entity.Property(e => e.Zaman1)
+                .HasColumnType("xml")
+                .HasColumnName("Zaman");
+
+            entity.HasOne(d => d.Doktor).WithMany(p => p.Zamen)
+                .HasForeignKey(d => d.DoktorId)
+                .HasConstraintName("FK_Zaman_Doktor");
         });
 
         OnModelCreatingPartial(modelBuilder);
