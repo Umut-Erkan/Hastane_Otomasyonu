@@ -24,12 +24,12 @@ namespace Hastane_Otomasyonu.Controllers
         {
             _context = context;
         }
-        
+
 
         private Doktor DoktoruBul(string isim, string soyisim)
         {
-            return _context.Doktors.FirstOrDefault(d => 
-            d.İsim == isim && 
+            return _context.Doktors.FirstOrDefault(d =>
+            d.İsim == isim &&
             d.Soyisim == soyisim);
         }
 
@@ -37,11 +37,11 @@ namespace Hastane_Otomasyonu.Controllers
 
         // RANDEVU ALMA
         [ServiceFilter(typeof(RefreshTokenFilter))]
-        [Authorize (Roles = "Hasta")]
-        [HttpPost ("Randevu Al")]
-        public IActionResult RandevuAl([FromBody]  RandevuAddDTO AddDTO)
+        [Authorize(Roles = "Hasta")]
+        [HttpPost("Randevu Al")]
+        public IActionResult RandevuAl([FromBody] RandevuAddDTO AddDTO)
         {
-            Doktor ExistingDoktor = DoktoruBul(AddDTO.DoktorName, AddDTO.DoktorSurname); 
+            Doktor ExistingDoktor = DoktoruBul(AddDTO.DoktorName, AddDTO.DoktorSurname);
 
             try
             {
@@ -49,8 +49,8 @@ namespace Hastane_Otomasyonu.Controllers
                 var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
                 var rawToken = authHeader.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase).Trim();
                 var token = new JwtSecurityTokenHandler().ReadJwtToken(rawToken);
-                string HastaId = token.Claims.FirstOrDefault(c=> c.Type == ClaimTypes.NameIdentifier).Value;
-                Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h=> h.Id.ToString() == HastaId);
+                string HastaId = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                Hastum ExistingHasta = _context.Hasta.FirstOrDefault(h => h.Id.ToString() == HastaId);
 
                 if (ExistingDoktor == null)
                 {
@@ -58,13 +58,13 @@ namespace Hastane_Otomasyonu.Controllers
                 }
 
                 // Randevu alıncak doktor   // Randevu listesinde ıd kısmı Mevcut hasta ile şeleşen randevunun doktoru
-                bool zatenRandevusuVarMi = _context.OnlineRandevus.Any(r => 
-                    r.HastaId == ExistingHasta.Id && 
+                bool zatenRandevusuVarMi = _context.OnlineRandevus.Any(r =>
+                    r.HastaId == ExistingHasta.Id &&
                     r.DoktorId == ExistingDoktor.Id);
 
                 if (zatenRandevusuVarMi)
                 {
-                    return StatusCode(500 , new { mesaj = "Zaten bu doktordan randevunuz var"});
+                    return StatusCode(500, new { mesaj = "Zaten bu doktordan randevunuz var" });
                 }
 
                 OnlineRandevu Randevu = new OnlineRandevu
@@ -84,28 +84,28 @@ namespace Hastane_Otomasyonu.Controllers
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
-                return StatusCode(200 , new { mesaj = "Başarılı"});
+                return StatusCode(200, new { mesaj = "Başarılı" });
             }
 
-            catch (DbUpdateException ex) 
+            catch (DbUpdateException ex)
             {
-                return BadRequest(new 
-                { 
+                return BadRequest(new
+                {
                     mesaj = "Veritabanına kaydederken hata oluştu.",
                     hata = ex.Message,
-                    detay = ex.InnerException?.Message 
+                    detay = ex.InnerException?.Message
                 });
             }
 
-            catch (NullReferenceException ex) 
+            catch (NullReferenceException ex)
             {
                 return BadRequest(new { mesaj = "Beklenmedik bir veri boşluğu oluştu.", hata = ex.Message });
             }
-            
+
             catch (Exception ex)
             {
                 string Hata = ex.Message;
-                
+
                 if (ex.InnerException != null)
                 {
                     Hata += " | Detay: " + ex.InnerException.Message;
@@ -114,17 +114,17 @@ namespace Hastane_Otomasyonu.Controllers
                 return StatusCode(500, Hata);
             }
         }
-        
 
 
 
 
-        
+
+
         // ISTENEN RANDEVU SILME
         [ServiceFilter(typeof(RefreshTokenFilter))]
-        [Authorize (Roles = "Hasta")]
-        [HttpDelete]
-        
+        [Authorize(Roles = "Hasta")]
+        [HttpDelete("Randevu Sil")]
+
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
         {
             OnlineRandevu DelKayıt = _context.OnlineRandevus.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
@@ -141,10 +141,10 @@ namespace Hastane_Otomasyonu.Controllers
 
             catch (NullReferenceException ex)
             {
-                return StatusCode(500, new{mesaj = "Hata", hata = ex.Message});
+                return StatusCode(500, new { mesaj = "Hata", hata = ex.Message });
             }
         }
 
-        }
     }
+}
 

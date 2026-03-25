@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Hastane_Otomasyonu.Business;
 using Hastane_Otomasyonu.DTO;
@@ -107,19 +108,35 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-
+        [ServiceFilter(typeof(RefreshTokenFilter))]
         [Authorize(Roles = "Doktor")]
-        [HttpPost("DoktorRandevu")]
-        public IActionResult RandevuGöster([FromBody] DoktorDTO doktordto)
+        [HttpGet("RandevuGoster")]
+        public IActionResult RandevuGöster()
         {
-            var Doktorumuz = _context.Doktors.FirstOrDefault(h => h.İsim == doktordto.Name);
-            if (Doktorumuz == null)
+
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;  // Doktorun id'si
+            Doktor user = _context.Doktors.FirstOrDefault(c => c.Id == int.Parse(userId)); // Randevularını görüntüleyeceğimiz doktor
+
+            if (user == null)
             {
-                return StatusCode(500, "Kayıtlı hasta bulunamadı");
+                return StatusCode(404, "Doktor bulunamadı");
             }
 
+            var randevular = _context.OnlineRandevus.Where(c => c.DoktorId == int.Parse(userId))
+                .Select(r => new
+                {
+                    r.HastaŞikayet,
+                    r.HastaName,
+                    r.HastaSurname,
+                    r.Tarih,
+                    r.Saat
+                }).ToList();
 
-            return new ObjectResult("Doktorun randevularını ID'leri") { StatusCode = 200 };
+            if (randevular.Count() == 0)
+            {
+                return StatusCode(404, "Randevu bulunamadı");
+            }
+            return StatusCode(200, randevular);
         }
 
     }

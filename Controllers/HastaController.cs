@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using MyApiProject.Models;
 
+
 namespace Hastane_Otomasyonu.Controllers
 {
     [ApiController]
@@ -154,8 +155,8 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [ServiceFilter(typeof(RefreshTokenFilter))]
-        [Authorize(Roles = "Hasta")] // Çalışıyor // Token sahibinin id si dönüyor
-        [HttpGet("RandevuGöster")]
+        [Authorize(Roles = "Hasta")]
+        [HttpGet("RandevuGoster")]
         public IActionResult RandevuGöster()
 
         {
@@ -170,7 +171,6 @@ namespace Hastane_Otomasyonu.Controllers
             var randevular = _context.OnlineRandevus.Where(c => c.HastaId == int.Parse(userId))
                 .Select(r => new
                 {
-                    r.HastaŞikayet,
                     r.DoktorName,
                     r.DoktorSurname,
                     r.Tarih,
