@@ -82,7 +82,7 @@ namespace Hastane_Otomasyonu.Controllers
 
                 // KULLANICININ GİRDİĞİ TARİH VE SAATİ DOKTORUN MEASİLERİNDEN SİL
                 var zaman = AddDTO.Tarih.DayOfWeek.ToString() + " " + AddDTO.Saat.ToString() + AddDTO.Saat.AddHours(1).ToString();
-                _context.Zamen.Remove(zaman);
+                //_context.Zamen.Remove(zaman);
 
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();

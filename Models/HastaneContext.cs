@@ -15,6 +15,7 @@ public partial class HastaneContext : DbContext
     {
     }
 
+    public virtual DbSet<AppointmentSlot> AppointmentSlots { get; set; }
 
     public virtual DbSet<Doktor> Doktors { get; set; }
 
@@ -26,15 +27,23 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
-
-    public virtual DbSet<Zaman> Zamen { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
 
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AppointmentSlot>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Appointm__3214EC07039A92A5");
+
+            entity.Property(e => e.DoktorId).HasColumnName("DoktorID");
+            entity.Property(e => e.IsAvailable).HasDefaultValue(true);
+
+            entity.HasOne(d => d.Doktor).WithMany(p => p.AppointmentSlots)
+                .HasForeignKey(d => d.DoktorId)
+                .HasConstraintName("FK_AppointmentSlots_Doktor");
+        });
 
         modelBuilder.Entity<Doktor>(entity =>
         {
@@ -190,22 +199,6 @@ public partial class HastaneContext : DbContext
                 .HasForeignKey(d => d.HastaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Tedavi_Hasta");
-        });
-
-
-        modelBuilder.Entity<Zaman>(entity =>
-        {
-            entity.ToTable("Zaman");
-
-            entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.DoktorId).HasColumnName("DoktorID");
-            entity.Property(e => e.Zaman1)
-                .HasColumnType("xml")
-                .HasColumnName("Zaman");
-
-            entity.HasOne(d => d.Doktor).WithMany(p => p.Zaman)
-                .HasForeignKey(d => d.DoktorId)
-                .HasConstraintName("FK_Zaman_Doktor");
         });
 
         OnModelCreatingPartial(modelBuilder);
