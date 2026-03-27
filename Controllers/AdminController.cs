@@ -80,9 +80,9 @@ namespace Hastane_Otomasyonu.Controllers
                 // OLUŞTURULAN DOKTORUN ID'SİNİ APPOINTMENT TABLOSUNA EKLE
                 var Doktor = _context.Doktors.FirstOrDefault(h => h.Tc == NewEntity.Tc);
 
-                _context.AppointmentSlots.Update()
+                //List<AppointmentSlot> Appointment = _context.AppointmentSlots.ToList();
 
-                return Ok($"{NewEntity.İsim}, {NewEntity.Soyisim} sisteme eklendi.");
+                return Ok($"{NewEntity.İsim} {NewEntity.Soyisim} sisteme eklendi.");
             }
 
             catch (DbUpdateException ex)
