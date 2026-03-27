@@ -15,7 +15,7 @@ public partial class AppointmentSlot
 
     public bool IsAvailable { get; set; }
 
-    public int? DoktorId { get; set; }
+    public List<int>? DoktorId { get; set; }
 
     public virtual Doktor Doktor { get; set; }
 }

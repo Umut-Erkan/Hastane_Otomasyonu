@@ -35,28 +35,14 @@ namespace Hastane_Otomasyonu.Controllers
             _Hash = new PasswordHashing();
         }
 
-        [HttpGet("Mesai")]
-        public IActionResult Mesai()
+        [HttpGet("Mesai/{userId}")]
+        public IActionResult Mesai(int userId)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            var Appointment = new List<AppointmentSlot>();
 
-            Doktor doktor = _context.Doktors.FirstOrDefault(h => h.Id == int.Parse(userId));
 
-            var bosZaman = _context.Zamen.Where(h => h.DoktorId == int.Parse(userId)).ToList();
 
-            if (bosZaman.Count() == 0)
-            {
-                return StatusCode(404, "Mesai bulunamadı");
-            }
-
-            // bosZaman direkt her şeyi veriyor anlamadım !!!!!!!!!!!!!!!!!!! 
-            var sonuc = bosZaman.Select(z => new
-            {
-                z.Id,
-                z.Zaman1
-            });
-
-            return StatusCode(200, sonuc);
+            return StatusCode(200, Appointment);
         }
 
 
