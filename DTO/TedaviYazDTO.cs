@@ -9,13 +9,15 @@ namespace Hastane_Otomasyonu.DTO
     public class TedaviYazDTO
     {
         public string Tanı { get; set; }
-        public int HastaID { get; set; }
-    }
 
-    public class TedaviRequestDTO
-    {
-        public ReceteDTO ReceteDTO { get; set; }
-        public TedaviYazDTO TedaviDTO { get; set; }
         public int HastaID { get; set; }
+
+        public string Kullanım { get; set; }
+
+        //public DateOnly GecerlilikTarihi { get; set; }
+
+        public List<int> IlacAdet { get; set; }
+
+        public List<string> Ilaclar { get; set; }
     }
 }
