@@ -48,43 +48,92 @@ namespace Hastane_Otomasyonu.Controllers
 
         [ServiceFilter(typeof(RefreshTokenFilter))] // Refresh token kontrolü ile hangi doktor olduğunu anlıyoruz.
         [HttpPost("Tedavi yaz")]
-        public IActionResult TedaviYaz([FromBody] TedaviYazDTO tedaviDTO, [FromHeader(Name = "Authorization")] string token, HastaneContext context)
+        public IActionResult TedaviYaz([FromBody] TedaviYazDTO dto, [FromHeader(Name = "Authorization")] string token)
         {
             try
             {
                 string accessToken = token.ToString().Replace("Bearer ", "");
                 Doktor doktor = _context.Doktors.FirstOrDefault(h => h.AccessToken == accessToken); // işlemi yapan doktor
-                Hastum hasta = _context.Hasta.FirstOrDefault(h => h.Id == tedaviDTO.HastaID); // İşlem yapılan hasta
+                Hastum hasta = _context.Hasta.FirstOrDefault(h => h.Id == dto.HastaID); // İşlem yapılan hasta
 
 
                 var Randevuları = _context.OnlineRandevus.Where(h => h.DoktorId == doktor.Id).ToList(); // doktorun randevuları ama List tipinde
-
+                _logger.LogInformation($"Doktorun randevuları: {Randevuları.Count()}");
                 List<int> HastaIDleri = new List<int>();
+
 
                 foreach (var randevu in Randevuları)
                 {
                     HastaIDleri.Add(randevu.HastaId); // Doktorun randevularındaki hasta ID'lerini tek bir yere attık
                 }
 
-                if (!HastaIDleri.Contains(tedaviDTO.HastaID)) // Doktor doğru hasta Idsini yazdı mı diye kontrol ediyoruz.
+                if (!HastaIDleri.Contains(dto.HastaID)) // Doktor doğru hasta Idsini yazdı mı diye kontrol ediyoruz.
                 {
                     return BadRequest(new { mesaj = "Bu hastanın sizden randevusu yok." });
                 }
 
-                //Doktor tedavi sınıfından yeni entity oluşturacak
+                foreach (var item in dto.Ilaclar)
+                {
+                    var ilac = _context.Ilacs.FirstOrDefault(h => h.IlacName == item.ToString());
+                    if (ilac.KullanımAlanı != doktor.Alan)
+                    {
+                        return BadRequest(new { mesaj = "İlaç doktorun uzmanlık alanına uygun değil." });
+                    }
+                }
+
+
+                // TEDAVİ YAZILACAK
                 Tedavi tedavi = new Tedavi
                 {
-                    Tanı = tedaviDTO.Tanı,
-                    Tedavi1 = tedaviDTO.Tedavi,
-                    Recete = tedaviDTO.Recete,
+                    Tanı = dto.Tanı,
                     DoktorId = doktor.Id,
                     HastaId = hasta.Id
                 };
 
+
                 _context.Tedavis.Add(tedavi);
                 _context.SaveChanges();
 
-                //Bu yeni entity’in ID’sini (TedaviID) seçtiği hastanınn TedaviID sütununa ekliycek
+                //RECETE YAZACAK TEDAVİID = RECETEID
+
+                Recete recete = new Recete
+                {
+                    Kullanım = dto.Kullanım,
+                    GecerlilikTarihi = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                };
+
+                recete.ReceteId = tedavi.TedaviId;
+                _context.Recetes.Add(recete);
+                _context.SaveChanges();
+
+
+                if (dto.Ilaclar.Count != dto.IlacAdet.Count)
+                {
+                    return BadRequest(new { mesaj = "İlaç sayısı ile adet sayısı eşleşmiyor." });
+                }
+
+
+                foreach (var (ilac, adet) in dto.Ilaclar.Zip(dto.IlacAdet)) // DTO'daki Ilaclar ile adetleri karşılıklı eşleniyor.
+                {
+                    var ilacID = _context.Ilacs.FirstOrDefault(h => h.IlacName == ilac.ToString());
+
+                    if (ilacID != null)
+                    {
+                        _context.IlcaToRecetes.Add(new IlcaToRecete
+                        {
+                            Adet = adet,
+                            ReceteFk = recete.ReceteId,
+                            IlcaFk = ilacID.IlacId
+                        });
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        return BadRequest(new { mesaj = "İlaç bulunamadı" });
+                    }
+                }
+
+
 
 
                 // Tedavi yazılında mevcut randevuyu sil
@@ -151,6 +200,4 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
     }
-
-
 }
