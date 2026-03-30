@@ -48,43 +48,86 @@ namespace Hastane_Otomasyonu.Controllers
 
         [ServiceFilter(typeof(RefreshTokenFilter))] // Refresh token kontrolü ile hangi doktor olduğunu anlıyoruz.
         [HttpPost("Tedavi yaz")]
-        public IActionResult TedaviYaz([FromBody] TedaviYazDTO tedaviDTO, [FromHeader(Name = "Authorization")] string token, HastaneContext context)
+        public IActionResult TedaviYaz([FromBody] TedaviRequestDTO request, [FromHeader(Name = "Authorization")] string token)
         {
+            var receteDTO = request.ReceteDTO;
+            var tedaviDTO = request.TedaviDTO;
+
             try
             {
                 string accessToken = token.ToString().Replace("Bearer ", "");
                 Doktor doktor = _context.Doktors.FirstOrDefault(h => h.AccessToken == accessToken); // işlemi yapan doktor
-                Hastum hasta = _context.Hasta.FirstOrDefault(h => h.Id == tedaviDTO.HastaID); // İşlem yapılan hasta
+                Hastum hasta = _context.Hasta.FirstOrDefault(h => h.Id == request.HastaID); // İşlem yapılan hasta
 
 
                 var Randevuları = _context.OnlineRandevus.Where(h => h.DoktorId == doktor.Id).ToList(); // doktorun randevuları ama List tipinde
-
+                _logger.LogInformation($"Doktorun randevuları: {Randevuları.Count()}");
                 List<int> HastaIDleri = new List<int>();
+                //HastaIDleri = null;
 
                 foreach (var randevu in Randevuları)
                 {
                     HastaIDleri.Add(randevu.HastaId); // Doktorun randevularındaki hasta ID'lerini tek bir yere attık
+                    _logger.LogInformation($"Hasta ID: {randevu.HastaId}");
+                    _logger.LogInformation($"Randevu adeti: {HastaIDleri.Count()}");
                 }
 
-                if (!HastaIDleri.Contains(tedaviDTO.HastaID)) // Doktor doğru hasta Idsini yazdı mı diye kontrol ediyoruz.
+                if (!HastaIDleri.Contains(request.HastaID)) // Doktor doğru hasta Idsini yazdı mı diye kontrol ediyoruz.
                 {
                     return BadRequest(new { mesaj = "Bu hastanın sizden randevusu yok." });
                 }
 
-                //Doktor tedavi sınıfından yeni entity oluşturacak
+
+                // TEDAVİ YAZILACAK
                 Tedavi tedavi = new Tedavi
                 {
                     Tanı = tedaviDTO.Tanı,
-                    Tedavi1 = tedaviDTO.Tedavi,
-                    Recete = tedaviDTO.Recete,
                     DoktorId = doktor.Id,
                     HastaId = hasta.Id
                 };
 
+
                 _context.Tedavis.Add(tedavi);
                 _context.SaveChanges();
 
-                //Bu yeni entity’in ID’sini (TedaviID) seçtiği hastanınn TedaviID sütununa ekliycek
+                //RECETE YAZACAK TEDAVİID = RECETEID
+
+                Recete recete = new Recete
+                {
+                    Kullanım = receteDTO.Kullanım,
+                    GecerlilikTarihi = DateOnly.FromDateTime(DateTime.Now.AddDays(30)),
+                };
+
+                recete.ReceteId = tedavi.TedaviId;
+                _context.Recetes.Add(recete);
+                _context.SaveChanges();
+
+
+                if (receteDTO.Ilaclar.Count != receteDTO.IlacAdet.Count)
+                {
+                    return BadRequest(new { mesaj = "İlaç sayısı ile adet sayısı eşleşmiyor." });
+                }
+
+
+                foreach (var (ilac, adet) in receteDTO.Ilaclar.Zip(receteDTO.IlacAdet)) // DTO'daki Ilaclar ile adetleri karşılıklı eşleniyor.
+                {
+                    var ilacID = _context.Ilacs.FirstOrDefault(h => h.IlacName == ilac.ToString());
+
+                    if (ilacID != null)
+                    {
+                        _context.IlcaToRecetes.Add(new IlcaToRecete
+                        {
+                            Adet = adet,
+                            ReceteFk = recete.ReceteId,
+                            IlcaFk = ilacID.IlacId
+                        });
+                        _context.SaveChanges();
+                    }
+                    else
+                    {
+                        return BadRequest(new { mesaj = "İlaç bulunamadı" });
+                    }
+                }
 
 
                 // Tedavi yazılında mevcut randevuyu sil
