@@ -5,10 +5,6 @@ namespace MyApiProject.Models;
 
 public partial class Tedavi
 {
-    public string Recete { get; set; }
-
-    public string Tedavi1 { get; set; }
-
     public int TedaviId { get; set; }
 
     public int DoktorId { get; set; }
@@ -20,4 +16,6 @@ public partial class Tedavi
     public virtual Doktor Doktor { get; set; }
 
     public virtual Hastum Hasta { get; set; }
+
+    public virtual Recete Recete { get; set; }
 }
