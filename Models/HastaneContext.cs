@@ -21,16 +21,19 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Hastum> Hasta { get; set; }
 
+    public virtual DbSet<Ilac> Ilacs { get; set; }
+
+    public virtual DbSet<IlcaToRecete> IlcaToRecetes { get; set; }
+
     public virtual DbSet<Kayıt> Kayıts { get; set; }
 
     public virtual DbSet<OnlineRandevu> OnlineRandevus { get; set; }
 
+    public virtual DbSet<Recete> Recetes { get; set; }
+
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-
-    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AppointmentSlot>(entity =>
@@ -119,6 +122,42 @@ public partial class HastaneContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<Ilac>(entity =>
+        {
+            entity.ToTable("Ilac");
+
+            entity.Property(e => e.IlacId).HasColumnName("IlacID");
+            entity.Property(e => e.IlacName)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("Ilac_Name");
+            entity.Property(e => e.KullanımAlanı)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("Kullanım_Alanı");
+        });
+
+        modelBuilder.Entity<IlcaToRecete>(entity =>
+        {
+            entity.ToTable("Ilca_To_Recete");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.IlcaFk).HasColumnName("IlcaFK");
+            entity.Property(e => e.ReceteFk).HasColumnName("ReceteFK");
+
+            entity.HasOne(d => d.IlcaFkNavigation).WithMany(p => p.IlcaToRecetes)
+                .HasForeignKey(d => d.IlcaFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Ilca_To_Recete_Ilac");
+
+            entity.HasOne(d => d.ReceteFkNavigation).WithMany(p => p.IlcaToRecetes)
+                .HasForeignKey(d => d.ReceteFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Ilca_To_Recete_Recete");
+        });
+
         modelBuilder.Entity<Kayıt>(entity =>
         {
             entity.ToTable("Kayıt");
@@ -171,6 +210,25 @@ public partial class HastaneContext : DbContext
                 .HasConstraintName("FK_OnlineRandevu_Hasta1");
         });
 
+        modelBuilder.Entity<Recete>(entity =>
+        {
+            entity.ToTable("Recete");
+
+            entity.Property(e => e.ReceteId)
+                .ValueGeneratedNever()
+                .HasColumnName("ReceteID");
+            entity.Property(e => e.GecerlilikTarihi).HasColumnName("Gecerlilik_Tarihi");
+            entity.Property(e => e.Kullanım)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsFixedLength();
+
+            entity.HasOne(d => d.ReceteNavigation).WithOne(p => p.Recete)
+                .HasForeignKey<Recete>(d => d.ReceteId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Recete_Tedavi");
+        });
+
         modelBuilder.Entity<Tedavi>(entity =>
         {
             entity.ToTable("Tedavi");
@@ -178,17 +236,10 @@ public partial class HastaneContext : DbContext
             entity.Property(e => e.TedaviId).HasColumnName("TedaviID");
             entity.Property(e => e.DoktorId).HasColumnName("DoktorID");
             entity.Property(e => e.HastaId).HasColumnName("HastaID");
-            entity.Property(e => e.Recete)
-                .IsRequired()
-                .HasMaxLength(50);
             entity.Property(e => e.Tanı)
                 .IsRequired()
                 .HasMaxLength(100)
                 .IsFixedLength();
-            entity.Property(e => e.Tedavi1)
-                .IsRequired()
-                .HasMaxLength(100)
-                .HasColumnName("Tedavi");
 
             entity.HasOne(d => d.Doktor).WithMany(p => p.Tedavis)
                 .HasForeignKey(d => d.DoktorId)

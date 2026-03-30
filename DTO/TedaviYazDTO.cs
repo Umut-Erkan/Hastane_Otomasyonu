@@ -9,8 +9,13 @@ namespace Hastane_Otomasyonu.DTO
     public class TedaviYazDTO
     {
         public string Tanı { get; set; }
-        public string Tedavi { get; set; }
-        public string Recete { get; set; }
+        public int HastaID { get; set; }
+    }
+
+    public class TedaviRequestDTO
+    {
+        public ReceteDTO ReceteDTO { get; set; }
+        public TedaviYazDTO TedaviDTO { get; set; }
         public int HastaID { get; set; }
     }
 }
