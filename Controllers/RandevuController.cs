@@ -68,8 +68,9 @@ namespace Hastane_Otomasyonu.Controllers
                     return StatusCode(500, new { mesaj = "Zaten bu doktordan randevunuz var" });
                 }
 
-                _logger.LogInformation($"Randevu öncesi Doktorun mesai günleri: {ExistingDoktor.MesaiGunu.Count()}");
+                /*_logger.LogInformation($"Randevu öncesi Doktorun mesai günleri: {ExistingDoktor.MesaiGunu.Count()}");
                 _logger.LogInformation($"Randevu öncesi Doktorun mesai saatleri: {ExistingDoktor.MesaiSaati.Count()}");
+                */
                 OnlineRandevu Randevu = new OnlineRandevu
                 {
                     HastaName = ExistingHasta.İsim,
@@ -84,12 +85,12 @@ namespace Hastane_Otomasyonu.Controllers
 
                 };
 
-                ExistingDoktor.MesaiGunu.Remove(AddDTO.Tarih);
+                /*ExistingDoktor.MesaiGunu.Remove(AddDTO.Tarih);
                 ExistingDoktor.MesaiSaati.Remove(AddDTO.Saat);
 
                 _logger.LogInformation($"Doktorun mesai günleri: {ExistingDoktor.MesaiGunu.Count()}");
                 _logger.LogInformation($"Doktorun mesai saatleri: {ExistingDoktor.MesaiSaati.Count()}");
-
+*/
                 _context.OnlineRandevus.Add(Randevu);
                 _context.SaveChanges();
 
