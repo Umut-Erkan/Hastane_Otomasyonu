@@ -85,14 +85,21 @@ namespace Hastane_Otomasyonu.Controllers
 
                 };
 
-                /*ExistingDoktor.MesaiGunu.Remove(AddDTO.Tarih);
-                ExistingDoktor.MesaiSaati.Remove(AddDTO.Saat);
+                var Appointment = _context.Appointments.FirstOrDefault(x => x.SlotDate == AddDTO.Tarih && x.StartTime == AddDTO.Saat);
 
-                _logger.LogInformation($"Doktorun mesai günleri: {ExistingDoktor.MesaiGunu.Count()}");
-                _logger.LogInformation($"Doktorun mesai saatleri: {ExistingDoktor.MesaiSaati.Count()}");
-*/
-                _context.OnlineRandevus.Add(Randevu);
-                _context.SaveChanges();
+                var AppointmentToDoktor = _context.AppointmentToDoktors.FirstOrDefault(x => x.AppointmentFk == Appointment.Id && x.DoktorFk == ExistingDoktor.Id);
+
+                if (AppointmentToDoktor == null)
+                {
+                    return StatusCode(404, new { mesaj = "Belirtilen tarih ve saatte randevu dolu." });
+                }
+
+                else
+                {
+                    _context.AppointmentToDoktors.Remove(AppointmentToDoktor);
+                    _context.OnlineRandevus.Add(Randevu);
+                    _context.SaveChanges();
+                }
 
                 return StatusCode(200, new { mesaj = "Başarılı" });
             }
