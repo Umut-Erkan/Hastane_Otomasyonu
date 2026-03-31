@@ -79,9 +79,6 @@ namespace Hastane_Otomasyonu.Business
             _context.AppointmentToDoktors.Remove(_context.AppointmentToDoktors.FirstOrDefault(x => x.DoktorFk == doktorId && x.AppointmentFk == Appointment.Id));
             _context.SaveChanges();
         }
-
-        // Mesai saatlerini güncelle
-
     }
 
 }
