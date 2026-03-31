@@ -38,6 +38,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
+
         [ServiceFilter(typeof(ActionFilter))]
         [HttpPost("Create Doktor")]
         public IActionResult DoktorOluştur([FromBody] DoktorDTO doktordto)
@@ -112,5 +113,84 @@ namespace Hastane_Otomasyonu.Controllers
                 });
             }
         }
+
+
+
+        [ServiceFilter(typeof(ActionFilter))]
+        [HttpPost("Create Resepsiyonist")]
+        public IActionResult ResepsiyonistOluştur([FromBody] RecepsionistAddDTO recepsionistdto)
+        {
+            try
+            {
+                var NewEntity = new HospitalReceptionist
+                {
+                    Tc = recepsionistdto.Tc,
+                    İsim = recepsionistdto.Name,
+                    Soyisim = recepsionistdto.Surname,
+                    Password = _Hash.HashPassword(recepsionistdto.Password).ToString(),
+                    Eposta = recepsionistdto.Eposta,
+                    Alan = recepsionistdto.Alan,
+
+                    Role = "Recepsionist",
+                    AccessToken = "PlaceHolder",
+                    RefreshToken = "PlaceHolder",
+                    RefreshTokenEndDate = DateTime.Now
+                };
+
+
+                bool TcKontrol = _context.HospitalReceptionists.Any(h => h.Tc == NewEntity.Tc);
+
+                if (TcKontrol)
+                {
+                    return StatusCode(400, "Zaten bu Resepsiyonist sistemde tanımlı");
+                }
+
+                _context.HospitalReceptionists.Add(NewEntity);
+                _context.SaveChanges();
+
+                var token = _tokenService.GenerateAccessToken(NewEntity);
+                NewEntity.AccessToken = token;
+
+                var RefreshToken = _tokenService.GenerateRefreshToken();
+                NewEntity.RefreshToken = RefreshToken.Token;
+                NewEntity.RefreshTokenEndDate = RefreshToken.Expiration;
+
+
+                _context.SaveChanges();
+
+                return Ok($"{NewEntity.İsim} {NewEntity.Soyisim} sisteme eklendi.");
+            }
+
+            catch (DbUpdateException ex)
+            {
+                return BadRequest(new
+                {
+                    mesaj = "Veritabanına kaydederken hata oluştu.",
+                    hata = ex.Message,
+                    detay = ex.InnerException?.Message
+                });
+            }
+
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(new { mesaj = "Beklenmedik bir veri boşluğu oluştu.", hata = ex.Message, detay = ex.StackTrace });
+            }
+
+            catch (Exception ex)
+
+            {
+                return BadRequest(new
+                {
+                    mesaj = "Bir hata oluştu.",
+                    hataDetayi = ex.Message,
+                    ekBilgi = ex.InnerException?.Message
+                });
+            }
+        }
+
+
+
+
     }
 }
+
