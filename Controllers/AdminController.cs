@@ -9,6 +9,7 @@ using Hastane_Otomasyonu.Filters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MyApiProject.Models;
 
 
@@ -23,11 +24,13 @@ namespace Hastane_Otomasyonu.Controllers
         private readonly HastaneContext _context;
         private readonly TokenService _tokenService;
         private PasswordHashing _Hash;
+        private readonly ILogger<AppointmentManagement> _logger;
 
-        public AdminController(HastaneContext context, TokenService tokenService)
+        public AdminController(HastaneContext context, TokenService tokenService, ILogger<AppointmentManagement> logger)
         {
             _context = context;
             _tokenService = tokenService;
+            _logger = logger;
 
             _Hash = new PasswordHashing();
 
@@ -77,10 +80,8 @@ namespace Hastane_Otomasyonu.Controllers
 
                 _context.SaveChanges();
 
-                // OLUŞTURULAN DOKTORUN ID'SİNİ APPOINTMENT TABLOSUNA EKLE
-                var Doktor = _context.Doktors.FirstOrDefault(h => h.Tc == NewEntity.Tc);
-
-                //List<AppointmentSlot> Appointment = _context.AppointmentSlots.ToList();
+                var appointmentManagement = new AppointmentManagement(_logger, _context);
+                appointmentManagement.MesaiEkle(NewEntity.Id);
 
                 return Ok($"{NewEntity.İsim} {NewEntity.Soyisim} sisteme eklendi.");
             }
@@ -97,7 +98,7 @@ namespace Hastane_Otomasyonu.Controllers
 
             catch (NullReferenceException ex)
             {
-                return BadRequest(new { mesaj = "Beklenmedik bir veri boşluğu oluştu.", hata = ex.Message });
+                return BadRequest(new { mesaj = "Beklenmedik bir veri boşluğu oluştu.", hata = ex.Message, detay = ex.StackTrace });
             }
 
             catch (Exception ex)
