@@ -15,7 +15,9 @@ public partial class HastaneContext : DbContext
     {
     }
 
-    public virtual DbSet<AppointmentSlot> AppointmentSlots { get; set; }
+    public virtual DbSet<Appointment> Appointments { get; set; }
+
+    public virtual DbSet<AppointmentToDoktor> AppointmentToDoktors { get; set; }
 
     public virtual DbSet<Doktor> Doktors { get; set; }
 
@@ -33,19 +35,38 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+
+    }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AppointmentSlot>(entity =>
+        modelBuilder.Entity<Appointment>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Appointm__3214EC07039A92A5");
 
-            entity.Property(e => e.DoktorId).HasColumnName("DoktorID");
-            entity.Property(e => e.IsAvailable).HasDefaultValue(true);
+            entity.ToTable("Appointment");
 
-            entity.HasOne(d => d.Doktor).WithMany(p => p.AppointmentSlots)
-                .HasForeignKey(d => d.DoktorId)
-                .HasConstraintName("FK_AppointmentSlots_Doktor");
+            entity.Property(e => e.IsAvailable).HasDefaultValue(true);
+        });
+
+        modelBuilder.Entity<AppointmentToDoktor>(entity =>
+        {
+            entity.ToTable("Appointment_To_Doktor");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.AppointmentFk).HasColumnName("AppointmentFK");
+            entity.Property(e => e.DoktorFk).HasColumnName("DoktorFK");
+
+            entity.HasOne(d => d.AppointmentFkNavigation).WithMany(p => p.AppointmentToDoktors)
+                .HasForeignKey(d => d.AppointmentFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointment_To_Doktor_Appointment");
+
+            entity.HasOne(d => d.DoktorFkNavigation).WithMany(p => p.AppointmentToDoktors)
+                .HasForeignKey(d => d.DoktorFk)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Appointment_To_Doktor_Doktor");
         });
 
         modelBuilder.Entity<Doktor>(entity =>

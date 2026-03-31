@@ -28,7 +28,7 @@ public partial class Doktor : IUser
 
     public DateTime RefreshTokenEndDate { get; set; }
 
-    public virtual ICollection<AppointmentSlot> AppointmentSlots { get; set; } = new List<AppointmentSlot>();
+    public virtual ICollection<AppointmentToDoktor> AppointmentToDoktors { get; set; } = new List<AppointmentToDoktor>();
 
     public virtual ICollection<OnlineRandevu> OnlineRandevus { get; set; } = new List<OnlineRandevu>();
 

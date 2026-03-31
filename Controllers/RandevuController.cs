@@ -19,10 +19,12 @@ namespace Hastane_Otomasyonu.Controllers
     public class RandevuController : ControllerBase
     {
         private readonly HastaneContext _context;
+        private readonly ILogger<RandevuController> _logger;
 
-        public RandevuController(HastaneContext context)
+        public RandevuController(HastaneContext context, ILogger<RandevuController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
 
@@ -66,6 +68,9 @@ namespace Hastane_Otomasyonu.Controllers
                     return StatusCode(500, new { mesaj = "Zaten bu doktordan randevunuz var" });
                 }
 
+                /*_logger.LogInformation($"Randevu öncesi Doktorun mesai günleri: {ExistingDoktor.MesaiGunu.Count()}");
+                _logger.LogInformation($"Randevu öncesi Doktorun mesai saatleri: {ExistingDoktor.MesaiSaati.Count()}");
+                */
                 OnlineRandevu Randevu = new OnlineRandevu
                 {
                     HastaName = ExistingHasta.İsim,
@@ -80,12 +85,21 @@ namespace Hastane_Otomasyonu.Controllers
 
                 };
 
-                // KULLANICININ GİRDİĞİ TARİH VE SAATİ DOKTORUN MEASİLERİNDEN SİL
-                var zaman = AddDTO.Tarih.DayOfWeek.ToString() + " " + AddDTO.Saat.ToString() + AddDTO.Saat.AddHours(1).ToString();
-                //_context.Zamen.Remove(zaman);
+                var Appointment = _context.Appointments.FirstOrDefault(x => x.SlotDate == AddDTO.Tarih && x.StartTime == AddDTO.Saat);
 
-                _context.OnlineRandevus.Add(Randevu);
-                _context.SaveChanges();
+                var AppointmentToDoktor = _context.AppointmentToDoktors.FirstOrDefault(x => x.AppointmentFk == Appointment.Id && x.DoktorFk == ExistingDoktor.Id);
+
+                if (AppointmentToDoktor == null)
+                {
+                    return StatusCode(404, new { mesaj = "Belirtilen tarih ve saatte randevu dolu." });
+                }
+
+                else
+                {
+                    _context.AppointmentToDoktors.Remove(AppointmentToDoktor);
+                    _context.OnlineRandevus.Add(Randevu);
+                    _context.SaveChanges();
+                }
 
                 return StatusCode(200, new { mesaj = "Başarılı" });
             }
