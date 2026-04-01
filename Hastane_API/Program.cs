@@ -15,6 +15,17 @@ using MyApiProject.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 
 
 // CONNECTION
@@ -74,6 +85,8 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 
+
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 
