@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Hasta_add.css';
 
-function HastaEkle() {
+function HastaRegister() {
+    const navigate = useNavigate();
 
     const [name, setName] = useState("");
     const [surname, setSurname] = useState("");
@@ -12,14 +15,13 @@ function HastaEkle() {
     const [hata, setHata] = useState(null);
     const [mesaj, setMesaj] = useState("");
 
-    // Kaydetme fonksiyonu (Form gönderildiğinde çalışır)
     const handleSumbit = async (e) => {
-        e.preventDefault(); // Sayfanın yenilenmesini engeller
+        e.preventDefault();
         setYukleniyor(true);
         setHata(null);
 
         try {
-            const cevap = await fetch('http://localhost:5160/api/Hasta/Login', {
+            const cevap = await fetch('http://localhost:5160/api/Hasta/Register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,7 +40,8 @@ function HastaEkle() {
             }
 
             const veri = await cevap.json();
-            setMesaj("Hasta başarıyla eklendi!");
+            setMesaj("Hasta başarıyla eklendi! Yönlendiriliyorsunuz...");
+            setTimeout(() => navigate('/hasta-panel'), 1500);
             console.log("Server Response:", veri);
 
         } catch (err) {
@@ -49,8 +52,8 @@ function HastaEkle() {
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '400px' }}>
-            <h2>Hasta Kayıt</h2>
+        <div className="hasta-form-container">
+            <h2>Hasta Kayıt Ol</h2>
             <form onSubmit={handleSumbit}>
                 <div>
                     <label>Ad:</label>
@@ -78,10 +81,10 @@ function HastaEkle() {
                 </button>
             </form>
 
-            {hata && <div style={{ color: 'red' }}>Hata: {hata}</div>}
-            {mesaj && <div style={{ color: 'green' }}>{mesaj}</div>}
+            {hata && <div className="error-message">Hata: {hata}</div>}
+            {mesaj && <div className="success-message">{mesaj}</div>}
         </div>
     );
 }
 
-export default HastaEkle;
+export default HastaRegister;
