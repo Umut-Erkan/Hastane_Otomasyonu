@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import './Home.css';
 
 const homeCards = [
@@ -6,7 +7,9 @@ const homeCards = [
   { id: 'resepsiyonist', title: 'Resepsiyonist', icon: '📝', description: 'Kayıt ve randevu işlemleri', color: '#f59e0b' },
 ];
 
-export default function Home({ onNavigate }) {
+export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <div className="home-container">
       <div className="home-content">
@@ -18,7 +21,7 @@ export default function Home({ onNavigate }) {
             <button 
               key={card.id} 
               className={`home-card card-${card.id}`}
-              onClick={() => onNavigate(card.id)}
+              onClick={() => navigate(`/${card.id}`)}
             >
               <div className="card-icon" style={{ backgroundColor: card.color + '20', color: card.color }}>
                 {card.icon}

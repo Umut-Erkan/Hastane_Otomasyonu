@@ -41,7 +41,7 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-        [HttpPost("Login")] // Hasta ilk kez kayıt oluyor
+        [HttpPost("Register")] // Hasta ilk kez kayıt oluyor
         public IActionResult CreateHasta([FromBody] HastaAddDTO dto)
         {
             try
@@ -134,6 +134,66 @@ namespace Hastane_Otomasyonu.Controllers
             }
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] HastaLoginDTO dto)
+        {
+            try
+            {
+                var hasta = _context.Hasta.FirstOrDefault(h => h.Tc == dto.Tc);
+                if (hasta == null)
+                {
+                    return Unauthorized(new { mesaj = "TC veya şifre hatalı." });
+                }
+
+                bool isPasswordValid = _Hash.VerifyPassword(dto.Password, hasta.Password);
+                if (!isPasswordValid)
+                {
+                    return Unauthorized(new { mesaj = "TC veya şifre hatalı." });
+                }
+
+                // Controller yeni token üretmiyor, mevcut hasta verisindeki tokenlar gönderiliyor
+                var AccessToken = hasta.AccessToken;
+                var RefreshToken = hasta.RefreshToken;
+
+                return Ok(new
+                {
+                    mesaj = "Giriş başarılı.",
+                    AccessToken = AccessToken,
+                    RefreshToken = RefreshToken,
+                    StatusCode = 200
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mesaj = "Login sırasında bir hata oluştu.", hata = ex.Message });
+            }
+        }
 
         [HttpDelete("Logout")]
         [Authorize(Roles = "Hasta")]
