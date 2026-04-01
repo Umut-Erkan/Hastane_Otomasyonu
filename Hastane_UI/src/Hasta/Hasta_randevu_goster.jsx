@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './Hasta_add.css';
+import './HastaStyle/Hasta_add.css';
 
 function HastaRandevuGoster() {
 

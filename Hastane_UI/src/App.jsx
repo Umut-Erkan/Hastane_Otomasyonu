@@ -1,8 +1,8 @@
 import { createBrowserRouter, RouterProvider, useNavigate } from 'react-router-dom';
 import './App.css';
-import HastaFirst from './HastaFirst.jsx';
-import HastaRandevuAl from './Hasta_randevu_al.jsx';
-import HastaRandevuGoster from './Hasta_randevu_goster.jsx';
+import HastaLanding from './Hasta/HastaLanding.jsx';
+import HastaRandevuAl from './Hasta/Hasta_randevu_al.jsx';
+import HastaRandevuGoster from './Hasta/Hasta_randevu_goster.jsx';
 import Home from './Home.jsx';
 
 // Sayfalar arası geçişte kullanılacak geri dön butonu bileşeni
@@ -35,7 +35,7 @@ function GoToButton({ path, text }) {
 
 // Hasta Sayfası Wrapper
 function HastaPage() {
-  console.log("HastaPage");
+  console.log("hasta-panel");
   console.log(`Hasta Token: ${localStorage.getItem('hastaToken')}`);
   return (
     <div className="page-wrapper">
@@ -95,7 +95,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/hasta",
-    element: <HastaFirst />,
+    element: <HastaLanding />,
   },
   {
     path: "/hasta-panel",
@@ -109,6 +109,8 @@ const router = createBrowserRouter([
     path: "/hasta-panel/randevu-goster",
     element: <HastaRandevuGosterPage />,
   },
+
+
   {
     path: "/doktor",
     element: <UnderConstructionPage title="Doktor" />,
