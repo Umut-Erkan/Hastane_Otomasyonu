@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Hasta_add.css';
+import './HastaStyle/Hasta_add.css';
 
 function HastaRegister() {
     const navigate = useNavigate();

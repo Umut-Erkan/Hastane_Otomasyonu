@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Hasta_add.css'; // Reusing the same CSS to maintain consistency
+import './HastaStyle/Hasta_add.css'; // Reusing the same CSS to maintain consistency
 
 function HastaLogin() {
     const navigate = useNavigate();
@@ -18,6 +18,7 @@ function HastaLogin() {
         setMesaj("");
 
         try {
+            console.log("test");
             const cevap = await fetch('http://localhost:5160/api/Hasta/Login', {
                 method: 'POST',
                 headers: {
@@ -29,26 +30,31 @@ function HastaLogin() {
                 }),
             });
 
-            if (cevap.StatusCode != 200) {
+            console.log("status: " + cevap.status);
+
+            if (cevap.status != 200) {
                 const errorData = await cevap.json().catch(() => ({}));
                 throw new Error(errorData.mesaj || `Sunucu hatası: HTTP ${cevap.status}`);
             }
 
-            const veri = await cevap.json();
-
-            if (veri.accessToken) {
-                localStorage.setItem('hastaToken', veri.accessToken);
+            if (cevap.accessToken) {
+                localStorage.setItem('hastaToken', cevap.accessToken);
             }
 
             if (localStorage.getItem('hastaToken') === null) {
                 console.log("Hasta Token: null geldi");
             }
+            else {
+                console.log("Hasta Token: " + localStorage.getItem('hastaToken'));
+            }
+
+
 
             setMesaj("Giriş başarılı! Yönlendiriliyorsunuz...");
 
             setTimeout(() => {
                 navigate('/hasta-panel');
-            }, 1000);
+            }, 10000);
 
         } catch (err) {
             setHata(err.message);
@@ -56,6 +62,8 @@ function HastaLogin() {
             setYukleniyor(false);
         }
     };
+
+
 
     return (
         <div className="hasta-form-container">
@@ -85,7 +93,7 @@ function HastaLogin() {
                 </button>
             </form>
 
-            {hata && <div className="error-message">Hata: {hata}</div>}
+            {hata && <div className="error-message">Hata Bu giriş başarılı diyor: {hata}</div>}
             {mesaj && <div className="success-message" style={{ color: 'green', marginTop: '10px' }}>{mesaj}</div>}
         </div>
     );
