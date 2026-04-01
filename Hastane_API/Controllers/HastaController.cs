@@ -73,7 +73,7 @@ namespace Hastane_Otomasyonu.Controllers
 
                 else if (dto.Tc.ToString().Length != 11)
                 {
-                    return new ObjectResult("Tc'nin 11 haneli olması lazım") { StatusCode = 400 };
+                    return BadRequest(new { mesaj = "Tc'nin 11 haneli olması lazım" });
                 }
 
                 else
@@ -96,7 +96,12 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-                    return Ok($"{tarih} kullanıcının Acces token bitiş tarihidir, Hastanın özelliklerinden erişebilirsiniz");
+                    return Ok(new
+                    {
+                        mesaj = $"{NewEntity.İsim} {NewEntity.Soyisim} başarıyla eklendi!",
+                        tarih = tarih,
+                        bilgi = "Hastanın özelliklerinden erişebilirsiniz"
+                    });
                 }
             }
 

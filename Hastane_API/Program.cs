@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
+    options.AddPolicy("http://localhost:5173",
         builder =>
         {
             builder.AllowAnyOrigin()

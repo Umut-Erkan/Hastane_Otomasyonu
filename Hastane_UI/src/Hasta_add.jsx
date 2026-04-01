@@ -39,7 +39,7 @@ function HastaEkle() {
 
             const veri = await cevap.json();
             setMesaj("Hasta başarıyla eklendi!");
-            console.log("Sunucudan dönen veri:", veri);
+            console.log("Server Response:", veri);
 
         } catch (err) {
             setHata(err.message);
