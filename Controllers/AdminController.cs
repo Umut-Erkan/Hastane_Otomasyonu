@@ -98,7 +98,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-            catch(StackExchange.Redis.RedisConnectionException ex)
+            catch(StackExchange.Redis.RedisServerException ex)
             {
                 return BadRequest(new
                 {

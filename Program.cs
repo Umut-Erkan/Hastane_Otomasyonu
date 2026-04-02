@@ -37,10 +37,14 @@ builder.Services.AddDbContext<HastaneContext>(options =>
 
 builder.Services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => 
 {
-    var redisHost = builder.Configuration["RedisConnection:ConnectionString"];
-    var redisPassword = builder.Configuration["RedisConnection:Password"];
-    var connString = $"{redisHost},password={redisPassword}";
-    return StackExchange.Redis.ConnectionMultiplexer.Connect(connString);
+    var configurationOptions = new StackExchange.Redis.ConfigurationOptions
+    {
+        EndPoints = { builder.Configuration["RedisConnection:EndPoints"] },
+        User = builder.Configuration["RedisConnection:Username"],
+        Password = builder.Configuration["RedisConnection:Password"]
+    };
+
+    return StackExchange.Redis.ConnectionMultiplexer.Connect(configurationOptions);
 });
 
 

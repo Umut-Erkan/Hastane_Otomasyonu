@@ -42,3 +42,4 @@ namespace Hastane_Otomasyonu.Redis.Services
         }
     }
 }
+
