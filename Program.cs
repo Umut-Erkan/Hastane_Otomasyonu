@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Hastane_Otomasyonu.Business;
 using Hastane_Otomasyonu.Filters;
+using Hastane_Otomasyonu.Redis.Interfaces;
+using Hastane_Otomasyonu.Redis.Services;
+using Hastane_Otomasyonu.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +30,19 @@ if (string.IsNullOrEmpty(connectionString))
 
 builder.Services.AddDbContext<HastaneContext>(options =>
         options.UseSqlServer(connectionString));
+
+
+
+//REDİS
+
+builder.Services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => 
+{
+    var redisHost = builder.Configuration["RedisConnection:ConnectionString"];
+    var redisPassword = builder.Configuration["RedisConnection:Password"];
+    var connString = $"{redisHost},password={redisPassword}";
+    return StackExchange.Redis.ConnectionMultiplexer.Connect(connString);
+});
+
 
 // TOKEN
 builder.Services.AddScoped<TokenService>();
@@ -62,6 +78,7 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<PasswordHashing>();
 builder.Services.AddScoped<ActionFilter>();
 builder.Services.AddScoped<RefreshTokenFilter>();
+builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
 
 builder.Services.AddHttpContextAccessor();
 // SWAGGER

@@ -25,12 +25,14 @@ namespace Hastane_Otomasyonu.Controllers
         private readonly TokenService _tokenService;
         private PasswordHashing _Hash;
         private readonly ILogger<AppointmentManagement> _logger;
+        private readonly Hastane_Otomasyonu.Redis.Interfaces.IRedisCacheService _redisCacheService;
 
-        public AdminController(HastaneContext context, TokenService tokenService, ILogger<AppointmentManagement> logger)
+        public AdminController(HastaneContext context, TokenService tokenService, ILogger<AppointmentManagement> logger, Hastane_Otomasyonu.Redis.Interfaces.IRedisCacheService redisCacheService)
         {
             _context = context;
             _tokenService = tokenService;
             _logger = logger;
+            _redisCacheService = redisCacheService;
 
             _Hash = new PasswordHashing();
 
@@ -77,6 +79,14 @@ namespace Hastane_Otomasyonu.Controllers
                 NewEntity.RefreshToken = RefreshToken.Token;
                 NewEntity.RefreshTokenEndDate = RefreshToken.Expiration;
 
+                try
+                {
+                    _redisCacheService.SetValue("Doktor:" + NewEntity.Id.ToString(), NewEntity.İsim + " " + NewEntity.Soyisim);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Redis'e veri eklenirken hata oluştu.");
+                }
 
                 _context.SaveChanges();
 
@@ -86,6 +96,17 @@ namespace Hastane_Otomasyonu.Controllers
                 return Ok($"{NewEntity.İsim} {NewEntity.Soyisim} sisteme eklendi.");
             }
 
+
+
+            catch(StackExchange.Redis.RedisConnectionException ex)
+            {
+                return BadRequest(new
+                {
+                    mesaj = "Redis'e bağlanırken hata oluştu.",
+                    hata = ex.Message,
+                    detay = ex.InnerException?.Message
+                });
+            }
             catch (DbUpdateException ex)
             {
                 return BadRequest(new

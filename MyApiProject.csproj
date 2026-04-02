@@ -18,7 +18,11 @@
 
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.21" />
 
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.5" />
+
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.16.0" />
+
+    <PackageReference Include="StackExchange.Redis" Version="2.12.8" />
     
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.5" />
     
