@@ -37,8 +37,8 @@ function HastaLogin() {
                 throw new Error(errorData.mesaj || `Sunucu hatası: HTTP ${cevap.status}`);
             }
 
-            if (cevap.accessToken) {
-                localStorage.setItem('hastaToken', cevap.accessToken);
+            if (cevap.AccessToken) {
+                localStorage.setItem('hastaToken', cevap.AccessToken);
             }
 
             if (localStorage.getItem('hastaToken') === null) {
@@ -54,7 +54,7 @@ function HastaLogin() {
 
             setTimeout(() => {
                 navigate('/hasta-panel');
-            }, 10000);
+            }, 100);
 
         } catch (err) {
             setHata(err.message);

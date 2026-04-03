@@ -166,6 +166,9 @@ namespace Hastane_Otomasyonu.Controllers
             try
             {
                 var hasta = _context.Hasta.FirstOrDefault(h => h.Tc == dto.Tc);
+
+                var AccessToken = new JwtSecurityTokenHandler().ReadJwtToken(hasta.AccessToken);
+                DateTime AccessTokenEndDate = AccessToken.ValidTo;
                 if (hasta == null)
                 {
                     return Unauthorized(new { mesaj = "TC veya şifre hatalı." });
@@ -177,15 +180,23 @@ namespace Hastane_Otomasyonu.Controllers
                     return Unauthorized(new { mesaj = "TC veya şifre hatalı." });
                 }
 
-                // Controller yeni token üretmiyor, mevcut hasta verisindeki tokenlar gönderiliyor
-                var AccessToken = hasta.AccessToken;
-                var RefreshToken = hasta.RefreshToken;
+                if (AccessTokenEndDate < DateTime.Now)
+                {
+                    hasta.AccessToken = _tokenService.GenerateAccessToken(hasta);
+                    _context.SaveChanges();
+                }
+                if (hasta.RefreshTokenEndDate < DateTime.Now)
+                {
+                    hasta.RefreshToken = _tokenService.GenerateRefreshToken().Token;
+                    hasta.RefreshTokenEndDate = _tokenService.GenerateRefreshToken().Expiration;
+                    _context.SaveChanges();
+                }
 
                 return Ok(new
                 {
                     mesaj = "Giriş başarılı.",
-                    AccessToken = AccessToken,
-                    RefreshToken = RefreshToken,
+                    AccessToken = hasta.AccessToken,
+                    RefreshToken = hasta.RefreshToken,
                     StatusCode = 200
                 });
             }
