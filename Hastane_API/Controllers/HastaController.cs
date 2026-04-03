@@ -247,6 +247,7 @@ namespace Hastane_Otomasyonu.Controllers
             var randevular = _context.OnlineRandevus.Where(c => c.HastaId == int.Parse(userId))
                 .Select(r => new
                 {
+                    r.Id,
                     r.DoktorName,
                     r.DoktorSurname,
                     r.Tarih,
@@ -255,7 +256,7 @@ namespace Hastane_Otomasyonu.Controllers
 
             if (randevular.Count() == 0)
             {
-                return StatusCode(404, "Randevu bulunamadı");
+                return StatusCode(404, new { mesaj = "Randevu bulunamadı", StatusCode = 404 });
             }
             return StatusCode(200, randevular);
         }

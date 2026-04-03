@@ -11,6 +11,7 @@ function HastaRandevuGoster() {
         const fetchRandevular = async () => {
             try {
                 const token = localStorage.getItem('hastaToken');
+
                 if (token === null) {
                     throw new Error("Token bulunamadı");
                 }
@@ -20,7 +21,9 @@ function HastaRandevuGoster() {
                     // Farklı API'lerde e-posta değişebilir, genellikle bilinen claim isimlerini kontrol ediyoruz.
                     const email = payload.email || payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] || payload.Eposta || "E-posta bulunamadı";
                     console.log("Token İçerisindeki E-Posta:", email);
-                } catch (parsErr) {
+                }
+
+                catch (parsErr) {
                     console.log("Token çözümlenemedi:", parsErr);
                 }
 
@@ -34,7 +37,6 @@ function HastaRandevuGoster() {
 
                 if (cevap.status === 401) {
                     throw new Error(`Giriş yapmanız gerekiyor: HTTP ${cevap.status}`);
-                    throw new Error(`Token süresi dolmuş: HTTP ${token}`);
                 }
 
                 if (cevap.status === 403) {
@@ -43,6 +45,7 @@ function HastaRandevuGoster() {
 
 
                 const veri = await cevap.json();
+                console.log("Server Response:", veri.mesaj);
 
                 // Eğer cevap bir hata mesajı içeriyorsa (örneğin randevu yoksa) veya boş liste dönerse
                 const isArray = Array.isArray(veri);
@@ -76,8 +79,8 @@ function HastaRandevuGoster() {
                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                         {randevular.map((randevu, index) => (
                             <li key={index} style={{ padding: '10px', border: '1px solid #ccc', margin: '5px 0', borderRadius: '5px' }}>
-                                <strong>Randevu ID:</strong> {randevu.Id || randevu.id || randevu.RandevuId || randevu.randevuId || index} <br />
-                                <strong>Doktor:</strong> {randevu.DoktorAdi || randevu.doktorId || "Belirtilmemiş"} <br />
+                                <strong>Randevu ID:</strong> {randevu.id} <br />
+                                <strong>Doktor:</strong> {randevu.doktorName} <br />
                                 <strong>Tarih:</strong> {randevu.Tarih || randevu.tarih || "Belirtilmemiş"} <br />
                                 <strong>Saat:</strong> {randevu.Saat || randevu.saat || "Belirtilmemiş"}
                             </li>

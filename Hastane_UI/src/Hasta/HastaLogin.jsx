@@ -29,24 +29,19 @@ function HastaLogin() {
                     Password: password,
                 }),
             });
+            const data = await cevap.json();
 
-            console.log("status: " + cevap.status);
 
-            if (cevap.status != 200) {
-                const errorData = await cevap.json().catch(() => ({}));
-                throw new Error(errorData.mesaj || `Sunucu hatası: HTTP ${cevap.status}`);
+
+            if (data.statusCode != 200) {
+                throw new Error(`Sunucu hatası: HTTP ${data.statusCode}`);
             }
 
-            if (cevap.AccessToken) {
-                localStorage.setItem('hastaToken', cevap.AccessToken);
+            if (data.accessToken != null) {
+                localStorage.setItem('hastaToken', data.accessToken);
             }
 
-            if (localStorage.getItem('hastaToken') === null) {
-                console.log("Hasta Token: null geldi");
-            }
-            else {
-                console.log("Hasta Token: " + localStorage.getItem('hastaToken'));
-            }
+            localStorage.setItem('hastaToken', data.accessToken);
 
 
 
@@ -93,7 +88,7 @@ function HastaLogin() {
                 </button>
             </form>
 
-            {hata && <div className="error-message">Hata Bu giriş başarılı diyor: {hata}</div>}
+            {hata && <div className="error-message">{hata}</div>}
             {mesaj && <div className="success-message" style={{ color: 'green', marginTop: '10px' }}>{mesaj}</div>}
         </div>
     );
