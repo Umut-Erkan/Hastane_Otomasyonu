@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Hastane_Otomasyonu.Business;
 using Hastane_Otomasyonu.DTO;
 using Hastane_Otomasyonu.Filters;
+using Hastane_Otomasyonu.Redis.Interfaces;
+using Hastane_Otomasyonu.Redis.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,14 +22,15 @@ namespace Hastane_Otomasyonu.Controllers
     [Route("api/[controller]")]
     public class DoktorController : ControllerBase
     {
-
+        private readonly IRedisCacheService _cache;
         private readonly HastaneContext _context;
         private readonly TokenService _tokenService;
         private PasswordHashing _Hash;
         private readonly ILogger<DoktorController> _logger;
 
-        public DoktorController(HastaneContext context, TokenService tokenService, ILogger<DoktorController> logger)
+        public DoktorController(IRedisCacheService cache, HastaneContext context, TokenService tokenService, ILogger<DoktorController> logger)
         {
+            _cache = cache;
             _context = context;
             _tokenService = tokenService;
             _logger = logger;
@@ -44,6 +47,41 @@ namespace Hastane_Otomasyonu.Controllers
 
             return StatusCode(200, Appointment);
         }
+
+
+        [ServiceFilter(typeof(RefreshTokenFilter))]
+        [HttpGet("GetDoktorSql")]
+        public IActionResult GetDoktorSql()
+        {
+            var doktorlarDTO = _context.Doktors.Select(d => new DoktorDisplayDTO
+            {
+                Name = d.İsim,
+                Surname = d.Soyisim,
+                Eposta = d.Eposta,
+                Alan = d.Alan,
+                Id = d.Id
+            }).ToList();
+
+            if (doktorlarDTO.Count == 0)
+            {
+                return BadRequest(new { mesaj = "Doktor bulunamadı" });
+            }
+            return Ok(doktorlarDTO);
+        }
+
+        [ServiceFilter(typeof(RefreshTokenFilter))]
+        [HttpGet("GetDoktorRedis")]
+        public IActionResult GetDoktorRedis()
+        {
+            var doktorlar = _cache.GetValue("doktorlar").ToList();
+
+            if (doktorlar.Count == 0)
+            {
+                return StatusCode(404, "Doktor bulunamadı");
+            }
+            return Ok(doktorlar);
+        }
+
 
 
         [ServiceFilter(typeof(RefreshTokenFilter))] // Refresh token kontrolü ile hangi doktor olduğunu anlıyoruz.
@@ -132,8 +170,6 @@ namespace Hastane_Otomasyonu.Controllers
                         return BadRequest(new { mesaj = "İlaç bulunamadı" });
                     }
                 }
-
-
 
 
                 // Tedavi yazılında mevcut randevuyu sil
