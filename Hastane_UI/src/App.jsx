@@ -36,7 +36,6 @@ function GoToButton({ path, text }) {
 // Hasta Sayfası Wrapper
 function HastaPage() {
   console.log("hasta-panel");
-  console.log(`Hasta Token: ${localStorage.getItem('hastaToken')}`);
   return (
     <div className="page-wrapper">
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
