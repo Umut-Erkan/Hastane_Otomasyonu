@@ -18,7 +18,18 @@ using MyApiProject.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var AppPolicy = "AppPolicy";
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: AppPolicy,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 // CONNECTION
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -96,7 +107,12 @@ var app = builder.Build();
 
 
 
-app.UseHttpsRedirection();
+
+//app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseCors(AppPolicy);
 
 app.UseAuthentication();
 

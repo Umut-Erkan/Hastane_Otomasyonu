@@ -41,7 +41,7 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-        [HttpPost("Login")] // Hasta ilk kez kayıt oluyor
+        [HttpPost("Register")] // Hasta ilk kez kayıt oluyor
         public IActionResult CreateHasta([FromBody] HastaAddDTO dto)
         {
             try
@@ -73,7 +73,7 @@ namespace Hastane_Otomasyonu.Controllers
 
                 else if (dto.Tc.ToString().Length != 11)
                 {
-                    return new ObjectResult("Tc'nin 11 haneli olması lazım") { StatusCode = 400 };
+                    return BadRequest(new { mesaj = "Tc'nin 11 haneli olması lazım" });
                 }
 
                 else
@@ -96,7 +96,12 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-                    return Ok($"{tarih} kullanıcının Acces token bitiş tarihidir, Hastanın özelliklerinden erişebilirsiniz");
+                    return Ok(new
+                    {
+                        mesaj = $"{NewEntity.İsim} {NewEntity.Soyisim} başarıyla eklendi!",
+                        tarih = tarih,
+                        bilgi = "Hastanın özelliklerinden erişebilirsiniz"
+                    });
                 }
             }
 
@@ -129,6 +134,77 @@ namespace Hastane_Otomasyonu.Controllers
             }
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] HastaLoginDTO dto)
+        {
+            try
+            {
+                var hasta = _context.Hasta.FirstOrDefault(h => h.Tc == dto.Tc);
+
+                var AccessToken = new JwtSecurityTokenHandler().ReadJwtToken(hasta.AccessToken);
+                DateTime AccessTokenEndDate = AccessToken.ValidTo;
+                if (hasta == null)
+                {
+                    return Unauthorized(new { mesaj = "TC veya şifre hatalı." });
+                }
+
+                bool isPasswordValid = _Hash.VerifyPassword(dto.Password, hasta.Password);
+                if (!isPasswordValid)
+                {
+                    return Unauthorized(new { mesaj = "TC veya şifre hatalı." });
+                }
+
+                if (AccessTokenEndDate < DateTime.Now)
+                {
+                    hasta.AccessToken = _tokenService.GenerateAccessToken(hasta);
+                    _context.SaveChanges();
+                }
+                if (hasta.RefreshTokenEndDate < DateTime.Now)
+                {
+                    hasta.RefreshToken = _tokenService.GenerateRefreshToken().Token;
+                    hasta.RefreshTokenEndDate = _tokenService.GenerateRefreshToken().Expiration;
+                    _context.SaveChanges();
+                }
+
+                return Ok(new
+                {
+                    mesaj = "Giriş başarılı.",
+                    AccessToken = hasta.AccessToken,
+                    RefreshToken = hasta.RefreshToken,
+                    StatusCode = 200
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mesaj = "Login sırasında bir hata oluştu.", hata = ex.Message });
+            }
+        }
 
         [HttpDelete("Logout")]
         [Authorize(Roles = "Hasta")]
@@ -171,6 +247,7 @@ namespace Hastane_Otomasyonu.Controllers
             var randevular = _context.OnlineRandevus.Where(c => c.HastaId == int.Parse(userId))
                 .Select(r => new
                 {
+                    r.Id,
                     r.DoktorName,
                     r.DoktorSurname,
                     r.Tarih,
@@ -179,7 +256,7 @@ namespace Hastane_Otomasyonu.Controllers
 
             if (randevular.Count() == 0)
             {
-                return StatusCode(404, "Randevu bulunamadı");
+                return StatusCode(404, new { mesaj = "Randevu bulunamadı", StatusCode = 404 });
             }
             return StatusCode(200, randevular);
         }
