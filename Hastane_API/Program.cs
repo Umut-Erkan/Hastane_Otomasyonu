@@ -7,7 +7,6 @@ using Hastane_Otomasyonu.Business;
 using Hastane_Otomasyonu.Filters;
 using Hastane_Otomasyonu.Redis.Interfaces;
 using Hastane_Otomasyonu.Redis.Services;
-using Hastane_Otomasyonu.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MyApiProject.Models;
+using StackExchange.Redis;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,18 +46,17 @@ builder.Services.AddDbContext<HastaneContext>(options =>
 
 
 
-//REDİS
-
-builder.Services.AddSingleton<StackExchange.Redis.IConnectionMultiplexer>(sp => 
+//REDIS
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
-    var configurationOptions = new StackExchange.Redis.ConfigurationOptions
+    var configurationOptions = new ConfigurationOptions
     {
         EndPoints = { builder.Configuration["RedisConnection:EndPoints"] },
         User = builder.Configuration["RedisConnection:Username"],
         Password = builder.Configuration["RedisConnection:Password"]
     };
 
-    return StackExchange.Redis.ConnectionMultiplexer.Connect(configurationOptions);
+    return ConnectionMultiplexer.Connect(configurationOptions);
 });
 
 

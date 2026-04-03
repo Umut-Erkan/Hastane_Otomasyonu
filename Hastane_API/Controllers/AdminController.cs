@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Hastane_Otomasyonu.Business;
 using Hastane_Otomasyonu.DTO;
 using Hastane_Otomasyonu.Filters;
+using Hastane_Otomasyonu.Redis.Interfaces;
+using Hastane_Otomasyonu.Redis.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MyApiProject.Models;
-
+using StackExchange.Redis;
 
 namespace Hastane_Otomasyonu.Controllers
 {
@@ -98,7 +100,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-            catch(StackExchange.Redis.RedisServerException ex)
+            catch (StackExchange.Redis.RedisServerException ex)
             {
                 return BadRequest(new
                 {

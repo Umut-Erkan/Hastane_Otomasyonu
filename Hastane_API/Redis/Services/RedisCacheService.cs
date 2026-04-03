@@ -1,7 +1,6 @@
 using System;
-using StackExchange.Redis;
-
 using Hastane_Otomasyonu.Redis.Interfaces;
+using StackExchange.Redis;
 
 namespace Hastane_Otomasyonu.Redis.Services
 {
@@ -12,7 +11,7 @@ namespace Hastane_Otomasyonu.Redis.Services
 
         public RedisCacheService(IConnectionMultiplexer redisConnection)
         {
-            _redisConnection = redisConnection; 
+            _redisConnection = redisConnection;
             _cache = redisConnection.GetDatabase();
         }
 
@@ -23,7 +22,7 @@ namespace Hastane_Otomasyonu.Redis.Services
 
         public void ClearAll()
         {
-           var redisEndpoints = _redisConnection.GetEndPoints(true);
+            var redisEndpoints = _redisConnection.GetEndPoints(true);
             foreach (var redisEndpoint in redisEndpoints)
             {
                 var redisServer = _redisConnection.GetServer(redisEndpoint);
