@@ -1,69 +1,82 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './HastaStyle/Hasta_add.css';
 
 function HastaRandevuGoster() {
 
-    const [tc, setTc] = useState("");
     const [randevular, setRandevular] = useState([]);
-
-    const [yukleniyor, setYukleniyor] = useState(false);
+    const [yukleniyor, setYukleniyor] = useState(true);
     const [hata, setHata] = useState(null);
 
-    const handleSumbit = async (e) => {
-        e.preventDefault();
-        setYukleniyor(true);
-        setHata(null);
-        setRandevular([]);
-
-        try {
-            const cevap = await fetch(`http://localhost:5160/api/Hasta/RandevuGoster`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
+    useEffect(() => {
+        const fetchRandevular = async () => {
+            try {
+                const token = localStorage.getItem('hastaToken');
+                if (token === null) {
+                    throw new Error("Token bulunamadı");
                 }
-            });
+
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    // Farklı API'lerde e-posta değişebilir, genellikle bilinen claim isimlerini kontrol ediyoruz.
+                    const email = payload.email || payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] || payload.Eposta || "E-posta bulunamadı";
+                    console.log("Token İçerisindeki E-Posta:", email);
+                } catch (parsErr) {
+                    console.log("Token çözümlenemedi:", parsErr);
+                }
+
+                const cevap = await fetch(`http://localhost:5160/api/Hasta/RandevuGoster`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${token}`,
+                    }
+                });
+
+                if (cevap.status === 401) {
+                    throw new Error(`Giriş yapmanız gerekiyor: HTTP ${cevap.status}`);
+                    throw new Error(`Token süresi dolmuş: HTTP ${token}`);
+                }
+
+                if (cevap.status === 403) {
+                    throw new Error(`Yetkisiz erişim: HTTP ${cevap.status}`);
+                }
 
 
+                const veri = await cevap.json();
 
+                // Eğer cevap bir hata mesajı içeriyorsa (örneğin randevu yoksa) veya boş liste dönerse
+                const isArray = Array.isArray(veri);
+                if ((isArray && veri.length === 0) || (!isArray && veri.message)) {
+                    setRandevular([]);
+                } else {
+                    setRandevular(isArray ? veri : [veri]);
+                }
+                console.log("Server Response:", veri);
 
-
-            if (!cevap.ok) {
-                throw new Error(`Sunucu hatası: HTTP ${cevap.status}`);
+            } catch (err) {
+                setHata(err.message);
+            } finally {
+                setYukleniyor(false);
             }
+        };
 
-            const veri = await cevap.json();
-            // Varsayılan olarak api'nin bir liste döndüğünü varsayıyoruz
-            setRandevular(Array.isArray(veri) ? veri : [veri]);
-            console.log("Server Response:", veri);
-
-        } catch (err) {
-            setHata(err.message);
-        } finally {
-            setYukleniyor(false);
-        }
-    };
+        fetchRandevular();
+    }, []);
 
     return (
         <div className="hasta-form-container" style={{ maxWidth: '600px' }}>
-            <h2>Randevu Görüntüle</h2>
-            <form onSubmit={handleSumbit}>
-                <div>
-                    <label>Sorgulanacak TC Kimlik No:</label>
-                    <input type="text" value={tc} onChange={(e) => setTc(e.target.value)} required />
-                </div>
-                <button type="submit" disabled={yukleniyor}>
-                    {yukleniyor ? "Sorgulanıyor..." : "Randevuları Getir"}
-                </button>
-            </form>
+            <h2>Randevularım</h2>
+
+            {yukleniyor && <div>Yükleniyor...</div>}
 
             {hata && <div className="error-message">Hata: {hata}</div>}
 
-            {randevular.length > 0 && (
+            {!yukleniyor && randevular.length > 0 && (
                 <div style={{ marginTop: '20px' }}>
-                    <h3>Bulunan Randevular:</h3>
                     <ul style={{ listStyleType: 'none', padding: 0 }}>
                         {randevular.map((randevu, index) => (
                             <li key={index} style={{ padding: '10px', border: '1px solid #ccc', margin: '5px 0', borderRadius: '5px' }}>
+                                <strong>Randevu ID:</strong> {randevu.Id || randevu.id || randevu.RandevuId || randevu.randevuId || index} <br />
                                 <strong>Doktor:</strong> {randevu.DoktorAdi || randevu.doktorId || "Belirtilmemiş"} <br />
                                 <strong>Tarih:</strong> {randevu.Tarih || randevu.tarih || "Belirtilmemiş"} <br />
                                 <strong>Saat:</strong> {randevu.Saat || randevu.saat || "Belirtilmemiş"}
@@ -73,8 +86,8 @@ function HastaRandevuGoster() {
                 </div>
             )}
 
-            {!yukleniyor && !hata && randevular.length === 0 && tc && (
-                <div style={{ marginTop: '20px', color: '#666' }}>Gösterilecek randevu bulunamadı.</div>
+            {!yukleniyor && !hata && randevular.length === 0 && (
+                <div style={{ marginTop: '20px', color: '#666', fontWeight: 'bold' }}>Randevunuz yok.</div>
             )}
         </div>
     );
