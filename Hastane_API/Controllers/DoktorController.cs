@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -38,14 +39,50 @@ namespace Hastane_Otomasyonu.Controllers
             _Hash = new PasswordHashing();
         }
 
-        [HttpGet("Mesai/{userId}")]
-        public IActionResult Mesai(int userId)
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] LoginDTO dto)
         {
-            var Appointment = new List<AppointmentSlot>();
+            try
+            {
+                var doktor = _context.Doktors.FirstOrDefault(h => h.Tc == dto.Tc);
 
+                var AccessToken = new JwtSecurityTokenHandler().ReadJwtToken(doktor.AccessToken);
+                DateTime AccessTokenEndDate = AccessToken.ValidTo;
+                if (doktor == null)
+                {
+                    return BadRequest(new { mesaj = "TC veya şifre hatalı." });
+                }
 
+                bool isPasswordValid = _Hash.VerifyPassword(dto.Password, doktor.Password);
+                if (!isPasswordValid)
+                {
+                    return BadRequest(new { mesaj = "Şifre hatalı." });
+                }
 
-            return StatusCode(200, Appointment);
+                if (AccessTokenEndDate < DateTime.Now)
+                {
+                    doktor.AccessToken = _tokenService.GenerateAccessToken(doktor);
+                    _context.SaveChanges();
+                }
+                if (doktor.RefreshTokenEndDate < DateTime.Now)
+                {
+                    doktor.RefreshToken = _tokenService.GenerateRefreshToken().Token;
+                    doktor.RefreshTokenEndDate = _tokenService.GenerateRefreshToken().Expiration;
+                    _context.SaveChanges();
+                }
+
+                return Ok(new
+                {
+                    mesaj = "Giriş başarılı.",
+                    AccessToken = doktor.AccessToken,
+                    RefreshToken = doktor.RefreshToken,
+                    StatusCode = 200
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mesaj = "Login sırasında bir hata oluştu.", hata = ex.Message });
+            }
         }
 
 
