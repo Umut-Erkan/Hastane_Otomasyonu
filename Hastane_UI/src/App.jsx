@@ -3,6 +3,9 @@ import './App.css';
 import HastaLanding from './Hasta/HastaLanding.jsx';
 import HastaRandevuAl from './Hasta/Hasta_randevu_al.jsx';
 import HastaRandevuGoster from './Hasta/Hasta_randevu_goster.jsx';
+import DoktorLogin from './Doktor/DoktorLogin.jsx';
+import DoktorRandevuGoster from './Doktor/Doktor_randevu_goster.jsx';
+import DoktorTedaviYaz from './Doktor/Doktor_tedavi_yaz.jsx';
 import Home from './Home.jsx';
 
 // Sayfalar arası geçişte kullanılacak geri dön butonu bileşeni
@@ -77,6 +80,30 @@ function HastaRandevuGosterPage() {
   );
 }
 
+// Doktor Randevu Görüntüle Wrapper
+function DoktorRandevuGosterPage() {
+  return (
+    <div className="page-wrapper">
+      <div className="page-header">
+        <BackButton />
+      </div>
+      <DoktorRandevuGoster />
+    </div>
+  );
+}
+
+// Doktor Tedavi Yaz Wrapper
+function DoktorTedaviYazPage() {
+  return (
+    <div className="page-wrapper">
+      <div className="page-header">
+        <BackButton />
+      </div>
+      <DoktorTedaviYaz />
+    </div>
+  );
+}
+
 // Yapım Aşamasında Sayfası Wrapper
 function UnderConstructionPage({ title }) {
   return (
@@ -112,7 +139,15 @@ const router = createBrowserRouter([
 
   {
     path: "/doktor",
-    element: <UnderConstructionPage title="Doktor" />,
+    element: <DoktorLogin />,
+  },
+  {
+    path: "/doktor-panel/randevu-goster",
+    element: <DoktorRandevuGosterPage />,
+  },
+  {
+    path: "/doktor-panel/tedavi-yaz",
+    element: <DoktorTedaviYazPage />,
   },
   {
     path: "/resepsiyonist",

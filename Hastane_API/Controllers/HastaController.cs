@@ -161,7 +161,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [HttpPost("Login")]
-        public IActionResult Login([FromBody] HastaLoginDTO dto)
+        public IActionResult Login([FromBody] LoginDTO dto)
         {
             try
             {
@@ -171,13 +171,13 @@ namespace Hastane_Otomasyonu.Controllers
                 DateTime AccessTokenEndDate = AccessToken.ValidTo;
                 if (hasta == null)
                 {
-                    return Unauthorized(new { mesaj = "TC veya şifre hatalı." });
+                    return BadRequest(new { mesaj = "TC veya şifre hatalı." });
                 }
 
                 bool isPasswordValid = _Hash.VerifyPassword(dto.Password, hasta.Password);
                 if (!isPasswordValid)
                 {
-                    return Unauthorized(new { mesaj = "TC veya şifre hatalı." });
+                    return BadRequest(new { mesaj = "Şifre hatalı." });
                 }
 
                 if (AccessTokenEndDate < DateTime.Now)
