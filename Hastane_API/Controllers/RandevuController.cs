@@ -47,6 +47,7 @@ namespace Hastane_Otomasyonu.Controllers
 
             try
             {
+                _logger.LogInformation("Debug Logger: ");
                 // DTO'dan gelen Tc ile veritabanımdaki istenen hastaya eriştim
                 var authHeader = HttpContext.Request.Headers["Authorization"].ToString();
                 var rawToken = authHeader.Replace("Bearer ", "", StringComparison.OrdinalIgnoreCase).Trim();
@@ -59,18 +60,6 @@ namespace Hastane_Otomasyonu.Controllers
                     return StatusCode(404, new { mesaj = "Belirtilen isim ve soyisimde bir doktor bulunamadı." });
                 }
 
-                bool zatenRandevusuVarMi = _context.OnlineRandevus.Any(r =>
-                    r.HastaId == ExistingHasta.Id &&
-                    r.DoktorId == ExistingDoktor.Id);
-
-                if (zatenRandevusuVarMi)
-                {
-                    return StatusCode(500, new { mesaj = "Zaten bu doktordan randevunuz var" });
-                }
-
-                /*_logger.LogInformation($"Randevu öncesi Doktorun mesai günleri: {ExistingDoktor.MesaiGunu.Count()}");
-                _logger.LogInformation($"Randevu öncesi Doktorun mesai saatleri: {ExistingDoktor.MesaiSaati.Count()}");
-                */
                 OnlineRandevu Randevu = new OnlineRandevu
                 {
                     HastaName = ExistingHasta.İsim,
@@ -82,16 +71,21 @@ namespace Hastane_Otomasyonu.Controllers
                     Saat = AddDTO.Saat,
                     Tarih = AddDTO.Tarih,
                     HastaŞikayet = AddDTO.Şikayet
-
                 };
 
+
                 var Appointment = _context.Appointments.FirstOrDefault(x => x.SlotDate == AddDTO.Tarih && x.StartTime == AddDTO.Saat);
+
+                if (Appointment == null)
+                {
+                    return StatusCode(404, new { mesaj = "Belirtilen tarih ve saatte uygun randevu slotu bulunamadı." });
+                }
 
                 var AppointmentToDoktor = _context.AppointmentToDoktors.FirstOrDefault(x => x.AppointmentFk == Appointment.Id && x.DoktorFk == ExistingDoktor.Id);
 
                 if (AppointmentToDoktor == null)
                 {
-                    return StatusCode(404, new { mesaj = "Belirtilen tarih ve saatte randevu dolu." });
+                    return StatusCode(404, new { mesaj = "Belirtilen tarih ve saatte bu doktor için uygun slot yok veya dolu." });
                 }
 
                 else
