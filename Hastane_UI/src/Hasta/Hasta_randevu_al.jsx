@@ -8,15 +8,17 @@ function HastaRandevuAl() {
     const [tarih, setTarih] = useState("");
     const [saat, setSaat] = useState("");
 
+    const [alanlar, setAlanlar] = useState([]);
+    const [secilenAlan, setSecilenAlan] = useState("");
     const [doktorlar, setDoktorlar] = useState([]);
     const [doktorListesiAcik, setDoktorListesiAcik] = useState(false);
     const [yukleniyor, setYukleniyor] = useState(false);
     const [hata, setHata] = useState(null);
     const [mesaj, setMesaj] = useState("");
 
-    // Doktor listesini component yüklendiğinde bir kez çek
+    // Uzmanlık alanlarını component yüklendiğinde bir kez çek
     useEffect(() => {
-        fetch('http://localhost:5160/api/Doktor/GetDoktorSql', {
+        fetch('http://localhost:5160/api/Doktor/GetAlanlar', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -25,11 +27,43 @@ function HastaRandevuAl() {
         })
             .then(response => response.json())
             .then(data => {
-                setDoktorlar(data);
-                console.log("Gelen doktor sayısı:", data.length);
+                setAlanlar(data);
+                console.log("Gelen alan sayısı:", data.length);
             })
-            .catch(err => console.error("Doktor listesi alınamadı:", err));
+            .catch(err => console.error("Alan listesi alınamadı:", err));
     }, []);
+
+    const handleAlanSecimi = (e) => {
+        const alan = e.target.value;
+        setSecilenAlan(alan);
+        setSecilenDoktor(null); // sıfırla
+        setDoktorlar([]); // temizle
+        setHata(null);
+
+        if (alan !== "") {
+            fetch('http://localhost:5160/api/Doktor/DisplayDoktor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('hastaToken')}`
+                },
+                body: JSON.stringify({ Alan: alan })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw new Error(err.mesaj || "Bu alanda doktor bulunamadı"); });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    setDoktorlar(data);
+                })
+                .catch(err => {
+                    console.error("Doktor listesi alınamadı:", err);
+                    setHata(err.message);
+                });
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -88,29 +122,46 @@ function HastaRandevuAl() {
                 </div>
 
                 <div className="doktor-secim-container">
-                    <label>Doktor Seçin:</label>
-                    <div
+                    <label>Alan Seçin:</label>
+                    <select 
+                        value={secilenAlan} 
+                        onChange={handleAlanSecimi}
                         className="doktor-secim-kutu"
-                        onClick={() => setDoktorListesiAcik(!doktorListesiAcik)}
+                        style={{fontFamily: 'inherit', fontSize: '1rem', cursor: 'pointer', appearance: 'auto'}}
                     >
-                        {secilenDoktor ? `${secilenDoktor.name} ${secilenDoktor.surname}` : "Doktor Seçmek İçin Tıklayın"}
-                    </div>
-                    {doktorListesiAcik && (
-                        <ul className="doktor-listesi">
-                            {doktorlar.map((doktor) => (
-                                <li
-                                    key={doktor.id}
-                                    onClick={() => {
-                                        setSecilenDoktor(doktor);
-                                        setDoktorListesiAcik(false);
-                                    }}
-                                >
-                                    {doktor.name} {doktor.surname} — {doktor.alan}
-                                </li>
-                            ))}
-                        </ul>
-                    )}
+                        <option value="">Uzmanlık Alanı Seçin</option>
+                        {alanlar.map((alan, index) => (
+                            <option key={index} value={alan}>{alan}</option>
+                        ))}
+                    </select>
                 </div>
+
+                {secilenAlan && (
+                    <div className="doktor-secim-container" style={{ marginTop: '15px' }}>
+                        <label>Doktor Seçin:</label>
+                        <div
+                            className="doktor-secim-kutu"
+                            onClick={() => setDoktorListesiAcik(!doktorListesiAcik)}
+                        >
+                            {secilenDoktor ? `${secilenDoktor.name} ${secilenDoktor.surname}` : "Doktor Seçmek İçin Tıklayın"}
+                        </div>
+                        {doktorListesiAcik && (
+                            <ul className="doktor-listesi">
+                                {doktorlar.map((doktor) => (
+                                    <li
+                                        key={doktor.id}
+                                        onClick={() => {
+                                            setSecilenDoktor(doktor);
+                                            setDoktorListesiAcik(false);
+                                        }}
+                                    >
+                                        {doktor.name} {doktor.surname}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                )}
 
                 <div>
                     <label>Randevu Tarihi:</label>
@@ -118,7 +169,23 @@ function HastaRandevuAl() {
                 </div>
                 <div>
                     <label>Randevu Saati:</label>
-                    <input type="time" value={saat} onChange={(e) => setSaat(e.target.value)} required />
+                    <select 
+                        value={saat} 
+                        onChange={(e) => setSaat(e.target.value)} 
+                        required
+                        className="doktor-secim-kutu"
+                        style={{fontFamily: 'inherit', fontSize: '1rem', cursor: 'pointer', appearance: 'auto', marginTop: '5px', width: '100%'}}
+                    >
+                        <option value="">Saat Seçin</option>
+                        {Array.from({ length: 9 }, (_, i) => i + 9).map(hour => {
+                            const formattedHour = hour.toString().padStart(2, '0');
+                            return (
+                                <option key={hour} value={`${formattedHour}:00`}>
+                                    {hour}.00
+                                </option>
+                            );
+                        })}
+                    </select>
                 </div>
 
                 <button type="submit" disabled={yukleniyor || !secilenDoktor}>

@@ -1,5 +1,10 @@
 using System;
+using System.Text.Json;
+using Hastane_Otomasyonu.DTO;
 using Hastane_Otomasyonu.Redis.Interfaces;
+using NRedisStack;
+using NRedisStack.RedisStackCommands;
+using NRedisStack.Search;
 using StackExchange.Redis;
 
 namespace Hastane_Otomasyonu.Redis.Services
@@ -32,12 +37,28 @@ namespace Hastane_Otomasyonu.Redis.Services
 
         public string GetValue(string key)
         {
-            return _cache.StringGet(key);
+            NRedisStack.Search.Query searchQuery = new NRedisStack.Search.Query("@role:{doktor}").Limit(0, 10);
+
+            var result = _cache.FT().Search("", searchQuery);
+            return result.ToString();
         }
 
-        public bool SetValue(string key, string value)
+        public bool SetDoktor(string key, DoktorDisplayDTO jsonDto)
         {
-            return _cache.StringSet(key, value, TimeSpan.FromHours(1));
+            var redisKey = $"doktor:{key}";
+            var hashEntries = new[]
+            {
+                new HashEntry("id", jsonDto.Id),
+                new HashEntry("name", jsonDto.Name),
+                new HashEntry("surname", jsonDto.Surname),
+                new HashEntry("eposta", jsonDto.Eposta),
+                new HashEntry("alan", jsonDto.Alan),
+                new HashEntry("Role", "Doktor")
+            };
+            _cache.HashSet(redisKey, hashEntries);
+            return true;
+
+
         }
     }
 }

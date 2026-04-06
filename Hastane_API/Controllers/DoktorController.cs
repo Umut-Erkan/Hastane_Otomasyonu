@@ -73,13 +73,46 @@ namespace Hastane_Otomasyonu.Controllers
         [HttpGet("GetDoktorRedis")]
         public IActionResult GetDoktorRedis()
         {
-            var doktorlar = _cache.GetValue("doktorlar").ToList();
+            var doktorlar = _cache.GetValue("Doktor:{}").ToList();
 
             if (doktorlar.Count == 0)
             {
                 return StatusCode(404, "Doktor bulunamadı");
             }
             return Ok(doktorlar);
+        }
+
+        [ServiceFilter(typeof(RefreshTokenFilter))]
+        [HttpGet("GetAlanlar")]
+        public IActionResult GetAlanlar()
+        {
+            var alanlar = _context.Doktors.Select(d => d.Alan).Distinct().ToList();
+            if (alanlar.Count == 0)
+            {
+                return BadRequest(new { mesaj = "Kayıtlı uzmanlık alanı bulunamadı" });
+            }
+            return Ok(alanlar);
+        }
+
+        [ServiceFilter(typeof(RefreshTokenFilter))]
+        [HttpPost("DisplayDoktor")]
+        public IActionResult DisplayDoktor([FromBody] AlanRequestDTO req)
+        {
+            var doktorlarDTO = _context.Doktors.Where(d => d.Alan == req.Alan).Select(d => new DoktorDisplayDTO
+            {
+                Name = d.İsim,
+                Surname = d.Soyisim,
+                Eposta = d.Eposta,
+                Alan = d.Alan,
+                Id = d.Id
+            }).ToList();
+
+            if (doktorlarDTO.Count == 0)
+            {
+                // UI'ın hata almaması için boş liste de dönülebilir ancak mesajlı hata dönüyoruz
+                return BadRequest(new { mesaj = "Bu alanda doktor bulunamadı" });
+            }
+            return Ok(doktorlarDTO);
         }
 
 

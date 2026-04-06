@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Hastane_Otomasyonu.Business;
 using Hastane_Otomasyonu.DTO;
@@ -81,9 +82,19 @@ namespace Hastane_Otomasyonu.Controllers
                 NewEntity.RefreshToken = RefreshToken.Token;
                 NewEntity.RefreshTokenEndDate = RefreshToken.Expiration;
 
+                // REDİS'E KAYDETME
                 try
                 {
-                    _redisCacheService.SetValue("Doktor:" + NewEntity.Id.ToString(), NewEntity.İsim + " " + NewEntity.Soyisim);
+                    DoktorDisplayDTO dto = new DoktorDisplayDTO
+                    {
+                        Id = NewEntity.Id,
+                        Name = NewEntity.İsim,
+                        Surname = NewEntity.Soyisim,
+                        Eposta = NewEntity.Eposta,
+                        Alan = NewEntity.Alan
+                    };
+
+                    _redisCacheService.SetDoktor(NewEntity.Id.ToString(), dto);
                 }
                 catch (Exception ex)
                 {
