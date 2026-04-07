@@ -136,30 +136,6 @@ namespace Hastane_Otomasyonu.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         [HttpPost("Login")]
         public IActionResult Login([FromBody] LoginDTO dto)
         {
@@ -260,5 +236,36 @@ namespace Hastane_Otomasyonu.Controllers
             }
             return StatusCode(200, randevular);
         }
+
+
+        [ServiceFilter(typeof(RefreshTokenFilter))]
+        [Authorize(Roles = "Hasta")]
+        [HttpGet("ReceteGoster")]
+        public IActionResult ReceteGoster()
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            Hastum user = _context.Hasta.FirstOrDefault(c => c.Id == int.Parse(userId));
+            int DoktorId = _context.Tedavis.FirstOrDefault(c => c.HastaId == int.Parse(userId)).DoktorId;
+
+
+            var Tedaviler = _context.Tedavis.Where(c => c.HastaId == int.Parse(userId))
+                .Select(r => new ReceteDisplayDTO
+                {
+                    HastaName = user.İsim + " " + user.Soyisim,
+                    DoktorName = "Placeholder",
+                    DoktorSurname = "Placeholder",
+                    Tanı = r.Tanı
+                }).ToList();
+
+            foreach (var t in Tedaviler)
+            {
+                Doktor doktor = _context.Doktors.FirstOrDefault(c => c.Id == DoktorId);
+                t.DoktorName = doktor.İsim;
+                t.DoktorSurname = doktor.Soyisim;
+            }
+
+            return StatusCode(200, Tedaviler);
+        }
+
     }
 }
