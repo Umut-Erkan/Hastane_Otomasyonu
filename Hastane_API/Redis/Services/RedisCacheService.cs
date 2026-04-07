@@ -39,16 +39,37 @@ namespace Hastane_Otomasyonu.Redis.Services
             }
         }
 
-        public string GetValue(string key)
+        public string GetValue()
         {
-            List<string> doktorlar = new List<string>();
+            try
+            {
+                var searchResult = _cache.FT().Search("idx:doktor_idx", new Query("@Role:{Doktor}"));
 
-            var rows = _cache.Execute("FT.SEARCH", "idx:doktor_idx", "@Role:{Doktor}");
-            _logger.LogInformation($"Doktorlar: {rows}");
-            _logger.LogInformation($"Doktorlar Tipi: {rows.GetType()}");
-            _logger.LogInformation($"Array Eleman Sayısı: {rows.ToDictionary()}");
+                var doktorlar = new List<DoktorDisplayDTO>();
 
-            return rows.ToString();
+                foreach (var doc in searchResult.Documents)
+                {
+                    // Her bir belgedeki propertyleri okuyup listeye ekliyoruz
+                    var dto = new DoktorDisplayDTO
+                    {
+                        Id = (int)doc["id"],
+                        Name = (string)doc["name"],
+                        Surname = (string)doc["surname"],
+                        Eposta = (string)doc["eposta"],
+                        Alan = (string)doc["alan"]
+                    };
+                    doktorlar.Add(dto);
+                }
+
+                _logger.LogInformation("Redis uzerinden basariyla {Count} doktor okundu.", doktorlar.Count);
+
+                return JsonSerializer.Serialize(doktorlar);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Redis'ten doktor verileri getirilirken hata olustu.");
+                return new Exception(ex.Message).ToString();
+            }
         }
 
         public bool SetDoktor(string key, DoktorDisplayDTO jsonDto)

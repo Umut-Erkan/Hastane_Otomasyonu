@@ -7,7 +7,7 @@ namespace Hastane_Otomasyonu.Redis.Interfaces
 {
     public interface IRedisCacheService
     {
-        string GetValue(string key);
+        string GetValue();
         bool SetDoktor(string key, DoktorDisplayDTO dto);
         void Clear(string key);
         void ClearAll();
