@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using Hastane_Otomasyonu.DTO;
 using Hastane_Otomasyonu.Redis.Interfaces;
@@ -11,8 +13,8 @@ namespace Hastane_Otomasyonu.Redis.Services
 {
     public class RedisCacheService : IRedisCacheService
     {
-        private readonly IConnectionMultiplexer _redisConnection; //Redis sunucusu ile aradaki bağlantıyı yönetir. kopmalar falan
-        private readonly IDatabase _cache; //Redis veritabanına erişip işlem yapmamızı sağlar.
+        private readonly IConnectionMultiplexer _redisConnection;
+        private readonly IDatabase _cache;
 
         public RedisCacheService(IConnectionMultiplexer redisConnection)
         {
@@ -37,10 +39,19 @@ namespace Hastane_Otomasyonu.Redis.Services
 
         public string GetValue(string key)
         {
-            NRedisStack.Search.Query searchQuery = new NRedisStack.Search.Query("@role:{doktor}").Limit(0, 10);
+            List<string> doktorlar = new List<string>();
 
-            var result = _cache.FT().Search("", searchQuery);
-            return result.ToString();
+            var rows = _cache.Execute("FT.SEARCH", "idx:doktor_idx", "@role:{Doktor}");
+
+            var results = (RedisResult[])rows;
+
+
+            foreach (var result in results)
+            {
+                doktorlar.Add(result.ToString());
+            }
+
+            return JsonSerializer.Serialize(doktorlar);
         }
 
         public bool SetDoktor(string key, DoktorDisplayDTO jsonDto)
@@ -57,9 +68,6 @@ namespace Hastane_Otomasyonu.Redis.Services
             };
             _cache.HashSet(redisKey, hashEntries);
             return true;
-
-
         }
     }
 }
-

@@ -110,13 +110,24 @@ namespace Hastane_Otomasyonu.Controllers
         [HttpGet("GetDoktorRedis")]
         public IActionResult GetDoktorRedis()
         {
-            var doktorlar = _cache.GetValue("Doktor:{}").ToList();
-
-            if (doktorlar.Count == 0)
+            try
             {
-                return StatusCode(404, "Doktor bulunamadı");
+                var doktorlar = _cache.GetValue("Doktor:{}");
+
+                if (doktorlar == null)
+                {
+                    return StatusCode(404, "Doktor bulunamadı");
+                }
+                return Ok(doktorlar);
             }
-            return Ok(doktorlar);
+            catch (NullReferenceException nl)
+            {
+                return BadRequest(new { mesaj = "Doktor bulunamadı", hata = nl.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mesaj = "Doktor bulunamadı", hata = ex.Message });
+            }
         }
 
         [ServiceFilter(typeof(RefreshTokenFilter))]
