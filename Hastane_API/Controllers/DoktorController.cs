@@ -107,12 +107,38 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
         [ServiceFilter(typeof(RefreshTokenFilter))]
+        [HttpGet("GetIlaclar")]
+        public IActionResult GetIlaclar([FromHeader(Name = "Authorization")] string token)
+        {
+            string accessToken = token.ToString().Replace("Bearer ", "");
+            Doktor doktor = _context.Doktors.FirstOrDefault(h => h.AccessToken == accessToken);
+
+            string alan = doktor.Alan;
+            var ilaclar = _context.Ilacs.Where(i => i.KullanımAlanı.Trim() == alan.Trim()).Select(i => new
+            {
+                i.IlacId,
+                IlacName = i.IlacName.Trim(),
+                KullanımAlanı = i.KullanımAlanı.Trim()
+            }).ToList();
+
+            if (ilaclar.Count == 0)
+            {
+                return BadRequest(new { mesaj = "Kayıtlı ilaç bulunamadı" });
+            }
+            return Ok(ilaclar);
+        }
+
+        [ServiceFilter(typeof(RefreshTokenFilter))]
         [HttpGet("GetDoktorRedis")]
         public IActionResult GetDoktorRedis()
         {
             try
             {
                 var doktorlar = _cache.GetValue("Doktor:{}");
+                if (doktorlar.Count() == 1)
+                {
+                    return StatusCode(200, "Sadece 1 tane doktor bulundu");
+                }
 
                 if (doktorlar == null)
                 {
@@ -194,7 +220,7 @@ namespace Hastane_Otomasyonu.Controllers
                 foreach (var item in dto.Ilaclar)
                 {
                     var ilac = _context.Ilacs.FirstOrDefault(h => h.IlacName == item.ToString());
-                    if (ilac.KullanımAlanı != doktor.Alan)
+                    if (ilac.KullanımAlanı.Trim().ToLower() != doktor.Alan.Trim().ToLower())
                     {
                         return BadRequest(new { mesaj = "İlaç doktorun uzmanlık alanına uygun değil." });
                     }
@@ -302,6 +328,8 @@ namespace Hastane_Otomasyonu.Controllers
             var randevular = _context.OnlineRandevus.Where(c => c.DoktorId == int.Parse(userId))
                 .Select(r => new
                 {
+                    r.Id,
+                    r.HastaId,
                     r.HastaŞikayet,
                     r.HastaName,
                     r.HastaSurname,

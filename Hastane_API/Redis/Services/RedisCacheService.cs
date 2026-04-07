@@ -15,11 +15,13 @@ namespace Hastane_Otomasyonu.Redis.Services
     {
         private readonly IConnectionMultiplexer _redisConnection;
         private readonly IDatabase _cache;
+        private readonly ILogger<RedisCacheService> _logger;
 
-        public RedisCacheService(IConnectionMultiplexer redisConnection)
+        public RedisCacheService(IConnectionMultiplexer redisConnection, ILogger<RedisCacheService> logger)
         {
             _redisConnection = redisConnection;
             _cache = redisConnection.GetDatabase();
+            _logger = logger;
         }
 
         public void Clear(string key)
@@ -41,17 +43,12 @@ namespace Hastane_Otomasyonu.Redis.Services
         {
             List<string> doktorlar = new List<string>();
 
-            var rows = _cache.Execute("FT.SEARCH", "idx:doktor_idx", "@role:{Doktor}");
+            var rows = _cache.Execute("FT.SEARCH", "idx:doktor_idx", "@Role:{Doktor}");
+            _logger.LogInformation($"Doktorlar: {rows}");
+            _logger.LogInformation($"Doktorlar Tipi: {rows.GetType()}");
+            _logger.LogInformation($"Array Eleman Sayısı: {rows.ToDictionary()}");
 
-            var results = (RedisResult[])rows;
-
-
-            foreach (var result in results)
-            {
-                doktorlar.Add(result.ToString());
-            }
-
-            return JsonSerializer.Serialize(doktorlar);
+            return rows.ToString();
         }
 
         public bool SetDoktor(string key, DoktorDisplayDTO jsonDto)

@@ -86,11 +86,11 @@ function DoktorRandevuGoster() {
                                     <strong>Saat:</strong> {randevu.saat || randevu.Saat || "Belirtilmemiş"}
                                 </div>
                                 <button 
-                                    onClick={() => navigate('/doktor-panel/tedavi-yaz', { state: { randevu } })} 
+                                    onClick={() => navigate('/doktor-panel/tedavi-yaz', { state: { randevuId: randevu.id || randevu.Id, hastaId: randevu.hastaId || randevu.HastaId } })} 
                                     style={{ padding: '5px 15px', cursor: 'pointer', borderRadius: '4px', border: 'none', backgroundColor: '#007bff', color: 'white', fontWeight: 'bold' }}
                                     title="Tedavi Yaz"
                                 >
-                                    ...
+                                    Tedavi Yaz
                                 </button>
                             </li>
                         ))}
