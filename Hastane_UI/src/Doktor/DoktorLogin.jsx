@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../Hasta/HastaStyle/Hasta_add.css'; // Aynı stil dosyasını tutarlılık için tekrar kullanıyoruz
+import '../Hasta/HastaStyle/Hasta_add.css';
 
 function DoktorLogin() {
     const navigate = useNavigate();
