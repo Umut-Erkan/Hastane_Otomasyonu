@@ -39,37 +39,35 @@ namespace Hastane_Otomasyonu.Redis.Services
             }
         }
 
-        public string GetValue()
+        public List<DoktorDisplayDTO> GetValue()
         {
-            try
+
+
+            var searchResult = _cache.FT().Search("idx:doktor_idx", new Query("@Role:{Doktor}"));
+
+            var doktorlar = new List<DoktorDisplayDTO>();
+
+            foreach (var doc in searchResult.Documents)
             {
-                var searchResult = _cache.FT().Search("idx:doktor_idx", new Query("@Role:{Doktor}"));
-
-                var doktorlar = new List<DoktorDisplayDTO>();
-
-                foreach (var doc in searchResult.Documents)
+                var dto = new DoktorDisplayDTO
                 {
-                    // Her bir belgedeki propertyleri okuyup listeye ekliyoruz
-                    var dto = new DoktorDisplayDTO
-                    {
-                        Id = (int)doc["id"],
-                        Name = (string)doc["name"],
-                        Surname = (string)doc["surname"],
-                        Eposta = (string)doc["eposta"],
-                        Alan = (string)doc["alan"]
-                    };
-                    doktorlar.Add(dto);
-                }
-
-                _logger.LogInformation("Redis uzerinden basariyla {Count} doktor okundu.", doktorlar.Count);
-
-                return JsonSerializer.Serialize(doktorlar);
+                    Id = (int)doc["id"],
+                    Name = (string)doc["name"],
+                    Surname = (string)doc["surname"],
+                    Eposta = (string)doc["eposta"],
+                    Alan = (string)doc["alan"]
+                };
+                doktorlar.Add(dto);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Redis'ten doktor verileri getirilirken hata olustu.");
-                return new Exception(ex.Message).ToString();
-            }
+
+            _logger.LogInformation("Redis uzerinden basariyla {Count} doktor okundu.", doktorlar.Count);
+
+            return doktorlar;
+
+
+
+
+
         }
 
         public bool SetDoktor(string key, DoktorDisplayDTO jsonDto)

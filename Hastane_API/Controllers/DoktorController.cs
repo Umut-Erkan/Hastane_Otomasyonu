@@ -91,19 +91,18 @@ namespace Hastane_Otomasyonu.Controllers
         {
             try
             {
-                _logger.LogInformation($"Controller tarafı çalıştı");
                 var doktorlar = _cache.GetValue();
 
-                _logger.LogInformation($"Controller tarafı Doktorlar: {doktorlar}");
                 _logger.LogInformation($"Controller tarafı Doktorlar Tipi: {doktorlar.GetType()}");
-
 
                 if (doktorlar == null)
                 {
                     return StatusCode(404, "Doktor bulunamadı");
                 }
+
                 return Ok(doktorlar);
             }
+
             catch (NullReferenceException nl)
             {
                 return BadRequest(new { mesaj = "Doktor bulunamadı", hata = nl.Message });
