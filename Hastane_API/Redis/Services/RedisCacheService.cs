@@ -41,8 +41,6 @@ namespace Hastane_Otomasyonu.Redis.Services
 
         public List<DoktorDisplayDTO> GetValue()
         {
-
-
             var searchResult = _cache.FT().Search("idx:doktor_idx", new Query("@Role:{Doktor}"));
 
             var doktorlar = new List<DoktorDisplayDTO>();
@@ -63,11 +61,30 @@ namespace Hastane_Otomasyonu.Redis.Services
             _logger.LogInformation("Redis uzerinden basariyla {Count} doktor okundu.", doktorlar.Count);
 
             return doktorlar;
+        }
 
+        public List<DoktorDisplayDTO> GetValueByAlan(string alan)
+        {
+            var searchResult = _cache.FT().Search("idx:doktor_idx", new Query($"@Role:{{Doktor}} @alan:{alan}"));
 
+            var doktorlar = new List<DoktorDisplayDTO>();
 
+            foreach (var doc in searchResult.Documents)
+            {
+                var dto = new DoktorDisplayDTO
+                {
+                    Id = (int)doc["id"],
+                    Name = (string)doc["name"],
+                    Surname = (string)doc["surname"],
+                    Eposta = (string)doc["eposta"],
+                    Alan = (string)doc["alan"]
+                };
+                doktorlar.Add(dto);
+            }
 
+            _logger.LogInformation("Redis uzerinden basariyla {Count} doktor okundu.", doktorlar.Count);
 
+            return doktorlar;
         }
 
         public bool SetDoktor(string key, DoktorDisplayDTO jsonDto)
