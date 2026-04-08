@@ -23,6 +23,8 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Hastum> Hasta { get; set; }
 
+    public virtual DbSet<HospitalReceptionist> HospitalReceptionists { get; set; }
+
     public virtual DbSet<Ilac> Ilacs { get; set; }
 
     public virtual DbSet<IlcaToRecete> IlcaToRecetes { get; set; }
@@ -132,6 +134,46 @@ public partial class HastaneContext : DbContext
             entity.Property(e => e.Role)
                 .IsRequired()
                 .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Soyisim)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.İsim)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<HospitalReceptionist>(entity =>
+        {
+            entity.ToTable("HospitalReceptionist");
+
+            entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.AccessToken)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .IsUnicode(false);
+            entity.Property(e => e.Alan)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Eposta)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Password)
+                .IsRequired()
+                .HasMaxLength(100)
+                .IsFixedLength();
+            entity.Property(e => e.RefreshToken)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .IsUnicode(false);
+            entity.Property(e => e.RefreshTokenEndDate).HasColumnType("datetime");
+            entity.Property(e => e.Role)
+                .IsRequired()
+                .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Soyisim)
                 .IsRequired()
