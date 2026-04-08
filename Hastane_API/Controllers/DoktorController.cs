@@ -23,6 +23,25 @@ namespace Hastane_Otomasyonu.Controllers
     [Route("api/[controller]")]
     public class DoktorController : ControllerBase
     {
+
+        private List<DoktorDisplayDTO> SearchOnSQL()
+        {
+            var doktorlarDTO = _context.Doktors.Select(d => new DoktorDisplayDTO
+            {
+                Name = d.İsim,
+                Surname = d.Soyisim,
+                Eposta = d.Eposta,
+                Alan = d.Alan,
+                Id = d.Id
+            }).ToList();
+
+            if (doktorlarDTO.Count == 0)
+            {
+                Console.WriteLine("Doktor bulunamadı");
+            }
+            return doktorlarDTO;
+        }
+
         private readonly IRedisCacheService _cache;
         private readonly HastaneContext _context;
         private readonly TokenService _tokenService;
@@ -98,7 +117,9 @@ namespace Hastane_Otomasyonu.Controllers
 
                 if (doktorlar == null)
                 {
-                    return StatusCode(404, "Doktor bulunamadı");
+                    Console.WriteLine("Cache üzerinden doktor bulunamadı, SQL'e bakılıyor...");
+                    var doktorlarSQL = SearchOnSQL();
+                    return Ok(new { doktorlarSQL, mesaj = "Doktorlar SQL üzerinden getirildi", StatusCode = 200 });
                 }
 
                 return Ok(doktorlar);
@@ -114,26 +135,6 @@ namespace Hastane_Otomasyonu.Controllers
             }
         }
 
-
-        [ServiceFilter(typeof(RefreshTokenFilter))]
-        [HttpGet("GetDoktorSql")]
-        public IActionResult GetDoktorSql()
-        {
-            var doktorlarDTO = _context.Doktors.Select(d => new DoktorDisplayDTO
-            {
-                Name = d.İsim,
-                Surname = d.Soyisim,
-                Eposta = d.Eposta,
-                Alan = d.Alan,
-                Id = d.Id
-            }).ToList();
-
-            if (doktorlarDTO.Count == 0)
-            {
-                return BadRequest(new { mesaj = "Doktor bulunamadı" });
-            }
-            return Ok(doktorlarDTO);
-        }
 
         [ServiceFilter(typeof(RefreshTokenFilter))]
         [HttpGet("GetIlaclar")]
@@ -174,14 +175,7 @@ namespace Hastane_Otomasyonu.Controllers
         [HttpPost("DisplayDoktor")]
         public IActionResult DisplayDoktor([FromBody] AlanRequestDTO req)
         {
-            var doktorlarDTO = _context.Doktors.Where(d => d.Alan == req.Alan).Select(d => new DoktorDisplayDTO
-            {
-                Name = d.İsim,
-                Surname = d.Soyisim,
-                Eposta = d.Eposta,
-                Alan = d.Alan,
-                Id = d.Id
-            }).ToList();
+            var doktorlarDTO = _cache.GetValueByAlan(req.Alan);
 
             if (doktorlarDTO.Count == 0)
             {

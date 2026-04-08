@@ -41,7 +41,7 @@ function HastaRandevuAl() {
         setHata(null);
 
         if (alan !== "") {
-            fetch('http://localhost:5160/api/Doktor/DisplayDoktor', {
+            const response = fetch('http://localhost:5160/api/Doktor/DisplayDoktor', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -49,11 +49,14 @@ function HastaRandevuAl() {
                 },
                 body: JSON.stringify({ Alan: alan })
             })
+
                 .then(response => {
                     if (!response.ok) {
                         return response.json().then(err => { throw new Error(err.mesaj || "Bu alanda doktor bulunamadı"); });
                     }
                     return response.json();
+
+
                 })
                 .then(data => {
                     setDoktorlar(data);
@@ -123,11 +126,11 @@ function HastaRandevuAl() {
 
                 <div className="doktor-secim-container">
                     <label>Alan Seçin:</label>
-                    <select 
-                        value={secilenAlan} 
+                    <select
+                        value={secilenAlan}
                         onChange={handleAlanSecimi}
                         className="doktor-secim-kutu"
-                        style={{fontFamily: 'inherit', fontSize: '1rem', cursor: 'pointer', appearance: 'auto'}}
+                        style={{ fontFamily: 'inherit', fontSize: '1rem', cursor: 'pointer', appearance: 'auto' }}
                     >
                         <option value="">Uzmanlık Alanı Seçin</option>
                         {alanlar.map((alan, index) => (
@@ -169,12 +172,12 @@ function HastaRandevuAl() {
                 </div>
                 <div>
                     <label>Randevu Saati:</label>
-                    <select 
-                        value={saat} 
-                        onChange={(e) => setSaat(e.target.value)} 
+                    <select
+                        value={saat}
+                        onChange={(e) => setSaat(e.target.value)}
                         required
                         className="doktor-secim-kutu"
-                        style={{fontFamily: 'inherit', fontSize: '1rem', cursor: 'pointer', appearance: 'auto', marginTop: '5px', width: '100%'}}
+                        style={{ fontFamily: 'inherit', fontSize: '1rem', cursor: 'pointer', appearance: 'auto', marginTop: '5px', width: '100%' }}
                     >
                         <option value="">Saat Seçin</option>
                         {Array.from({ length: 9 }, (_, i) => i + 9).map(hour => {
