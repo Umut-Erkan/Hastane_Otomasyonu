@@ -74,6 +74,7 @@ namespace Hastane_Otomasyonu.Controllers
                 return Ok(new
                 {
                     mesaj = "Giriş başarılı.",
+                    Id = doktor.Id,
                     AccessToken = doktor.AccessToken,
                     RefreshToken = doktor.RefreshToken,
                     StatusCode = 200
@@ -188,8 +189,6 @@ namespace Hastane_Otomasyonu.Controllers
             }
             return Ok(doktorlarDTO);
         }
-
-
 
         [ServiceFilter(typeof(RefreshTokenFilter))] // Refresh token kontrolü ile hangi doktor olduğunu anlıyoruz.
         [HttpPost("Tedavi yaz")]
@@ -309,23 +308,19 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
 
-
-
         [ServiceFilter(typeof(RefreshTokenFilter))]
-        [Authorize(Roles = "Doktor")]
+        [Authorize(Roles = "Doktor,Recepsionist")]
         [HttpGet("RandevuGoster")]
-        public IActionResult RandevuGöster()
+        public IActionResult RandevuGöster(int userId)
         {
-
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;  // Doktorun id'si
-            Doktor user = _context.Doktors.FirstOrDefault(c => c.Id == int.Parse(userId)); // Randevularını görüntüleyeceğimiz doktor
+            var user = _context.Doktors.FirstOrDefault(c => c.Id == userId); // Randevularını görüntüleyeceğimiz doktor
 
             if (user == null)
             {
                 return StatusCode(404, "Doktor bulunamadı");
             }
 
-            var randevular = _context.OnlineRandevus.Where(c => c.DoktorId == int.Parse(userId))
+            var randevular = _context.OnlineRandevus.Where(c => c.DoktorId == userId)
                 .Select(r => new
                 {
                     r.Id,

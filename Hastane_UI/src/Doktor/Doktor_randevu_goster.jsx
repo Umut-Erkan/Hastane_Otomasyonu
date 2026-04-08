@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../Hasta/HastaStyle/Hasta_add.css';
 
 function DoktorRandevuGoster() {
@@ -8,6 +8,9 @@ function DoktorRandevuGoster() {
     const [randevular, setRandevular] = useState([]);
     const [yukleniyor, setYukleniyor] = useState(true);
     const [hata, setHata] = useState(null);
+
+    const location = useLocation();
+    const userId = location.state?.userId;
 
     useEffect(() => {
         const fetchRandevular = async () => {
@@ -18,7 +21,11 @@ function DoktorRandevuGoster() {
                     throw new Error("Token bulunamadı. Lütfen önce giriş yapın.");
                 }
 
-                const response = await fetch(`http://localhost:5160/api/Doktor/RandevuGoster`, {
+                if (!userId) {
+                    throw new Error("Doktor bilgisi bulunamadı.");
+                }
+
+                const response = await fetch(`http://localhost:5160/api/Doktor/RandevuGoster?userId=${userId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

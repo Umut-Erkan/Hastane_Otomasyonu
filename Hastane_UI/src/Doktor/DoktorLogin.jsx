@@ -41,7 +41,7 @@ function DoktorLogin() {
             setMesaj("Giriş başarılı! Yönlendiriliyorsunuz...");
 
             setTimeout(() => {
-                navigate('/doktor-panel/randevu-goster');
+                navigate('/doktor-panel/randevu-goster', { state: { userId: data.Id } });
             }, 500);
 
         } catch (err) {
@@ -74,7 +74,7 @@ function DoktorLogin() {
                     />
                 </div>
 
-                <button type="submit" disabled={yukleniyor}>
+                <button type="submit" disabled={yukleniyor} onClick={handleSubmit}>
                     {yukleniyor ? "Giriş Yapılıyor..." : "Giriş Yap"}
                 </button>
             </form>

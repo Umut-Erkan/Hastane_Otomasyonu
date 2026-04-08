@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import '../Hasta/HastaStyle/Hasta_add.css';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // JWT'yi decode etmek için yardımcı fonksiyon
 function parseJwt(token) {
@@ -18,6 +18,7 @@ function parseJwt(token) {
 }
 
 function ResepsiyonistDashboard() {
+    const navigate = useNavigate();
     const [doktorlar, setDoktorlar] = useState([]);
     const [hata, setHata] = useState(null);
     const [yukleniyor, setYukleniyor] = useState(false);
@@ -97,29 +98,50 @@ function ResepsiyonistDashboard() {
                             overflow: 'visible'
                         }}>
                             {doktorlar.map((doktor, index) => (
-                                <li
-                                    key={doktor.Id || doktor.id || index}
-                                    style={{
-                                        padding: '12px 20px',
-                                        border: '1px solid #e2e8f0',
-                                        listStyleType: 'none',
-                                        backgroundColor: '#ffffff',
-                                        marginBottom: '12px',
-                                        borderRadius: '10px',
-                                        fontSize: '1rem',
-                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                        transition: 'transform 0.2s ease'
-                                    }}
-                                >
-                                    <span style={{ fontWeight: '600', color: '#1a202c' }}>
-                                        {(doktor.Name || doktor.name || doktor.İsim || "İsim Belirsiz")} {(doktor.Surname || doktor.surname || doktor.Soyisim || "Soyisim Belirsiz")}
-                                    </span>
-                                    <span style={{ fontSize: '0.85rem', color: '#718096', fontStyle: 'italic' }}>
-                                        {doktor.Eposta || doktor.eposta || ""}
-                                    </span>
+                                <li key={doktor.Id || doktor.id || index} style={{ listStyleType: 'none', marginBottom: '12px' }}>
+                                    <button
+                                        onClick={() => navigate('/resepsiyonist-panel/randevu-goster', { state: { userId: doktor.id || doktor.Id } })}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px 20px',
+                                            border: '1px solid var(--border)',
+                                            backgroundColor: 'var(--bg)',
+                                            color: 'var(--text-h)',
+                                            borderRadius: '10px',
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.2s ease',
+                                            textAlign: 'left',
+                                            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                            fontFamily: 'inherit'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.borderColor = 'var(--accent)';
+                                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                                            e.currentTarget.style.transform = 'translateY(-2px)';
+                                            e.currentTarget.style.backgroundColor = 'var(--accent-bg)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.borderColor = 'var(--border)';
+                                            e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.backgroundColor = 'var(--bg)';
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span style={{ fontWeight: '600', fontSize: '1.05rem' }}>
+                                                {(doktor.Name || doktor.name || doktor.İsim || "İsim Belirsiz")} {(doktor.Surname || doktor.surname || doktor.Soyisim || "Soyisim Belirsiz")}
+                                            </span>
+                                            <span style={{ fontSize: '0.85rem', color: '#718096', marginTop: '2px' }}>
+                                                {doktor.Eposta || doktor.eposta || "E-posta bulunamadı"}
+                                            </span>
+                                        </div>
+                                        <div style={{ color: 'var(--accent)', fontWeight: 'bold', fontSize: '1.2rem' }}>
+                                            →
+                                        </div>
+                                    </button>
                                 </li>
                             ))}
                         </ul>

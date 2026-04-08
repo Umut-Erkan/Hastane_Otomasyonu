@@ -10,6 +10,7 @@ import DoktorTedaviYaz from './Doktor/Doktor_tedavi_yaz.jsx';
 import Home from './Home.jsx';
 import ResepsiyonistLogin from './Resepsiyonist/ResepsiyonistLogin.jsx';
 import ResepsiyonistDashboard from './Resepsiyonist/ResepsiyonistDashboard.jsx';
+import ResepsiyonistRandevuGoster from './Resepsiyonist/ResepsiyonistRandevuGoster.jsx';
 
 // Sayfalar arası geçişte kullanılacak geri dön butonu bileşeni
 function BackButton() {
@@ -177,6 +178,18 @@ function ResepsiyonistDashboardPage() {
   );
 }
 
+// Resepsiyonist Randevu Göster Wrapper
+function ResepsiyonistRandevuGosterPage() {
+  return (
+    <div className="page-wrapper">
+      <div className="page-header">
+        <BackButton />
+      </div>
+      <ResepsiyonistRandevuGoster />
+    </div>
+  );
+}
+
 // Yapım Aşamasında Sayfası Wrapper
 function UnderConstructionPage({ title }) {
   return (
@@ -235,6 +248,10 @@ const router = createBrowserRouter([
   {
     path: "/resepsiyonist-panel/dashboard",
     element: <ResepsiyonistDashboardPage />,
+  },
+  {
+    path: "/resepsiyonist-panel/randevu-goster",
+    element: <ResepsiyonistRandevuGosterPage />,
   },
 ]);
 
