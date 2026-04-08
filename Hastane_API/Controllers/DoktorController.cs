@@ -184,7 +184,6 @@ namespace Hastane_Otomasyonu.Controllers
 
             if (doktorlarDTO.Count == 0)
             {
-                // UI'ın hata almaması için boş liste de dönülebilir ancak mesajlı hata dönüyoruz
                 return BadRequest(new { mesaj = "Bu alanda doktor bulunamadı" });
             }
             return Ok(doktorlarDTO);

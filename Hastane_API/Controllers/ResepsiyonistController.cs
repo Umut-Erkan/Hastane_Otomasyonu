@@ -34,43 +34,56 @@ namespace Hastane_Otomasyonu.Controllers
         {
             try
             {
-                var resepsiyonist = _context.HospitalReceptionists.FirstOrDefault(h => h.Tc == dto.Tc && h.Password == _Hash.HashPassword(dto.Password));
-                var AccessToken = new JwtSecurityTokenHandler().ReadJwtToken(resepsiyonist.AccessToken);
-                var UzmanlıkAlanı = resepsiyonist.Alan;
+                // 1. Önce sadece TC ile kullanıcıyı ara
+                var resepsiyonist = _context.HospitalReceptionists.FirstOrDefault(h => h.Tc == dto.Tc);
 
+                // 2. Kullanıcı hiç yoksa hemen çık (NullReferenceException engellenir)
                 if (resepsiyonist == null)
                 {
-                    bool isPasswordValid = _Hash.VerifyPassword(dto.Password, resepsiyonist.Password);
-                    if (!isPasswordValid)
-                    {
-                        return BadRequest(new { mesaj = "Şifre hatalı." });
-                    }
-                    else
-                    {
-                        return BadRequest(new { mesaj = "TC hatalı." });
-                    }
+                    return BadRequest(new { mesaj = "Kullanıcı bulunamadı." });
                 }
 
+                // 3. Kullanıcı varsa şifreyi doğrula (Hash karşılaştırması için VerifyPassword şarttır)
+                bool isPasswordValid = _Hash.VerifyPassword(dto.Password, resepsiyonist.Password);
+                if (!isPasswordValid)
+                {
+                    return BadRequest(new { mesaj = "Şifre hatalı." });
+                }
 
-                if (AccessToken.ValidTo >= DateTime.UtcNow)
+                // 4. Token kontrolü ve üretimi
+                if (string.IsNullOrEmpty(resepsiyonist.AccessToken) || resepsiyonist.AccessToken == "PlaceHolder")
                 {
                     resepsiyonist.AccessToken = _tokenService.GenerateAccessToken(resepsiyonist);
-                    _context.SaveChanges();
+                }
+                else
+                {
+                    try
+                    {
+                        var handler = new JwtSecurityTokenHandler();
+                        var jwtToken = handler.ReadJwtToken(resepsiyonist.AccessToken);
+
+
+                        if (jwtToken.ValidTo <= DateTime.UtcNow)
+                        {
+                            resepsiyonist.AccessToken = _tokenService.GenerateAccessToken(resepsiyonist);
+                        }
+                    }
+                    catch
+                    {
+                        resepsiyonist.AccessToken = _tokenService.GenerateAccessToken(resepsiyonist);
+                    }
                 }
 
                 _context.SaveChanges();
-
 
                 return Ok(new
                 {
                     mesaj = "Giriş başarılı.",
                     AccessToken = resepsiyonist.AccessToken,
-                    Alan = UzmanlıkAlanı,
+                    Alan = resepsiyonist.Alan,
                     StatusCode = 200
                 });
             }
-
-
             catch (Exception ex)
             {
                 return BadRequest(new { mesaj = "Login sırasında bir hata oluştu.", hata = ex.Message });

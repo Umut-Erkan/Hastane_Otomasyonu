@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import '../Hasta/HastaStyle/Hasta_add.css';
+import { useLocation } from 'react-router-dom';
 
 // JWT'yi decode etmek için yardımcı fonksiyon
 function parseJwt(token) {
     try {
         var base64Url = token.split('.')[1];
         var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
 
@@ -21,6 +22,7 @@ function ResepsiyonistDashboard() {
     const [hata, setHata] = useState(null);
     const [yukleniyor, setYukleniyor] = useState(false);
     const [resepsiyonistAlan, setResepsiyonistAlan] = useState("");
+    const location = useLocation();
 
     useEffect(() => {
         const fetchDoktorlar = async () => {
@@ -30,21 +32,14 @@ function ResepsiyonistDashboard() {
                 return;
             }
 
-            const payload = parseJwt(token);
-            if (!payload) {
-                setHata("Geçersiz veya bozuk token.");
-                return;
-            }
 
-            // Token içerisinden Alan bilgisini çekiyoruz (Claim isimlerine göre fallback eklendi)
-            // Eğer Alan JWT payload'ına 'Alan' adlı bir özellik olarak eklenmişse direkt olarak alınır.
-            const alan = payload.Alan || payload.alan || "Bilinmeyen Alan";
+            const alan = location.state?.resepsiyonistData?.alan;
 
             setResepsiyonistAlan(alan);
             setYukleniyor(true);
 
-            if (alan === "Bilinmeyen Alan") {
-                setHata("Token içerisinde 'Alan' bilgisi bulunamadı!");
+            if (!alan) {
+                setHata("Uzmanlık alanı bilgisi bulunamadı!");
                 setYukleniyor(false);
                 return;
             }
@@ -65,7 +60,10 @@ function ResepsiyonistDashboard() {
                 }
 
                 const data = await response.json();
-                setDoktorlar(data);
+                console.log("Doktorlar (API'den dönen ham veri): ", data);
+
+                setDoktorlar(data)
+
 
             } catch (err) {
                 console.error("Doktor listesi alınamadı:", err);
@@ -76,36 +74,52 @@ function ResepsiyonistDashboard() {
         };
 
         fetchDoktorlar();
-    }, []);
+    }, [location.state]);
 
     return (
         <div className="hasta-form-container">
             <h2>{resepsiyonistAlan ? `İlgili Alan: ${resepsiyonistAlan}` : "Resepsiyonist Paneli"}</h2>
             <p>Eşleşen Doktor Listesi:</p>
-            
+
             {hata && <div className="error-message">Hata: {hata}</div>}
-            
+
             {yukleniyor ? (
                 <p>Doktorlar yükleniyor...</p>
             ) : (
                 <div style={{ marginTop: '20px' }}>
-                    {doktorlar.length > 0 ? (
-                        <ul className="doktor-listesi" style={{ display: 'block', padding: 0 }}>
-                            {doktorlar.map((doktor) => (
-                                <li 
-                                    key={doktor.id} 
-                                    style={{ 
-                                        padding: '10px 15px', 
-                                        border: '1px solid #ddd', 
+                    {doktorlar && doktorlar.length > 0 ? (
+                        <ul className="doktor-listesi-view" style={{
+                            display: 'block',
+                            padding: 0,
+                            margin: '20px 0',
+                            position: 'static',
+                            maxHeight: 'none',
+                            overflow: 'visible'
+                        }}>
+                            {doktorlar.map((doktor, index) => (
+                                <li
+                                    key={doktor.Id || doktor.id || index}
+                                    style={{
+                                        padding: '12px 20px',
+                                        border: '1px solid #e2e8f0',
                                         listStyleType: 'none',
-                                        backgroundColor: '#f9f9f9',
-                                        marginBottom: '10px',
-                                        borderRadius: '8px',
-                                        fontSize: '1.1rem',
-                                        boxShadow: '0 2px 5px rgba(0,0,0,0.05)'
+                                        backgroundColor: '#ffffff',
+                                        marginBottom: '12px',
+                                        borderRadius: '10px',
+                                        fontSize: '1rem',
+                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        transition: 'transform 0.2s ease'
                                     }}
                                 >
-                                    🧑‍⚕️ <strong>{doktor.name} {doktor.surname}</strong>
+                                    <span style={{ fontWeight: '600', color: '#1a202c' }}>
+                                        {(doktor.Name || doktor.name || doktor.İsim || "İsim Belirsiz")} {(doktor.Surname || doktor.surname || doktor.Soyisim || "Soyisim Belirsiz")}
+                                    </span>
+                                    <span style={{ fontSize: '0.85rem', color: '#718096', fontStyle: 'italic' }}>
+                                        {doktor.Eposta || doktor.eposta || ""}
+                                    </span>
                                 </li>
                             ))}
                         </ul>
