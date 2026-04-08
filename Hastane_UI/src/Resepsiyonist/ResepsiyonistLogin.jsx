@@ -17,6 +17,7 @@ function ResepsiyonistLogin() {
         setHata(null);
         setMesaj("");
 
+
         try {
             const response = await fetch('http://localhost:5160/api/Resepsiyonist/Login', {
                 method: 'POST',
@@ -28,7 +29,10 @@ function ResepsiyonistLogin() {
                     Password: password,
                 }),
             });
+            console.log("Response: ", response);
+
             const data = await response.json();
+            console.log("Jsonified Response: ", data);
 
             if (response.status !== 200) {
                 throw new Error(data.mesaj || `Sunucu hatası: HTTP ${response.status}`);
@@ -41,15 +45,10 @@ function ResepsiyonistLogin() {
             setMesaj("Giriş başarılı! Yönlendiriliyorsunuz...");
 
             setTimeout(() => {
-                navigate('/resepsiyonist-panel/dashboard');
+                navigate('/resepsiyonist-panel/dashboard', { state: { resepsiyonistData: data } });
             }, 500);
 
         } catch (err) {
-            // Hata olursa geçici olarak UI görmek isterseniz, alttaki yorumu kaldırarak 
-            // backend olmadan da geçişi debug edebilirsiniz:
-            // localStorage.setItem('resepsiyonistToken', 'dummy.token.payload');
-            // navigate('/resepsiyonist-panel/dashboard');
-
             setHata(err.message);
         } finally {
             setYukleniyor(false);
