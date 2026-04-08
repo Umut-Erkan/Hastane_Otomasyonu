@@ -52,6 +52,14 @@ namespace Hastane_Otomasyonu.Filters
                     context.Result = new ObjectResult("Refresh Token süresi dolmuş") { StatusCode = 403 };
                 }
             }
+            else if (role == "Resepsiyonist")
+            {
+                HospitalReceptionist resepsiyonist = _context.HospitalReceptionists.FirstOrDefault(h => h.AccessToken == accessToken);
+                if (resepsiyonist != null && resepsiyonist.RefreshTokenEndDate < DateTime.Now)
+                {
+                    context.Result = new ObjectResult("Refresh Token süresi dolmuş") { StatusCode = 403 };
+                }
+            }
         }
 
         public void OnActionExecuted(ActionExecutedContext context) { }
