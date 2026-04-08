@@ -11,5 +11,6 @@ namespace Hastane_Otomasyonu.Redis.Interfaces
         bool SetDoktor(string key, DoktorDisplayDTO dto);
         void Clear(string key);
         void ClearAll();
+        List<DoktorDisplayDTO> GetValueByAlan(string alan);
     }
 }
