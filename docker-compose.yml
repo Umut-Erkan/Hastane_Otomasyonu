@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # 1. VERİTABANI SERVİSİ (Hazır imaj kullanır, Dockerfile gerekmez)
+  # 1. SQL VERİTABANI SERVİSİ (Hazır imaj kullanır, Dockerfile gerekmez)
   sql-db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: hastane_sql_server # Compose sql-db servisi için yukardaki imageyi çeker sonra sql-db servisinden container üretir, adında hastane_sql_server der
@@ -15,17 +15,31 @@ services:
 
   # 2. API SERVİSİ (Senin hazırladığın Dockerfile'ı kullanır)
   hastane-api:
+    image: busgn162/hastane_api:v2
     build:
       context: ./Hastane_API # Dockerfile'ının bulunduğu klasör
       dockerfile: Dockerfile
+    env_file: 
+      -.env
+    environment:
+      ConnectionStrings__DefaultConnection: Server=sql-db;Database=HastaneDB;User Id=sa;Password=${SQL_PASSWORD};TrustServerCertificate=True;
     container_name: hastane_api_server
     ports:
       - "5000:8080" # Dışarıdan 5000 portu ile API'ye erişeceğiz
     depends_on:
       - sql-db # "Önce sql-db ayağa kalksın, sonra ben kalkayım" der
-    environment:
-      # En önemli kısım: API'nin veritabanına bağlanma adresi
-      - ConnectionStrings__DefaultConnection=Server=sql-db;Database=HastaneDB;User Id=sa ;Password=${SQL_PASSWORD};TrustServerCertificate=True;
-
+    
+  #3. UI SERVİSİ (UI Dockerfile'ı kullanmak.)
+  hastane_ui:
+    image: busgn162/hastane_ui:v2
+    build:
+      context: ./Hastane_UI
+      dockerfile: Dockerfile
+    container_name: hastane_ui_server
+    ports:
+      - "80:80"
+    depends_on:
+      - hastane-api
+    
 volumes:
   sql_data: # Kalıcı veri alanı tanımlaması
