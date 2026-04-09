@@ -1,6 +1,6 @@
 # 1. AŞAMA: DERLEME (Build)
-FROM mcr.microsoft.com/dotnet/sdk:10.0.201 AS build 
-# Microsoft'un deposundan içinde .NET 8.0 SDK kurulu olan imajı indir ve build adını ver
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build 
+# Microsoft'un deposundan içinde .NET 9.0 SDK kurulu olan imajı indir ve build adını ver
 WORKDIR /app
 # Konteyner içinde app dında bir klasör oluşturuğ içine gir
 
@@ -19,12 +19,12 @@ RUN dotnet publish -c Release -o out
 
 
 # 2. AŞAMA: ÇALIŞTIRMA (Runtime)
-FROM mcr.microsoft.com/dotnet/sdk:8.0-aspnet AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 # SDK'dan ürettiğimiz .dll dosyasını çalıştıracak olan imajı indir ve runtime adını ver
 WORKDIR /app
 
-# Sadece derlenmiş dosyaları ilk aşamadan buraya kopyalıyoruz
-COPY --from=build /app/out .
+# build adlı konteynera gidip /app/out klasöründeki dosyaları kopyalıyor. Yani oluşturulan .dll dosyaları
+COPY --from=build /app/out . 
 
 # Uygulamanın hangi dosya ile başlayacağını belirtiyoruz
-ENTRYPOINT ["dotnet", "SeninProjeAdin.dll"]
+ENTRYPOINT ["dotnet", "MyApiProject.dll"]
