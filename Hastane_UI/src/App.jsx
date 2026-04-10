@@ -12,31 +12,41 @@ import ResepsiyonistLogin from './Resepsiyonist/ResepsiyonistLogin.jsx';
 import ResepsiyonistDashboard from './Resepsiyonist/ResepsiyonistDashboard.jsx';
 import ResepsiyonistRandevuGoster from './Resepsiyonist/ResepsiyonistRandevuGoster.jsx';
 
-// Sayfalar arası geçişte kullanılacak geri dön butonu bileşeni
+// Sol üst: bir önceki sayfaya geri döner
 function BackButton() {
   const navigate = useNavigate();
   return (
     <button
-      onClick={() => navigate('/')}
-      className="back-button"
+      onClick={() => navigate(-1)}
+      className="nav-btn nav-btn-back"
+      title="Geri"
     >
-      ← Ana Sayfaya Dön
+      ← Geri
     </button>
   );
 }
 
-function GoToButton({ path, text }) {
+// Sağ üst: ana sayfaya gider
+function HomeButton() {
   const navigate = useNavigate();
   return (
     <button
-      onClick={() => navigate(path)}
-      style={{
-        padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', border: '1px solid var(--accent)',
-        background: 'transparent', color: 'var(--accent)', fontWeight: 'bold', margin: '0 10px'
-      }}
+      onClick={() => navigate('/')}
+      className="nav-btn nav-btn-home"
+      title="Ana Sayfa"
     >
-      {text}
+      🏠 Ana Sayfa
     </button>
+  );
+}
+
+// İki butonlu navigasyon çubuğu
+function NavBar() {
+  return (
+    <div className="page-nav-bar">
+      <BackButton />
+      <HomeButton />
+    </div>
   );
 }
 
@@ -73,9 +83,7 @@ function HastaPage() {
 
   return (
     <div className="page-wrapper fade-in">
-      <div className="page-header" style={{ marginBottom: '0px' }}>
-        <BackButton />
-      </div>
+      <NavBar />
 
       <div style={{ textAlign: 'center', marginBottom: '50px' }}>
         <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>Hasta Paneline Hoş Geldiniz</h2>
@@ -110,9 +118,7 @@ function HastaPage() {
 function HastaRandevuAlPage() {
   return (
     <div className="page-wrapper">
-      <div className="page-header">
-        <BackButton />
-      </div>
+      <NavBar />
       <HastaRandevuAl />
     </div>
   );
@@ -122,9 +128,7 @@ function HastaRandevuAlPage() {
 function HastaRandevuGosterPage() {
   return (
     <div className="page-wrapper">
-      <div className="page-header">
-        <BackButton />
-      </div>
+      <NavBar />
       <HastaRandevuGoster />
     </div>
   );
@@ -134,10 +138,21 @@ function HastaRandevuGosterPage() {
 function HastaReceteGosterPage() {
   return (
     <div className="page-wrapper">
-      <div className="page-header">
-        <BackButton />
-      </div>
+      <NavBar />
       <HastaReceteGoster />
+    </div>
+  );
+}
+
+// Doktor Login Wrapper
+function DoktorLoginPage() {
+  return (
+    <div className="page-wrapper">
+      <div className="page-nav-bar">
+        <span />
+        <HomeButton />
+      </div>
+      <DoktorLogin />
     </div>
   );
 }
@@ -146,9 +161,7 @@ function HastaReceteGosterPage() {
 function DoktorRandevuGosterPage() {
   return (
     <div className="page-wrapper">
-      <div className="page-header">
-        <BackButton />
-      </div>
+      <NavBar />
       <DoktorRandevuGoster />
     </div>
   );
@@ -158,10 +171,21 @@ function DoktorRandevuGosterPage() {
 function DoktorTedaviYazPage() {
   return (
     <div className="page-wrapper">
-      <div className="page-header">
-        <BackButton />
-      </div>
+      <NavBar />
       <DoktorTedaviYaz />
+    </div>
+  );
+}
+
+// Resepsiyonist Login Wrapper
+function ResepsiyonistLoginPage() {
+  return (
+    <div className="page-wrapper">
+      <div className="page-nav-bar">
+        <span />
+        <HomeButton />
+      </div>
+      <ResepsiyonistLogin />
     </div>
   );
 }
@@ -170,9 +194,7 @@ function DoktorTedaviYazPage() {
 function ResepsiyonistDashboardPage() {
   return (
     <div className="page-wrapper">
-      <div className="page-header">
-        <BackButton />
-      </div>
+      <NavBar />
       <ResepsiyonistDashboard />
     </div>
   );
@@ -182,9 +204,7 @@ function ResepsiyonistDashboardPage() {
 function ResepsiyonistRandevuGosterPage() {
   return (
     <div className="page-wrapper">
-      <div className="page-header">
-        <BackButton />
-      </div>
+      <NavBar />
       <ResepsiyonistRandevuGoster />
     </div>
   );
@@ -200,6 +220,19 @@ function UnderConstructionPage({ title }) {
   );
 }
 
+// Hasta Landing Wrapper (sadece Home butonu)
+function HastaLandingPage() {
+  return (
+    <div className="page-wrapper">
+      <div className="page-nav-bar">
+        <span />
+        <HomeButton />
+      </div>
+      <HastaLanding />
+    </div>
+  );
+}
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -207,7 +240,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/hasta",
-    element: <HastaLanding />,
+    element: <HastaLandingPage />,
   },
   {
     path: "/hasta-panel",
@@ -229,7 +262,7 @@ const router = createBrowserRouter([
 
   {
     path: "/doktor",
-    element: <DoktorLogin />,
+    element: <DoktorLoginPage />,
   },
   {
     path: "/doktor-panel/randevu-goster",
@@ -243,7 +276,7 @@ const router = createBrowserRouter([
 
   {
     path: "/resepsiyonist",
-    element: <ResepsiyonistLogin />,
+    element: <ResepsiyonistLoginPage />,
   },
   {
     path: "/resepsiyonist-panel/dashboard",
