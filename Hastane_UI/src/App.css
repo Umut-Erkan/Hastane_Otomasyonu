@@ -186,30 +186,54 @@
   }
 }
 
-/* App Layout Classes */
-.back-button {
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  border: none;
-  background: var(--accent);
-  color: white;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
+/* Navigasyon Çubuğu */
+.page-nav-bar {
   position: relative;
   width: 100%;
-  min-height: 100vh;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  box-sizing: border-box;
+  pointer-events: none; /* çocuklar pointer eventi aldığı için parent'ta kapatıyoruz */
 }
 
-.page-header {
-  padding: 20px;
-  display: flex;
-  justify-content: flex-start;
+.nav-btn {
+  pointer-events: all;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.nav-btn-back {
+  background: var(--surface, #1e293b);
+  color: var(--accent, #3b82f6);
+  border-color: var(--accent, #3b82f6);
+}
+
+.nav-btn-back:hover {
+  background: var(--accent, #3b82f6);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+  transform: translateX(-2px);
+}
+
+.nav-btn-home {
+  background: var(--accent, #3b82f6);
+  color: #fff;
+  border-color: var(--accent, #3b82f6);
+}
+
+.nav-btn-home:hover {
+  background: var(--surface, #1e293b);
+  color: var(--accent, #3b82f6);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+  transform: translateX(2px);
 }
 
 .under-construction-wrapper {

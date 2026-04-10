@@ -1,28 +1,11 @@
 
 import HastaRegister from './Hasta_Register.jsx';
 import HastaLogin from './HastaLogin.jsx';
-import { useNavigate } from 'react-router-dom';
 import './HastaStyle/Hasta_add.css';
-
-function BackButton() {
-    const navigate = useNavigate();
-    return (
-        <button
-            onClick={() => navigate('/')}
-            className="back-button"
-            style={{ marginBottom: '20px' }}
-        >
-            ← Ana Sayfaya Dön
-        </button>
-    );
-}
 
 function HastaLanding() {
     return (
-        <div className="page-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '50px' }}>
-            <div style={{ width: '100%', maxWidth: '1000px', display: 'flex', justifyContent: 'flex-start' }}>
-                <BackButton />
-            </div>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '30px' }}>
 
             <div style={{
                 display: 'flex',
