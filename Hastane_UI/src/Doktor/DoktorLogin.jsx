@@ -29,6 +29,7 @@ function DoktorLogin() {
                 }),
             });
             const data = await response.json();
+            console.log(`gelen response ${data}`);
 
             if (response.status !== 200) {
                 throw new Error(data.mesaj || `Sunucu hatası: HTTP ${response.status}`);
@@ -39,9 +40,10 @@ function DoktorLogin() {
             }
 
             setMesaj("Giriş başarılı! Yönlendiriliyorsunuz...");
+            console.log(`Randevu göster sayfasına gönderilecek ıd ${data.id}`);
 
             setTimeout(() => {
-                navigate('/doktor-panel/randevu-goster', { state: { userId: data.Id } });
+                navigate('/doktor-panel/randevu-goster', { state: { userId: data.id } });
             }, 500);
 
         } catch (err) {
@@ -74,7 +76,7 @@ function DoktorLogin() {
                     />
                 </div>
 
-                <button type="submit" disabled={yukleniyor} onClick={handleSubmit}>
+                <button type="submit" disabled={yukleniyor}>
                     {yukleniyor ? "Giriş Yapılıyor..." : "Giriş Yap"}
                 </button>
             </form>

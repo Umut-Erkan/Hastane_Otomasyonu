@@ -177,12 +177,14 @@ namespace Hastane_Otomasyonu.Controllers
         {
             var doktorlarDTO = _cache.GetValueByAlan(req.Alan);
 
-            if (doktorlarDTO.Count == 0)
+            if (doktorlarDTO.Count == null)
             {
                 return BadRequest(new { mesaj = "Bu alanda doktor bulunamadı" });
             }
             return Ok(doktorlarDTO);
         }
+
+
 
         [ServiceFilter(typeof(RefreshTokenFilter))] // Refresh token kontrolü ile hangi doktor olduğunu anlıyoruz.
         [HttpPost("Tedavi yaz")]

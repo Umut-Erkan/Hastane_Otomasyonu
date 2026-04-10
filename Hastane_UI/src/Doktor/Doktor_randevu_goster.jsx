@@ -16,6 +16,7 @@ function DoktorRandevuGoster() {
         const fetchRandevular = async () => {
             try {
                 const token = localStorage.getItem('doktorToken');
+                console.log(`Token ile giriş yapıldı ${userId}`);
 
                 if (token === null) {
                     throw new Error("Token bulunamadı. Lütfen önce giriş yapın.");
@@ -92,8 +93,8 @@ function DoktorRandevuGoster() {
                                     <strong>Tarih:</strong> {randevu.tarih || randevu.Tarih || "Belirtilmemiş"} <br />
                                     <strong>Saat:</strong> {randevu.saat || randevu.Saat || "Belirtilmemiş"}
                                 </div>
-                                <button 
-                                    onClick={() => navigate('/doktor-panel/tedavi-yaz', { state: { randevuId: randevu.id || randevu.Id, hastaId: randevu.hastaId || randevu.HastaId } })} 
+                                <button
+                                    onClick={() => navigate('/doktor-panel/tedavi-yaz', { state: { randevuId: randevu.id || randevu.Id, hastaId: randevu.hastaId || randevu.HastaId } })}
                                     style={{ padding: '5px 15px', cursor: 'pointer', borderRadius: '4px', border: 'none', backgroundColor: '#007bff', color: 'white', fontWeight: 'bold' }}
                                     title="Tedavi Yaz"
                                 >

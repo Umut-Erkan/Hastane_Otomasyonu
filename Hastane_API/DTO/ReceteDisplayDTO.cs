@@ -11,5 +11,12 @@ namespace Hastane_Otomasyonu.DTO
         public string DoktorName { get; set; }
         public string DoktorSurname { get; set; }
         public string Tanı { get; set; }
+        public List<IlacDetayDTO> Ilaclar { get; set; } = new List<IlacDetayDTO>();
+    }
+
+    public class IlacDetayDTO
+    {
+        public string IlacName { get; set; }
+        public int Adet { get; set; }
     }
 }
