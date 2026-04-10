@@ -243,28 +243,41 @@ namespace Hastane_Otomasyonu.Controllers
         [HttpGet("ReceteGoster")]
         public IActionResult ReceteGoster()
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            Hastum user = _context.Hasta.FirstOrDefault(c => c.Id == int.Parse(userId));
-            int DoktorId = _context.Tedavis.FirstOrDefault(c => c.HastaId == int.Parse(userId)).DoktorId;
+            var userIdValue = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userIdValue == null) return Unauthorized();
 
+            int userId = int.Parse(userIdValue);
+            var hasta = _context.Hasta.FirstOrDefault(h => h.Id == userId);
 
-            var Tedaviler = _context.Tedavis.Where(c => c.HastaId == int.Parse(userId))
-                .Select(r => new ReceteDisplayDTO
+            if (hasta == null) return NotFound("Hasta bulunamadı");
+
+            var result = _context.Tedavis
+                .Include(t => t.Doktor)
+                .Include(t => t.Recete)
+                    .ThenInclude(r => r.IlcaToRecetes)
+                        .ThenInclude(ir => ir.IlcaFkNavigation)
+                .Where(t => t.HastaId == userId)
+                .Select(t => new ReceteDisplayDTO
                 {
-                    HastaName = user.İsim + " " + user.Soyisim,
-                    DoktorName = "Placeholder",
-                    DoktorSurname = "Placeholder",
-                    Tanı = r.Tanı
+                    HastaName = hasta.İsim + " " + hasta.Soyisim,
+                    DoktorName = t.Doktor.İsim,
+                    DoktorSurname = t.Doktor.Soyisim,
+                    Tanı = t.Tanı,
+                    Ilaclar = t.Recete != null
+                        ? t.Recete.IlcaToRecetes.Select(ir => new IlacDetayDTO
+                        {
+                            IlacName = ir.IlcaFkNavigation.IlacName,
+                            Adet = ir.Adet
+                        }).ToList()
+                        : new List<IlacDetayDTO>()
                 }).ToList();
 
-            foreach (var t in Tedaviler)
+            if (result.Count == 0)
             {
-                Doktor doktor = _context.Doktors.FirstOrDefault(c => c.Id == DoktorId);
-                t.DoktorName = doktor.İsim;
-                t.DoktorSurname = doktor.Soyisim;
+                return StatusCode(404, new { mesaj = "Reçete bulunamadı", StatusCode = 404 });
             }
 
-            return StatusCode(200, Tedaviler);
+            return Ok(result);
         }
 
     }

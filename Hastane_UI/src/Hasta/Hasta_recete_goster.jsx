@@ -60,62 +60,143 @@ function Hasta_recete_goster() {
   }, []);
 
   return (
-    <div className="hasta-form-container fade-in" style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px', color: 'var(--primary, #007bff)' }}>Tedavilerim ve Reçetelerim</h2>
+    <div className="fade-in" style={{
+      maxWidth: '900px',
+      margin: '0 auto',
+      padding: '40px 20px',
+      minHeight: '80vh'
+    }}>
+      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <h1 style={{ margin: '0 0 10px 0', color: 'var(--text-h)' }}>Tedaviler ve Reçeteler</h1>
+        <p style={{ color: 'var(--text)', fontSize: '1.1rem' }}>Geçmiş tedavilerinizi ve reçete edilen ilaçlarınızı buradan takip edebilirsiniz.</p>
+      </div>
 
       {yukleniyor && (
-        <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-          <div style={{ display: 'inline-block', width: '30px', height: '30px', border: '3px solid rgba(0,0,0,0.1)', borderRadius: '50%', borderTopColor: 'var(--primary, #007bff)', animation: 'spin 1s ease-in-out infinite' }}></div>
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <div style={{
+            display: 'inline-block',
+            width: '40px',
+            height: '40px',
+            border: '3px solid var(--accent-bg)',
+            borderRadius: '50%',
+            borderTopColor: 'var(--accent)',
+            animation: 'spin 1s linear infinite'
+          }}></div>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          <p style={{ marginTop: '10px' }}>Yükleniyor...</p>
+          <p style={{ marginTop: '15px', color: 'var(--text)' }}>Bilgileriniz getiriliyor...</p>
         </div>
       )}
 
       {hata && (
-        <div className="error-message" style={{ color: '#721c24', backgroundColor: '#f8d7da', border: '1px solid #f5c6cb', padding: '15px', borderRadius: '8px', textAlign: 'center', marginBottom: '20px' }}>
+        <div className="error-message" style={{ margin: '20px auto', maxWidth: '500px' }}>
           <strong>Hata:</strong> {hata}
         </div>
       )}
 
       {!yukleniyor && receteler.length > 0 && (
-        <div style={{ display: 'grid', gap: '20px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          gap: '24px'
+        }}>
           {receteler.map((veri, index) => (
             <div key={index} style={{
-              padding: '20px',
-              background: 'var(--surface, #ffffff)',
-              border: '1px solid #e0e0e0',
-              boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-              borderRadius: '12px',
-              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              padding: '24px',
+              background: 'var(--bg)',
+              border: '1px solid var(--border)',
+              boxShadow: 'var(--shadow)',
+              borderRadius: '16px',
+              transition: 'all 0.3s ease',
+              textAlign: 'left'
             }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 6px 12px rgba(0,0,0,0.1)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.05)'; }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.borderColor = 'var(--accent-border)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'var(--border)';
+              }}
             >
-              <div style={{ paddingBottom: '5px' }}>
-                <h3 style={{ margin: '0 0 12px 0', color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '1.2rem' }}>🩺</span>
-                  Tanı: <span style={{ fontWeight: 'normal', color: '#555' }}>{veri.tanı || "Belirtilmemiş"}</span>
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '1rem', color: '#555', backgroundColor: '#f8f9fa', padding: '15px', borderRadius: '8px', borderLeft: '4px solid #17a2b8' }}>
-                  <div>
-                    <strong>Hasta:</strong> {veri.hastaName}
-                  </div>
-                  <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', borderBottom: '1px solid var(--border)', paddingBottom: '15px' }}>
+                <div>
+                  <h2 style={{ margin: '0 0 5px 0', fontSize: '1.4rem' }}>
+                    <span style={{ marginRight: '10px' }}>🩺</span>
+                    {veri.tanı || "Tanı Belirtilmemiş"}
+                  </h2>
+                  <div style={{ color: 'var(--text)', fontSize: '0.9rem' }}>
                     <strong>Doktor:</strong> {veri.doktorName} {veri.doktorSurname}
                   </div>
                 </div>
+                <div style={{
+                  backgroundColor: 'var(--accent-bg)',
+                  color: 'var(--accent)',
+                  padding: '6px 14px',
+                  borderRadius: '20px',
+                  fontSize: '0.85rem',
+                  fontWeight: '600'
+                }}>
+                  Tamamlandı
+                </div>
               </div>
 
+              {veri.ilaclar && veri.ilaclar.length > 0 ? (
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.2rem' }}>💊</span> Reçete Edilen İlaçlar
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '12px' }}>
+                    {veri.ilaclar.map((ilac, i) => (
+                      <div key={i} style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        backgroundColor: 'var(--accent-bg)',
+                        padding: '12px 16px',
+                        borderRadius: '10px',
+                        border: '1px solid var(--accent-border)'
+                      }}>
+                        <span style={{ color: 'var(--text-h)', fontWeight: '700', fontSize: '1rem' }}>
+                          {ilac.ilacName}
+                        </span>
+                        <span style={{
+                          backgroundColor: 'var(--accent)',
+                          color: '#fff',
+                          padding: '2px 10px',
+                          borderRadius: '6px',
+                          fontSize: '0.8rem',
+                          fontWeight: 'bold'
+                        }}>
+                          {ilac.adet} Adet
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div style={{ padding: '10px', color: 'var(--text)', fontStyle: 'italic', fontSize: '0.9rem' }}>
+                  Bu tedavi için reçete edilmiş ilaç bulunmamaktadır.
+                </div>
+              )}
             </div>
           ))}
         </div>
       )}
 
       {!yukleniyor && !hata && receteler.length === 0 && (
-        <div style={{ textAlign: 'center', marginTop: '40px', padding: '50px 20px', backgroundColor: '#f8f9fa', borderRadius: '12px', border: '1px dashed #ced4da' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '15px' }}>📝</div>
-          <h3 style={{ color: '#495057', marginBottom: '10px' }}>Kayıtlı Tedaviniz Yok</h3>
-          <p style={{ color: '#6c757d' }}>Sisteme girilmiş bir tedaviniz bulunmuyor.</p>
+        <div style={{
+          textAlign: 'center',
+          marginTop: '60px',
+          padding: '60px 20px',
+          backgroundColor: 'var(--accent-bg)',
+          borderRadius: '20px',
+          border: '2px dashed var(--accent-border)'
+        }}>
+          <div style={{ fontSize: '4rem', marginBottom: '20px' }}>📄</div>
+          <h2 style={{ color: 'var(--text-h)' }}>Henüz Reçeteniz Bulunmuyor</h2>
+          <p style={{ color: 'var(--text)', maxWidth: '400px', margin: '0 auto' }}>
+            Doktorunuz tarafından sisteme girilen herhangi bir reçete veya tedavi kaydı bulunmamaktadır.
+          </p>
         </div>
       )}
     </div>
