@@ -14,6 +14,9 @@ import Home from './Home.jsx';
 import ResepsiyonistLogin from './Resepsiyonist/ResepsiyonistLogin.jsx';
 import ResepsiyonistDashboard from './Resepsiyonist/ResepsiyonistDashboard.jsx';
 import ResepsiyonistRandevuGoster from './Resepsiyonist/ResepsiyonistRandevuGoster.jsx';
+import AdminPanel from './Admin/Admin_Panel.jsx';
+import CreateDoktor from './Admin/Create_Doktor.jsx';
+import CreateResepsiyonist from './Admin/Create_Resepsiyonist.jsx';
 
 // Sol üst: bir önceki sayfaya geri döner
 function BackButton() {
@@ -49,6 +52,39 @@ function NavBar() {
     <div className="page-nav-bar">
       <BackButton />
       <HomeButton />
+    </div>
+  );
+}
+
+// Admin Paneli Sayfası Wrapper
+function AdminPanelPage() {
+  return (
+    <div className="page-wrapper fade-in">
+      <div className="page-nav-bar">
+        <span />
+        <HomeButton />
+      </div>
+      <AdminPanel />
+    </div>
+  );
+}
+
+// Doktor Ekle (Admin) Wrapper
+function AdminCreateDoktorPage() {
+  return (
+    <div className="page-wrapper fade-in">
+      <NavBar />
+      <CreateDoktor />
+    </div>
+  );
+}
+
+// Resepsiyonist Ekle (Admin) Wrapper
+function AdminCreateResepsiyonistPage() {
+  return (
+    <div className="page-wrapper fade-in">
+      <NavBar />
+      <CreateResepsiyonist />
     </div>
   );
 }
@@ -186,6 +222,18 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+  },
+  {
+    path: "/admin",
+    element: <AdminPanelPage />,
+  },
+  {
+    path: "/admin/doktor-ekle",
+    element: <AdminCreateDoktorPage />,
+  },
+  {
+    path: "/admin/resepsiyonist-ekle",
+    element: <AdminCreateResepsiyonistPage />,
   },
   {
     path: "/hasta",
