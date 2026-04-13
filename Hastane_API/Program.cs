@@ -38,7 +38,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 if (string.IsNullOrEmpty(connectionString))
 {
-    throw new InvalidOperationException("Bağlantı metni bulunamadı! appsettings.json dosyasını kontrol et.");
+    throw new InvalidOperationException(
+        "Connection string bulunamadı. `ConnectionStrings:DefaultConnection` değerini " +
+        "User Secrets (Development) veya ortam değişkeni `ConnectionStrings__DefaultConnection` ile sağlayın.");
 }
 
 builder.Services.AddDbContext<HastaneContext>(options =>
@@ -49,9 +51,17 @@ builder.Services.AddDbContext<HastaneContext>(options =>
 //REDIS
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 {
+    var redisEndPoints = builder.Configuration["RedisConnection:EndPoints"];
+    if (string.IsNullOrWhiteSpace(redisEndPoints))
+    {
+        throw new InvalidOperationException(
+            "Redis ayarları bulunamadı. `RedisConnection:EndPoints` değerini " +
+            "User Secrets (Development) veya ortam değişkeni `RedisConnection__EndPoints` ile sağlayın.");
+    }
+
     var configurationOptions = new ConfigurationOptions
     {
-        EndPoints = { builder.Configuration["RedisConnection:EndPoints"] },
+        EndPoints = { redisEndPoints },
         User = builder.Configuration["RedisConnection:Username"],
         Password = builder.Configuration["RedisConnection:Password"]
     };
@@ -110,7 +120,11 @@ var app = builder.Build();
 
 
 
-//app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+    app.UseHttpsRedirection();
+}
 
 app.UseRouting();
 
