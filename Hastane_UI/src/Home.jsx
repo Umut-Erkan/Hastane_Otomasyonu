@@ -5,6 +5,7 @@ const homeCards = [
   { id: 'doktor', title: 'Doktor', icon: '🩺', description: 'Doktor paneline giriş yapın', color: '#3b82f6' },
   { id: 'hasta', title: 'Hasta', icon: '🏥', description: 'Hasta işlemlerini yönetin', color: '#10b981' },
   { id: 'resepsiyonist', title: 'Resepsiyonist', icon: '📝', description: 'Kayıt ve randevu işlemleri', color: '#f59e0b' },
+  { id: 'admin', title: 'Admin', icon: '🛡️', description: 'Sistem yönetimi ve personel ekleme', color: '#8b5cf6' },
 ];
 
 export default function Home() {
@@ -15,11 +16,11 @@ export default function Home() {
       <div className="home-content">
         <h1 className="home-title">Hastane Yönetim Sistemi</h1>
         <p className="home-subtitle">Lütfen işlem yapmak istediğiniz modülü seçin</p>
-        
+
         <div className="cards-grid">
           {homeCards.map((card) => (
-            <button 
-              key={card.id} 
+            <button
+              key={card.id}
               className={`home-card card-${card.id}`}
               onClick={() => navigate(`/${card.id}`)}
             >
