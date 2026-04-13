@@ -142,9 +142,16 @@ namespace Hastane_Otomasyonu.Controllers
             try
             {
                 var hasta = _context.Hasta.FirstOrDefault(h => h.Tc == dto.Tc);
+                if (hasta.AccessToken != "Null" && new JwtSecurityTokenHandler().ReadJwtToken(hasta.AccessToken).ValidTo < DateTime.Now)
+                {
 
-                var AccessToken = new JwtSecurityTokenHandler().ReadJwtToken(hasta.AccessToken);
-                DateTime AccessTokenEndDate = AccessToken.ValidTo;
+                }
+                else
+                {
+                    hasta.AccessToken = _tokenService.GenerateAccessToken(hasta);
+                    _context.SaveChanges();
+                }
+
                 if (hasta == null)
                 {
                     return BadRequest(new { mesaj = "TC veya şifre hatalı." });
@@ -156,11 +163,8 @@ namespace Hastane_Otomasyonu.Controllers
                     return BadRequest(new { mesaj = "Şifre hatalı." });
                 }
 
-                if (AccessTokenEndDate < DateTime.Now)
-                {
-                    hasta.AccessToken = _tokenService.GenerateAccessToken(hasta);
-                    _context.SaveChanges();
-                }
+
+
                 if (hasta.RefreshTokenEndDate < DateTime.Now)
                 {
                     hasta.RefreshToken = _tokenService.GenerateRefreshToken().Token;
@@ -175,6 +179,10 @@ namespace Hastane_Otomasyonu.Controllers
                     RefreshToken = hasta.RefreshToken,
                     StatusCode = 200
                 });
+            }
+            catch (NullReferenceException ex)
+            {
+                return BadRequest(new { mesaj = "Beklenmedik bir veri boşluğu oluştu.", hata = ex.Message });
             }
             catch (Exception ex)
             {
@@ -195,12 +203,13 @@ namespace Hastane_Otomasyonu.Controllers
 
 
             var Hasta = _context.Hasta.FirstOrDefault(h => h.Id == int.Parse(NameIdentifier));
+            Hasta.AccessToken = "Null";
+
 
             if (Hasta == null)
             {
                 return StatusCode(404, "Hasta bulunamadı");
             }
-            _context.Remove(Hasta);
             _context.SaveChanges();
             return Ok("Logout başarılı");
         }

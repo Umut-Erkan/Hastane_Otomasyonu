@@ -31,6 +31,7 @@ function HastaLogin() {
             });
             const data = await cevap.json();
 
+            console.log("response", data);
 
 
             if (data.statusCode != 200) {
