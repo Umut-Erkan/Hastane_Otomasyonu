@@ -1,9 +1,12 @@
+import React from 'react';
 import { createBrowserRouter, RouterProvider, useNavigate } from 'react-router-dom';
 import './App.css';
 import HastaLanding from './Hasta/HastaLanding.jsx';
 import HastaRandevuAl from './Hasta/Hasta_randevu_al.jsx';
 import HastaRandevuGoster from './Hasta/Hasta_randevu_goster.jsx';
 import HastaReceteGoster from './Hasta/Hasta_recete_goster.jsx';
+import HastaLogout from './Hasta/Hasta_Logout.jsx';
+import HastaProfile from './Hasta/Hasta_Profile.jsx';
 import DoktorLogin from './Doktor/DoktorLogin.jsx';
 import DoktorRandevuGoster from './Doktor/Doktor_randevu_goster.jsx';
 import DoktorTedaviYaz from './Doktor/Doktor_tedavi_yaz.jsx';
@@ -50,66 +53,12 @@ function NavBar() {
   );
 }
 
-// Hasta Sayfası Wrapper
+// Hasta Panel Sayfası – içeriği Hasta_Profile.jsx'te
 function HastaPage() {
-  console.log("hasta-panel");
-  const navigate = useNavigate();
-
-  // Şık Navigasyon Kartı (Dashboard stili)
-  const ActionCard = ({ title, desc, path, icon }) => (
-    <div
-      onClick={() => navigate(path)}
-      style={{
-        background: 'var(--surface)',
-        padding: '30px',
-        borderRadius: '16px',
-        cursor: 'pointer',
-        border: '1px solid var(--accent)',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '15px',
-        transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-      }}
-      onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-5px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(37, 99, 235, 0.2)'; }}
-      onMouseOut={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.1)'; }}
-    >
-      <div style={{ fontSize: '3.5rem' }}>{icon}</div>
-      <h3 style={{ margin: 0, color: 'var(--text)', fontSize: '1.4rem' }}>{title}</h3>
-      <p style={{ margin: 0, color: 'var(--textSecondary)', textAlign: 'center', fontSize: '0.95rem' }}>{desc}</p>
-    </div>
-  );
-
   return (
-    <div className="page-wrapper fade-in">
+    <div className="page-wrapper">
       <NavBar />
-
-      <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-        <h2 style={{ fontSize: '2.5rem', fontWeight: 'bold' }}>Hasta Paneline Hoş Geldiniz</h2>
-        <p style={{ color: 'var(--textSecondary)', marginTop: '10px', fontSize: '1.2rem' }}>Aşağıdaki menüden işlemlerinizi hızlıca gerçekleştirebilirsiniz.</p>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', maxWidth: '1000px', margin: '0 auto' }}>
-        <ActionCard
-          title="Randevu Al"
-          desc="Uygun hekimlerimizden kolayca yeni bir randevu oluşturun."
-          path="/hasta-panel/randevu-al"
-
-        />
-        <ActionCard
-          title="Randevu Göster"
-          desc="Yaklaşan ve geçmiş hastane randevularınızı görüntüleyin."
-          path="/hasta-panel/randevu-goster"
-
-        />
-        <ActionCard
-          title="Reçete Göster"
-          desc="Size yazılan reçeteleri ve ilaç detaylarınızı inceleyin."
-          path="/hasta-panel/recete-goster"
-
-        />
-      </div>
+      <HastaProfile />
     </div>
   );
 }
@@ -257,6 +206,10 @@ const router = createBrowserRouter([
   {
     path: "/hasta-panel/recete-goster",
     element: <HastaReceteGosterPage />,
+  },
+  {
+    path: "/hasta-panel/logout",
+    element: <div className="page-wrapper"><NavBar /><HastaLogout /></div>,
   },
 
 
