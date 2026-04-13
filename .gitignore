@@ -1,3 +1,5 @@
-.env
+
 Hastane_API/appsettings.Development.json
 Hastane_API/appsettings.*.json.user
+
+.env
