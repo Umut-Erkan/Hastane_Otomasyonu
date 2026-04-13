@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>Hastane_Otomasyonu-MyApiProject</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

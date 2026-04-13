@@ -20,9 +20,14 @@ services:
       context: ./Hastane_API # Dockerfile'ının bulunduğu klasör
       dockerfile: Dockerfile
     env_file: 
-      -.env
+      - .env
     environment:
       ConnectionStrings__DefaultConnection: Server=sql-db;Database=HastaneDB;User Id=sa;Password=${SQL_PASSWORD};TrustServerCertificate=True;
+      JwtSettings__jwtKey: ${JWT_KEY}
+      AdminSecurity__SecretKey: ${ADMIN_SECRET_KEY}
+      RedisConnection__EndPoints: ${REDIS_ENDPOINTS}
+      RedisConnection__Username: ${REDIS_USERNAME}
+      RedisConnection__Password: ${REDIS_PASSWORD}
     container_name: hastane_api_server
     ports:
       - "5000:8080" # Dışarıdan 5000 portu ile API'ye erişeceğiz
