@@ -106,7 +106,7 @@ namespace Hastane_Otomasyonu.Controllers
 
         [ServiceFilter(typeof(ActionFilter))]
         [HttpPost("Create Doktor")]
-        public IActionResult DoktorOluştur([FromBody] DoktorDTO doktordto)
+        public IActionResult DoktorOluştur([FromBody] DoktorAddDTO doktordto)
         {
             try
             {
