@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -19,8 +20,6 @@ namespace Hastane_Otomasyonu.Middlewares
         // DbContext is injected into the InvokeAsync method because it is a Scoped service.
         public async Task InvokeAsync(HttpContext context, HastaneContext dbContext)
         {
-            // Proceed with the request first
-            await _next(context);
 
             // Fetch the required information
             string serviceName = context.Request.Path.Value ?? "Unknown";
@@ -31,14 +30,9 @@ namespace Hastane_Otomasyonu.Middlewares
                 browserInfo = "Unknown";
             }
 
-            // Truncate strings to match the database constraints of 50 chars
-            if (serviceName.Length > 50)
-                serviceName = serviceName.Substring(0, 50);
-
-            if (browserInfo.Length > 50)
-                browserInfo = browserInfo.Substring(0, 50);
-
-            int userId = 0; // Default when unauthenticated
+            string AccessToken = context.Request.Headers["Authorization"].ToString();
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(AccessToken);
+            int userId = int.Parse(token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
 
             // Extract the user ID from the claims if authenticated
             if (context.User.Identity?.IsAuthenticated == true)
@@ -62,10 +56,6 @@ namespace Hastane_Otomasyonu.Middlewares
                 Role = context.User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown"
             };
 
-            //dbContext.AuditLogs.Add(auditLog);
-            //await dbContext.SaveChangesAsync();
-
-
             // F5 atıldığında tekrar kaydetmesin die
 
             var auditLogs = dbContext.AuditLogs.ToList();
@@ -81,13 +71,10 @@ namespace Hastane_Otomasyonu.Middlewares
 
             dbContext.AuditLogs.Add(auditLog);
 
-            // Save the logs at the end of the request
-
-
             await dbContext.SaveChangesAsync();
-
-
-
+            
+            // Proceed with the request to the next middleware/controller
+            await _next(context);
         }
     }
 }
