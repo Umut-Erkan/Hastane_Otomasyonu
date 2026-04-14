@@ -12,4 +12,6 @@ public partial class AuditLog
     public string ServiceName { get; set; }
 
     public string BrowserInfo { get; set; }
+
+    public string Role { get; set; }
 }

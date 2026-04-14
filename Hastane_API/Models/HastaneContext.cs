@@ -39,10 +39,7 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<Tedavi> Tedavis { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-
-    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Appointment>(entity =>
@@ -81,6 +78,7 @@ public partial class HastaneContext : DbContext
 
             entity.Property(e => e.LogId).HasColumnName("LogID");
             entity.Property(e => e.BrowserInfo).HasMaxLength(50);
+            entity.Property(e => e.Role).HasMaxLength(50);
             entity.Property(e => e.ServiceName).HasMaxLength(50);
         });
 

@@ -8,10 +8,12 @@ namespace Hastane_Otomasyonu.Middlewares
     public class AuditLoggingMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<AuditLoggingMiddleware> _logger;
 
-        public AuditLoggingMiddleware(RequestDelegate next)
+        public AuditLoggingMiddleware(RequestDelegate next, ILogger<AuditLoggingMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         // DbContext is injected into the InvokeAsync method because it is a Scoped service.
@@ -56,31 +58,35 @@ namespace Hastane_Otomasyonu.Middlewares
             {
                 ServiceName = serviceName,
                 BrowserInfo = browserInfo,
-                Userıd = userId // The model was generated with a Turkish "ı"
+                Userıd = userId,
+                Role = context.User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown"
             };
 
+            //dbContext.AuditLogs.Add(auditLog);
+            //await dbContext.SaveChangesAsync();
+
+
+            // F5 atıldığında tekrar kaydetmesin die
+
+            var auditLogs = dbContext.AuditLogs.ToList();
+
+            foreach (var item in auditLogs)
+            {
+                if (item == auditLog)
+                {
+                    _logger.LogInformation("Sayfa yenilendiği için veri eklenmedi.");
+                    return;
+                }
+            }
+
             dbContext.AuditLogs.Add(auditLog);
+
+            // Save the logs at the end of the request
+
+
             await dbContext.SaveChangesAsync();
-            /*
-
-                        // F5 atıldığında tekrar kaydetmesin die
-
-                        List<AuditLog> auditLogs = new List<AuditLog>();
-                        auditLogs.Add(auditLog);
-
-                        if (auditLogs[0] == auditLog)
-                        {
-                            return;
-                        }
-                        else
-                        {
-                            dbContext.AuditLogs.Add(auditLog);
-
-                            // Save the logs at the end of the request
 
 
-                            await dbContext.SaveChangesAsync();
-                        }*/
 
         }
     }
