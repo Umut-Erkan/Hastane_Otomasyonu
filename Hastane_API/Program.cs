@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using dotenv.net;
 using Hastane_Otomasyonu.Business;
 using Hastane_Otomasyonu.Filters;
 using Hastane_Otomasyonu.Redis.Interfaces;
@@ -16,9 +17,11 @@ using Microsoft.IdentityModel.Tokens;
 using MyApiProject.Models;
 using StackExchange.Redis;
 
+DotEnv.Load(options: new DotEnvOptions(envFilePaths: new[] { "../.env" }));
 
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 var AppPolicy = "AppPolicy";
 
@@ -27,14 +30,15 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: AppPolicy,
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173")
+            policy.SetIsOriginAllowed(origin => true)
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
 // CONNECTION
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
 
 if (string.IsNullOrEmpty(connectionString))
 {
@@ -77,6 +81,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
     .AddJwtBearer(options =>
     {
+        var jwtKey = Environment.GetEnvironmentVariable("JwtSettings__jwtKey") ?? builder.Configuration["JwtSettings:jwtKey"];
+        if (string.IsNullOrEmpty(jwtKey)) throw new Exception("JWT Key is missing from configuration and environment!");
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true, // Token'ı kimin dağıttığını (Issuer) kontrol et
@@ -88,7 +95,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["JwtSettings:Audience"], // Basitlik için Audience'ı da aynı yapıyoruz
 
             // Gizli anahtarımızı byte dizisine çevirip sisteme veriyoruz
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:jwtKey"])),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
 
             // Varsayılan 5 dakikalık toleransı sıfırlıyoruz → Token TAM olarak belirtilen anda sona erer
             ClockSkew = TimeSpan.Zero
