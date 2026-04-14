@@ -39,7 +39,10 @@ namespace Hastane_Otomasyonu.Business
 
         public string GenerateAccessToken(IUser user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:jwtKey"]));
+            var jwtKey = Environment.GetEnvironmentVariable("JwtSettings__jwtKey") ?? _config["JwtSettings:jwtKey"];
+            if (string.IsNullOrEmpty(jwtKey)) throw new Exception("JWT Key is missing from configuration and environment!");
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
