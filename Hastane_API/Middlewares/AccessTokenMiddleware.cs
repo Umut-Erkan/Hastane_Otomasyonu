@@ -23,6 +23,13 @@ namespace Hastane_Otomasyonu.Middlewares
 
 
             string authHeader = context.Request.Headers["Authorization"].ToString();
+
+            if (authHeader == "Null")
+            {
+                await _next(context);
+                return;
+            }
+
             string AccessToken = authHeader.Replace("Bearer ", "");
 
             if (!string.IsNullOrEmpty(AccessToken) && AccessToken != "Null")
@@ -66,8 +73,7 @@ namespace Hastane_Otomasyonu.Middlewares
                     _logger.LogInformation("TokenMiddleware çalışmıyor.");
                 }
             }
-            
-            // Proceed with the request after token logic is done
+
             await _next(context);
         }
     }
