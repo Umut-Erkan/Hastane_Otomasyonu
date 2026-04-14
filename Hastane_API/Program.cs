@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using dotenv.net;
 using Hastane_Otomasyonu.Business;
 using Hastane_Otomasyonu.Filters;
+using Hastane_Otomasyonu.Middlewares;
 using Hastane_Otomasyonu.Redis.Interfaces;
 using Hastane_Otomasyonu.Redis.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -140,6 +141,8 @@ app.UseCors(AppPolicy);
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseMiddleware<AuditLoggingMiddleware>();
 
 app.MapControllers();
 
