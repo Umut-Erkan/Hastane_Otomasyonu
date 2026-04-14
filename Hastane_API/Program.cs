@@ -142,6 +142,7 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseMiddleware<AccessTokenMiddleware>();
 app.UseMiddleware<AuditLoggingMiddleware>();
 
 app.MapControllers();
