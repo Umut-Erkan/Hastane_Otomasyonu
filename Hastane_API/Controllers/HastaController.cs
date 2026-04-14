@@ -144,13 +144,11 @@ namespace Hastane_Otomasyonu.Controllers
                 var hasta = _context.Hasta.FirstOrDefault(h => h.Tc == dto.Tc);
                 if (hasta.AccessToken != "Null" && new JwtSecurityTokenHandler().ReadJwtToken(hasta.AccessToken).ValidTo < DateTime.Now)
                 {
-
-                }
-                else
-                {
                     hasta.AccessToken = _tokenService.GenerateAccessToken(hasta);
                     _context.SaveChanges();
+
                 }
+
 
                 if (hasta == null)
                 {
