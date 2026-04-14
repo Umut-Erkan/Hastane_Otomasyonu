@@ -19,6 +19,8 @@ public partial class HastaneContext : DbContext
 
     public virtual DbSet<AppointmentToDoktor> AppointmentToDoktors { get; set; }
 
+    public virtual DbSet<AuditLog> AuditLogs { get; set; }
+
     public virtual DbSet<Doktor> Doktors { get; set; }
 
     public virtual DbSet<Hastum> Hasta { get; set; }
@@ -69,6 +71,17 @@ public partial class HastaneContext : DbContext
                 .HasForeignKey(d => d.DoktorFk)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Appointment_To_Doktor_Doktor");
+        });
+
+        modelBuilder.Entity<AuditLog>(entity =>
+        {
+            entity.HasKey(e => e.LogId);
+
+            entity.ToTable("Audit Logs");
+
+            entity.Property(e => e.LogId).HasColumnName("LogID");
+            entity.Property(e => e.BrowserInfo).HasMaxLength(50);
+            entity.Property(e => e.ServiceName).HasMaxLength(50);
         });
 
         modelBuilder.Entity<Doktor>(entity =>
