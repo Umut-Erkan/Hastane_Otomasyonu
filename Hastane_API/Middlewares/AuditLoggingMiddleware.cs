@@ -20,61 +20,105 @@ namespace Hastane_Otomasyonu.Middlewares
         // DbContext is injected into the InvokeAsync method because it is a Scoped service.
         public async Task InvokeAsync(HttpContext context, HastaneContext dbContext)
         {
-
-            // Fetch the required information
-            string serviceName = context.Request.Path.Value ?? "Unknown";
-            string browserInfo = context.Request.Headers["User-Agent"].ToString();
-
-            if (string.IsNullOrEmpty(browserInfo))
+            try
             {
-                browserInfo = "Unknown";
-            }
 
-            string AccessToken = context.Request.Headers["Authorization"].ToString();
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(AccessToken);
-            int userId = int.Parse(token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+                // Fetch the required information
+                string serviceName = context.Request.Path.Value ?? "Unknown";
+                string browserInfo = context.Request.Headers["User-Agent"].ToString();
 
-            // Extract the user ID from the claims if authenticated
-            if (context.User.Identity?.IsAuthenticated == true)
-            {
-                var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (int.TryParse(userIdClaim, out int parsedId))
+                if (string.IsNullOrEmpty(browserInfo))
                 {
-                    userId = parsedId;
+                    browserInfo = "Unknown";
                 }
-            }
+
+                string authHeader = context.Request.Headers["Authorization"].ToString();
+                string AccessToken = authHeader.Replace("Bearer ", "");
+                int userId = 0;
 
 
-            // Map and save to the Scaffolded AuditLog model
 
-
-            var auditLog = new AuditLog
-            {
-                ServiceName = serviceName,
-                BrowserInfo = browserInfo,
-                Userıd = userId,
-                Role = context.User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown"
-            };
-
-            // F5 atıldığında tekrar kaydetmesin die
-
-            var auditLogs = dbContext.AuditLogs.ToList();
-
-            foreach (var item in auditLogs)
-            {
-                if (item == auditLog)
+                if (!string.IsNullOrEmpty(AccessToken) && AccessToken != "Null")
                 {
-                    _logger.LogInformation("Sayfa yenilendiği için veri eklenmedi.");
-                    return;
+                    var token = new JwtSecurityTokenHandler().ReadJwtToken(AccessToken);
+                    var nameIdClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+
+                    if (nameIdClaim != null)
+                    {
+                        userId = int.Parse(nameIdClaim);
+                    }
+
                 }
+
+
+                var auditLog = new AuditLog
+                {
+                    ServiceName = serviceName,
+                    BrowserInfo = browserInfo,
+                    Userıd = userId,
+                    Role = context.User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown"
+                };
+
+                // F5 atıldığında tekrar kaydetmesin die
+
+                var auditLogs = dbContext.AuditLogs.ToList();
+
+                foreach (var item in auditLogs)
+                {
+                    if (item == auditLog)
+                    {
+                        _logger.LogInformation("Sayfa yenilendiği için veri eklenmedi.");
+                        await _next(context);
+                        return;
+                    }
+                }
+
+                dbContext.AuditLogs.Add(auditLog);
+
+                await dbContext.SaveChangesAsync();
+
+                await _next(context);
             }
+            catch
 
-            dbContext.AuditLogs.Add(auditLog);
+            {
+                int userId = 0;
+                string serviceName = context.Request.Path.Value ?? "Unknown";
+                string browserInfo = context.Request.Headers["User-Agent"].ToString() ?? "Unknown";
 
-            await dbContext.SaveChangesAsync();
-            
-            // Proceed with the request to the next middleware/controller
-            await _next(context);
+                browserInfo = browserInfo.Length > 50 ? browserInfo.Substring(0, 50) : browserInfo;
+                serviceName = serviceName.Length > 50 ? serviceName.Substring(0, 50) : serviceName;
+
+                var auditLog = new AuditLog
+                {
+                    ServiceName = serviceName,
+                    BrowserInfo = browserInfo,
+                    Userıd = userId,
+                    Role = context.User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown"
+                };
+
+
+                var auditLogs = dbContext.AuditLogs.ToList();
+
+                foreach (var item in auditLogs)
+                {
+                    if (item == auditLog)
+                    {
+                        _logger.LogInformation("Sayfa yenilendiği için veri eklenmedi.");
+                        await _next(context);
+                        return;
+                    }
+                }
+
+                dbContext.AuditLogs.Add(auditLog);
+
+                await dbContext.SaveChangesAsync();
+
+                await _next(context);
+
+
+            }
         }
     }
 }
