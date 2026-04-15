@@ -10,7 +10,7 @@ function DoktorRandevuGoster() {
     const [hata, setHata] = useState(null);
 
     const location = useLocation();
-    const userId = location.state?.userId;
+    const userId = location.state?.userId || localStorage.getItem('doktorUserId');
 
     useEffect(() => {
         const fetchRandevular = async () => {
@@ -94,7 +94,7 @@ function DoktorRandevuGoster() {
                                     <strong>Saat:</strong> {randevu.saat || randevu.Saat || "Belirtilmemiş"}
                                 </div>
                                 <button
-                                    onClick={() => navigate('/doktor-panel/tedavi-yaz', { state: { randevuId: randevu.id || randevu.Id, hastaId: randevu.hastaId || randevu.HastaId } })}
+                                    onClick={() => navigate('/doktor-panel/tedavi-yaz', { state: { randevuId: randevu.id || randevu.Id, hastaId: randevu.hastaId || randevu.HastaId, userId: userId } })}
                                     style={{ padding: '5px 15px', cursor: 'pointer', borderRadius: '4px', border: 'none', backgroundColor: '#007bff', color: 'white', fontWeight: 'bold' }}
                                     title="Tedavi Yaz"
                                 >

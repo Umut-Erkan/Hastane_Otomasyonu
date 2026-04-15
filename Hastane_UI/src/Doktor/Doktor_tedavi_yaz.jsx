@@ -8,6 +8,7 @@ function DoktorTedaviYaz() {
 
     const [hastaId] = useState(location.state?.hastaId);
     const [randevuId] = useState(location.state?.randevuId);
+    const [doktorUserId] = useState(location.state?.userId);
     useEffect(() => {
         console.log("Hasta ID:", hastaId);
         console.log("Randevu ID:", randevuId);
@@ -84,7 +85,7 @@ function DoktorTedaviYaz() {
                 ilaclar: gecerliIlaclar.map(ilac => ilac.isim.trim())
             };
 
-            const response = await fetch('http://localhost:5160/api/Doktor/Tedavi%20yaz', {
+            const response = await fetch('http://localhost:5160/api/Doktor/TedaviYaz', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -103,7 +104,7 @@ function DoktorTedaviYaz() {
 
             // Başarılı olduğunda 2 saniye sonra randevularım sayfasına dön
             setTimeout(() => {
-                navigate('/doktor-panel/randevu-goster');
+                navigate('/doktor-panel/randevu-goster', { state: { userId: doktorUserId } });
             }, 2000);
 
         } catch (err) {
