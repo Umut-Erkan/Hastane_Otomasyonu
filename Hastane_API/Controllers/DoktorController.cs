@@ -187,7 +187,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [ServiceFilter(typeof(RefreshTokenFilter))] // Refresh token kontrolü ile hangi doktor olduğunu anlıyoruz.
-        [HttpPost("Tedavi yaz")]
+        [HttpPost("TedaviYaz")]
         public IActionResult TedaviYaz([FromBody] TedaviYazDTO dto, [FromHeader(Name = "Authorization")] string token)
         {
             try
