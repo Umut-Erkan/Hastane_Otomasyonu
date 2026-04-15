@@ -143,9 +143,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 //app.UseMiddleware<AccessTokenMiddleware>();
-app.UseMiddleware<AuditLoggingMiddleware>();
 
 app.MapControllers();
+app.UseMiddleware<AuditLoggingMiddleware>();
 
 
 if (app.Environment.IsDevelopment())
