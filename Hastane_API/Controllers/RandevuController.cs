@@ -135,7 +135,6 @@ namespace Hastane_Otomasyonu.Controllers
         [ServiceFilter(typeof(RefreshTokenFilter))]
         [Authorize(Roles = "Hasta")]
         [HttpDelete("Randevu Sil")]
-
         public IActionResult KayitSil([FromBody] RandevuDelDTO DelDTO)
         {
             OnlineRandevu DelKayıt = _context.OnlineRandevus.FirstOrDefault(r => r.Id == DelDTO.RandevuID);
@@ -146,6 +145,7 @@ namespace Hastane_Otomasyonu.Controllers
                     return StatusCode(404, "Silinecek randevu bulunamadı");
                 }
 
+                _context.OnlineRandevus.Remove(DelKayıt);
                 _context.SaveChanges();
                 return StatusCode(200, $"{DelDTO.RandevuID} nolu randevu başarıyla silindi");
             }
