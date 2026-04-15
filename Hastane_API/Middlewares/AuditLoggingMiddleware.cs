@@ -22,8 +22,6 @@ namespace Hastane_Otomasyonu.Middlewares
         {
             try
             {
-
-                // Fetch the required information
                 string serviceName = context.Request.Path.Value ?? "Unknown";
                 string browserInfo = context.Request.Headers["User-Agent"].ToString();
 
@@ -33,31 +31,34 @@ namespace Hastane_Otomasyonu.Middlewares
                 }
 
                 string authHeader = context.Request.Headers["Authorization"].ToString();
-                string AccessToken = authHeader.Replace("Bearer ", "");
                 int userId = 0;
+                string Role = "Unknown";
 
 
 
-                if (!string.IsNullOrEmpty(AccessToken) && AccessToken != "Null")
+                if (!string.IsNullOrEmpty(authHeader) && authHeader != "Null")
                 {
+                    string AccessToken = authHeader.Replace("Bearer ", "");
                     var token = new JwtSecurityTokenHandler().ReadJwtToken(AccessToken);
                     var nameIdClaim = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
 
                     if (nameIdClaim != null)
                     {
                         userId = int.Parse(nameIdClaim);
+                        Role = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
                     }
 
                 }
 
+                browserInfo = browserInfo.Length > 50 ? browserInfo.Substring(0, 50) : browserInfo;
+                serviceName = serviceName.Length > 50 ? serviceName.Substring(0, 50) : serviceName;
 
                 var auditLog = new AuditLog
                 {
                     ServiceName = serviceName,
                     BrowserInfo = browserInfo,
                     Userıd = userId,
-                    Role = context.User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown"
+                    Role = Role
                 };
 
                 // F5 atıldığında tekrar kaydetmesin die
@@ -83,41 +84,7 @@ namespace Hastane_Otomasyonu.Middlewares
             catch
 
             {
-                int userId = 0;
-                string serviceName = context.Request.Path.Value ?? "Unknown";
-                string browserInfo = context.Request.Headers["User-Agent"].ToString() ?? "Unknown";
-
-                browserInfo = browserInfo.Length > 50 ? browserInfo.Substring(0, 50) : browserInfo;
-                serviceName = serviceName.Length > 50 ? serviceName.Substring(0, 50) : serviceName;
-
-                var auditLog = new AuditLog
-                {
-                    ServiceName = serviceName,
-                    BrowserInfo = browserInfo,
-                    Userıd = userId,
-                    Role = context.User.FindFirst(ClaimTypes.Role)?.Value ?? "Unknown"
-                };
-
-
-                var auditLogs = dbContext.AuditLogs.ToList();
-
-                foreach (var item in auditLogs)
-                {
-                    if (item == auditLog)
-                    {
-                        _logger.LogInformation("Sayfa yenilendiği için veri eklenmedi.");
-                        await _next(context);
-                        return;
-                    }
-                }
-
-                dbContext.AuditLogs.Add(auditLog);
-
-                await dbContext.SaveChangesAsync();
-
-                await _next(context);
-
-
+                _logger.LogError("AuditLogları uretilemedi.");
             }
         }
     }
