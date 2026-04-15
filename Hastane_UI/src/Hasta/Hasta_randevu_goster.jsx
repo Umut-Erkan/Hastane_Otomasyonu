@@ -43,6 +43,15 @@ function HastaRandevuGoster() {
                     throw new Error(`Yetkisiz erişim: HTTP ${cevap.status}`);
                 }
 
+                if (cevap.status === 404) {
+                    setRandevular([]);
+                    return;
+                }
+
+                if (!cevap.ok) {
+                    const errText = await cevap.text();
+                    throw new Error(`Sunucu hatası: ${errText} (HTTP ${cevap.status})`);
+                }
 
                 const veri = await cevap.json();
                 console.log("Server Response:", veri.mesaj);
