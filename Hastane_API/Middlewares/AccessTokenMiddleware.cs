@@ -24,7 +24,7 @@ namespace Hastane_Otomasyonu.Middlewares
 
             string authHeader = context.Request.Headers["Authorization"].ToString();
 
-            if (authHeader == "Null")
+            if (string.IsNullOrEmpty(authHeader)) // Yeni kayıt oluyorsa bu middleware atlancak.
             {
                 await _next(context);
                 return;
@@ -32,46 +32,45 @@ namespace Hastane_Otomasyonu.Middlewares
 
             string AccessToken = authHeader.Replace("Bearer ", "");
 
-            if (!string.IsNullOrEmpty(AccessToken) && AccessToken != "Null")
+            try
             {
-                try
+                var token = new JwtSecurityTokenHandler().ReadJwtToken(AccessToken);
+                var role = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+                if (token.ValidTo < DateTime.UtcNow)
                 {
-                    var token = new JwtSecurityTokenHandler().ReadJwtToken(AccessToken);
-                    if (token.ValidTo < DateTime.UtcNow) // Jwt ValidTo returns an Utc time, compare with UtcNow!
+                    if (role == "Hasta") //Hasta
                     {
-                        if (context.User.IsInRole("Hasta")) //Hasta
+                        var hasta = dbContext.Hasta.FirstOrDefault(h => h.AccessToken == AccessToken);
+                        if (hasta != null)
                         {
-                            var hasta = dbContext.Hasta.FirstOrDefault(h => h.AccessToken == AccessToken);
-                            if (hasta != null)
-                            {
-                                hasta.AccessToken = tokenService.GenerateAccessToken(hasta);
-                                dbContext.SaveChanges();
-                            }
+                            hasta.AccessToken = tokenService.GenerateAccessToken(hasta);
+                            dbContext.SaveChanges();
                         }
-                        else if (context.User.IsInRole("Doktor")) //Doktor
+                    }
+                    else if (role == "Doktor") //Doktor
+                    {
+                        var Doktor = dbContext.Doktors.FirstOrDefault(h => h.AccessToken == AccessToken);
+                        if (Doktor != null)
                         {
-                            var Doktor = dbContext.Doktors.FirstOrDefault(h => h.AccessToken == AccessToken);
-                            if (Doktor != null)
-                            {
-                                Doktor.AccessToken = tokenService.GenerateAccessToken(Doktor);
-                                dbContext.SaveChanges();
-                            }
+                            Doktor.AccessToken = tokenService.GenerateAccessToken(Doktor);
+                            dbContext.SaveChanges();
                         }
-                        else if (context.User.IsInRole("Resepsiyonist")) //Resepsiyonist
+                    }
+                    else if (role == "Resepsiyonist") //Resepsiyonist
+                    {
+                        var resepsiyonist = dbContext.HospitalReceptionists.FirstOrDefault(h => h.AccessToken == AccessToken);
+                        if (resepsiyonist != null)
                         {
-                            var resepsiyonist = dbContext.HospitalReceptionists.FirstOrDefault(h => h.AccessToken == AccessToken);
-                            if (resepsiyonist != null)
-                            {
-                                resepsiyonist.AccessToken = tokenService.GenerateAccessToken(resepsiyonist);
-                                dbContext.SaveChanges();
-                            }
+                            resepsiyonist.AccessToken = tokenService.GenerateAccessToken(resepsiyonist);
+                            dbContext.SaveChanges();
                         }
                     }
                 }
-                catch
-                {
-                    _logger.LogInformation("TokenMiddleware çalışmıyor.");
-                }
+            }
+            catch
+            {
+                _logger.LogInformation("TokenMiddleware çalışmıyor.");
             }
 
             await _next(context);
