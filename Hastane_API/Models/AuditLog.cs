@@ -14,4 +14,6 @@ public partial class AuditLog
     public string BrowserInfo { get; set; }
 
     public string Role { get; set; }
+
+    public DateTime? Time { get; set; }
 }

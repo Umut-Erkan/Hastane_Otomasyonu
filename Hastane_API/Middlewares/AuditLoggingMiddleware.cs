@@ -53,26 +53,32 @@ namespace Hastane_Otomasyonu.Middlewares
                 browserInfo = browserInfo.Length > 50 ? browserInfo.Substring(0, 50) : browserInfo;
                 serviceName = serviceName.Length > 50 ? serviceName.Substring(0, 50) : serviceName;
 
+
+
                 var auditLog = new AuditLog
                 {
                     ServiceName = serviceName,
                     BrowserInfo = browserInfo,
                     Userıd = userId,
-                    Role = Role
+                    Role = Role,
+                    Time = DateTime.Now
                 };
 
-                // F5 atıldığında tekrar kaydetmesin die
+                // F5 atıldığında tekrar kaydetmesin 
 
-                var auditLogs = dbContext.AuditLogs.ToList();
+                bool zatenVar = dbContext.AuditLogs.Any(item =>
+                    item.ServiceName == auditLog.ServiceName &&
+                    item.Userıd == auditLog.Userıd &&
+                    item.Role == auditLog.Role &&
+                    item.Time == auditLog.Time
 
-                foreach (var item in auditLogs)
+                );
+
+                if (zatenVar)
                 {
-                    if (item == auditLog)
-                    {
-                        _logger.LogInformation("Sayfa yenilendiği için veri eklenmedi.");
-                        await _next(context);
-                        return;
-                    }
+                    _logger.LogInformation("Sayfa yenilendiği için Log kayıt edilmedi.");
+                    await _next(context);
+                    return;
                 }
 
                 dbContext.AuditLogs.Add(auditLog);

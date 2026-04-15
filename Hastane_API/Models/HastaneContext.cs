@@ -80,6 +80,7 @@ public partial class HastaneContext : DbContext
             entity.Property(e => e.BrowserInfo).HasMaxLength(50);
             entity.Property(e => e.Role).HasMaxLength(50);
             entity.Property(e => e.ServiceName).HasMaxLength(50);
+            entity.Property(e => e.Time).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Doktor>(entity =>
