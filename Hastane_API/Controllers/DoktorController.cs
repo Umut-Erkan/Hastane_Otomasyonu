@@ -105,6 +105,7 @@ namespace Hastane_Otomasyonu.Controllers
             }
         }
 
+
         [ServiceFilter(typeof(RefreshTokenFilter))]
         [HttpGet("GetDoktorRedis")]
         public IActionResult GetDoktorRedis()
@@ -171,6 +172,7 @@ namespace Hastane_Otomasyonu.Controllers
             return Ok(alanlar);
         }
 
+
         [ServiceFilter(typeof(RefreshTokenFilter))]
         [HttpPost("DisplayDoktor")]
         public IActionResult DisplayDoktor([FromBody] AlanRequestDTO req)
@@ -183,7 +185,6 @@ namespace Hastane_Otomasyonu.Controllers
             }
             return Ok(doktorlarDTO);
         }
-
 
 
         [ServiceFilter(typeof(RefreshTokenFilter))] // Refresh token kontrolü ile hangi doktor olduğunu anlıyoruz.
@@ -305,7 +306,7 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [ServiceFilter(typeof(RefreshTokenFilter))]
-        [Authorize(Roles = "Doktor,Recepsionist")]
+        [Authorize(Roles = "Doktor,Resepsiyonist")]
         [HttpGet("RandevuGoster")]
         public IActionResult RandevuGöster(int userId)
         {

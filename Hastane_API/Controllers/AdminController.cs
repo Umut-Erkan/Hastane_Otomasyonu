@@ -53,7 +53,7 @@ namespace Hastane_Otomasyonu.Controllers
                     Eposta = recepsionistdto.Eposta,
                     Alan = recepsionistdto.Alan,
 
-                    Role = "Recepsionist",
+                    Role = "Resepsiyonist",
                     AccessToken = "PlaceHolder",
                     RefreshToken = "PlaceHolder",
                     RefreshTokenEndDate = DateTime.Now

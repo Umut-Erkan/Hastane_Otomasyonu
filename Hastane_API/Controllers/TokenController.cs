@@ -8,6 +8,7 @@ using MyApiProject.Models;
 using Hastane_Otomasyonu.Models;
 using Hastane_Otomasyonu.DTO;   
 
+
 namespace Hastane_Otomasyonu.Controllers
 {
     [ApiController]
@@ -17,10 +18,12 @@ namespace Hastane_Otomasyonu.Controllers
 
         private readonly TokenService _tokenService;
         private readonly HastaneContext _context;
-        public TokenController(TokenService tokenService, HastaneContext context)
+        private readonly PasswordHashing _hash;
+        public TokenController(TokenService tokenService, HastaneContext context , PasswordHashing hash)
         {
             _tokenService = tokenService;
             _context = context;
+            _hash = hash;
         }
 
 
@@ -65,7 +68,7 @@ namespace Hastane_Otomasyonu.Controllers
         {
             if (dto.Role == "Doktor")
             {
-                var doktor = _context.Doktors.FirstOrDefault(x => x.Eposta == dto.Eposta && x.Password == dto.Password);
+                var doktor = _context.Doktors.FirstOrDefault(x => x.Eposta == dto.Eposta && x.Password == _hash.HashPassword(dto.Password));
                 if (doktor == null)
                     return Unauthorized(new { mesaj = "Geçersiz E-posta veya Şifre" });
 
