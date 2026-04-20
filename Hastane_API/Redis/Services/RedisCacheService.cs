@@ -63,6 +63,22 @@ namespace Hastane_Otomasyonu.Redis.Services
             return doktorlar;
         }
 
+        public List<string> GetAlanlar()
+        {
+            var searchResult = _cache.FT().Search("idx:doktor_idx", new Query("@Role:{Doktor}"));
+
+            var alanlar = new List<string>();
+
+            foreach (var doc in searchResult.Documents)
+            {
+                alanlar.Add((string)doc["alan"]);
+            }
+
+            _logger.LogInformation("Redis uzerinden basariyla {Count} alan okundu.", alanlar.Count);
+
+            return alanlar;
+        }
+
         public List<DoktorDisplayDTO> GetValueByAlan(string alan)
         {
             var searchResult = _cache.FT().Search("idx:doktor_idx", new Query($"@Role:{{Doktor}} @alan:{alan}"));
