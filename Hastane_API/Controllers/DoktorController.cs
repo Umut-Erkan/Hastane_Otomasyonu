@@ -48,6 +48,7 @@ namespace Hastane_Otomasyonu.Controllers
         private PasswordHashing _Hash;
         private readonly ILogger<DoktorController> _logger;
 
+
         public DoktorController(IRedisCacheService cache, HastaneContext context, TokenService tokenService, ILogger<DoktorController> logger)
         {
             _cache = cache;
@@ -107,6 +108,31 @@ namespace Hastane_Otomasyonu.Controllers
 
 
         [ServiceFilter(typeof(RefreshTokenFilter))]
+        [HttpGet("GetAlanlar")]
+        public IActionResult GetAlanlar()
+        {
+            try
+            {
+                var alanlar = _cache.GetAlanlar().Distinct().ToList();
+                foreach (var item in alanlar)
+                {
+                    _logger.LogInformation("Redis uzerinden {Alan} okundu.", item);
+                }
+
+                if (alanlar.Count == 0 || alanlar == null)
+                {
+                    var alan = _context.Doktors.Select(d => d.Alan).Distinct().ToList();
+                    return Ok(alan);
+                }
+                return Ok(alanlar);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { mesaj = "Uzmanlık alanı bulunamadı", hata = ex.Message });
+            }
+        }
+
+        [ServiceFilter(typeof(RefreshTokenFilter))]
         [HttpGet("GetDoktorRedis")]
         public IActionResult GetDoktorRedis()
         {
@@ -159,18 +185,6 @@ namespace Hastane_Otomasyonu.Controllers
             return Ok(ilaclar);
         }
 
-
-        [ServiceFilter(typeof(RefreshTokenFilter))]
-        [HttpGet("GetAlanlar")]
-        public IActionResult GetAlanlar()
-        {
-            var alanlar = _context.Doktors.Select(d => d.Alan).Distinct().ToList();
-            if (alanlar.Count == 0)
-            {
-                return BadRequest(new { mesaj = "Kayıtlı uzmanlık alanı bulunamadı" });
-            }
-            return Ok(alanlar);
-        }
 
 
         [ServiceFilter(typeof(RefreshTokenFilter))]
