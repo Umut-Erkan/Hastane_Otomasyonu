@@ -25,13 +25,10 @@ namespace Hastane_Otomasyonu.Middlewares
                 string serviceName = context.Request.Path.Value ?? "Unknown";
                 string browserInfo = context.Request.Headers["User-Agent"].ToString();
 
-                // Proxy/Docker arkasında gerçek IP için X-Forwarded-For'a bak, yoksa direkt bağlantı IP'si
-                string ipAddress = context.Request.Headers["X-Forwarded-For"].FirstOrDefault()
-                    ?? context.Connection.RemoteIpAddress?.ToString()
-                    ?? "Unknown";
-                // Birden fazla IP varsa (proxy zinciri) ilkini al
-                if (ipAddress.Contains(","))
-                    ipAddress = ipAddress.Split(',')[0].Trim();
+                string ipAddress = context.Connection.RemoteIpAddress?.ToString();
+                if (ipAddress == null || ipAddress == "")
+                    ipAddress = "Unknown";
+
 
                 if (string.IsNullOrEmpty(browserInfo))
                 {

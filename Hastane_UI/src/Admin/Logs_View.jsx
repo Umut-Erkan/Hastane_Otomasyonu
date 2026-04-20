@@ -6,7 +6,6 @@ function Logs_View() {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [search, setSearch] = useState('');
 
     const handleSecretSubmit = async (e) => {
         e.preventDefault();
@@ -43,13 +42,6 @@ function Logs_View() {
             setLoading(false);
         }
     };
-
-    // Arama filtresi
-    const filteredLogs = logs.filter(log =>
-        Object.values(log).some(val =>
-            String(val ?? '').toLowerCase().includes(search.toLowerCase())
-        )
-    );
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '30px' }}>
@@ -126,22 +118,8 @@ function Logs_View() {
                             </h2>
                             <p style={{ color: 'var(--text)', margin: '4px 0 0', fontSize: '0.9rem' }}>
                                 Toplam <strong style={{ color: 'var(--accent)' }}>{logs.length}</strong> kayıt
-                                {search && ` · ${filteredLogs.length} sonuç`}
                             </p>
                         </div>
-
-                        {/* Arama Kutusu */}
-                        <input
-                            type="text"
-                            placeholder="🔍  Ara... (rol, servis, IP...)"
-                            value={search}
-                            onChange={e => setSearch(e.target.value)}
-                            style={{
-                                ...inputStyle,
-                                width: '260px',
-                                padding: '10px 14px',
-                            }}
-                        />
                     </div>
 
                     {/* Tablo */}
@@ -162,14 +140,14 @@ function Logs_View() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredLogs.length === 0 ? (
+                                    {logs.length === 0 ? (
                                         <tr>
                                             <td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: 'var(--text)' }}>
-                                                {search ? 'Arama sonucu bulunamadı.' : 'Kayıtlı log bulunamadı.'}
+                                                Kayıtlı log bulunamadı.
                                             </td>
                                         </tr>
                                     ) : (
-                                        filteredLogs.map((log, i) => (
+                                        logs.map((log, i) => (
                                             <tr
                                                 key={log.logId}
                                                 style={{
@@ -214,7 +192,7 @@ function Logs_View() {
                     {/* Yenile butonu */}
                     <div style={{ textAlign: 'center', marginTop: '20px' }}>
                         <button
-                            onClick={() => { setStep(0); setSecret(''); setLogs([]); setSearch(''); }}
+                            onClick={() => { setStep(0); setSecret(''); setLogs([]); }}
                             style={{
                                 padding: '10px 24px',
                                 borderRadius: '8px',
@@ -240,10 +218,10 @@ function Logs_View() {
 // Rol renk badge'i
 function RoleBadge({ role }) {
     const colors = {
-        'Admin':         { bg: 'rgba(239,68,68,0.15)',  text: '#ef4444' },
-        'Doktor':        { bg: 'rgba(59,130,246,0.15)', text: '#60a5fa' },
+        'Admin': { bg: 'rgba(239,68,68,0.15)', text: '#ef4444' },
+        'Doktor': { bg: 'rgba(59,130,246,0.15)', text: '#60a5fa' },
         'Resepsiyonist': { bg: 'rgba(16,185,129,0.15)', text: '#34d399' },
-        'Hasta':         { bg: 'rgba(245,158,11,0.15)', text: '#fbbf24' },
+        'Hasta': { bg: 'rgba(245,158,11,0.15)', text: '#fbbf24' },
     };
     const c = colors[role] ?? { bg: 'rgba(156,163,175,0.15)', text: '#9ca3af' };
     return (
