@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyApiProject.Models;
 
@@ -11,9 +12,11 @@ using MyApiProject.Models;
 namespace MyApiProject.Migrations
 {
     [DbContext(typeof(HastaneContext))]
-    partial class HastaneContextModelSnapshot : ModelSnapshot
+    [Migration("20260420135332_DataBase")]
+    partial class DataBase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -52,7 +52,7 @@ function Admin_Panel() {
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
                 gap: '30px',
-                maxWidth: '800px',
+                maxWidth: '900px',
                 margin: '0 auto',
             }}>
                 <ActionCard
@@ -65,6 +65,12 @@ function Admin_Panel() {
                     title="Resepsiyonist Ekle"
                     desc="Sisteme yeni kayıt ve kabul personeli ekleyin."
                     path="/admin/resepsiyonist-ekle"
+                    navigate={navigate}
+                />
+                <ActionCard
+                    title="Sistem Logları"
+                    desc="Kullanıcı işlem geçmişini ve erişim loglarını görüntüleyin."
+                    path="/admin/logs"
                     navigate={navigate}
                 />
             </div>
