@@ -142,20 +142,20 @@ namespace Hastane_Otomasyonu.Controllers
             try
             {
                 var hasta = _context.Hasta.FirstOrDefault(h => h.Tc == dto.Tc);
-                if (hasta.AccessToken != "Null" && new JwtSecurityTokenHandler().ReadJwtToken(hasta.AccessToken).ValidTo < DateTime.Now)
-                {
-
-                }
-                else
-                {
-                    hasta.AccessToken = _tokenService.GenerateAccessToken(hasta);
-                    _context.SaveChanges();
-                }
-
                 if (hasta == null)
                 {
                     return BadRequest(new { mesaj = "TC veya şifre hatalı." });
                 }
+
+                // Token "Null" ise (logout sonrası) VEYA süresi dolmuşsa → yenile
+                if (hasta.AccessToken == "Null" ||
+                    new JwtSecurityTokenHandler().ReadJwtToken(hasta.AccessToken).ValidTo < DateTime.UtcNow)
+                {
+                    hasta.AccessToken = _tokenService.GenerateAccessToken(hasta);
+                    _context.SaveChanges();
+                    _logger.LogInformation("Access Token yenilendi.");
+                }
+
 
                 bool isPasswordValid = _Hash.VerifyPassword(dto.Password, hasta.Password);
                 if (!isPasswordValid)

@@ -39,6 +39,27 @@ namespace Hastane_Otomasyonu.Controllers
         }
 
         [ServiceFilter(typeof(ActionFilter))]
+        [HttpGet("Logs")]
+        public IActionResult Logs()
+        {
+            try
+            {
+                var logs = _context.AuditLogs.ToList();
+                return Ok(logs);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    mesaj = "Bir hata oluştu.",
+                    hataDetayi = ex.Message,
+                    ekBilgi = ex.InnerException?.Message
+                });
+            }
+        }
+
+
+        [ServiceFilter(typeof(ActionFilter))]
         [HttpPost("Create Resepsiyonist")]
         public IActionResult ResepsiyonistOluştur([FromBody] RecepsionistAddDTO recepsionistdto)
         {
@@ -53,7 +74,7 @@ namespace Hastane_Otomasyonu.Controllers
                     Eposta = recepsionistdto.Eposta,
                     Alan = recepsionistdto.Alan,
 
-                    Role = "Recepsionist",
+                    Role = "Resepsiyonist",
                     AccessToken = "PlaceHolder",
                     RefreshToken = "PlaceHolder",
                     RefreshTokenEndDate = DateTime.Now

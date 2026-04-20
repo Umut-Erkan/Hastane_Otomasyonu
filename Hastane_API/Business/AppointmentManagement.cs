@@ -27,12 +27,6 @@ namespace Hastane_Otomasyonu.Business
 
 
 
-        public List<DateOnly> dates = new List<DateOnly>
-        {
-            DateOnly.Parse("2026-03-23"), DateOnly.Parse("2026-03-24"),
-            DateOnly.Parse("2026-03-25"), DateOnly.Parse("2026-03-26"),
-            DateOnly.Parse("2026-03-27")
-        };
 
         public List<TimeOnly> times = new List<TimeOnly>
         {
@@ -43,17 +37,51 @@ namespace Hastane_Otomasyonu.Business
 
 
 
+        // Bugünden itibaren gelecek 5 iş gününü hesapla
+        public List<DateOnly> GetNextWorkingDays(int count = 5)
+        {
+            var result = new List<DateOnly>();
+            var date = DateOnly.FromDateTime(DateTime.Today);
+            while (result.Count < count)
+            {
+                date = date.AddDays(1);
+                if (date.DayOfWeek != DayOfWeek.Saturday && date.DayOfWeek != DayOfWeek.Sunday)
+                    result.Add(date);
+            }
+            return result;
+        }
+
         // Mesai saatlerini yaz
         public void MesaiEkle(int doktorId)
         {
+            var dates = GetNextWorkingDays(5);
+
             foreach (var item in dates)
             {
                 foreach (var item2 in times)
                 {
                     _logger.LogInformation($"Tarih ve saat: {item} {item2}");
-                    var Appointment = _context.Appointments.FirstOrDefault(x => x.SlotDate == item && x.StartTime == item2);
 
-                    if (Appointment != null)
+                    // Slot yoksa önce oluştur
+                    var Appointment = _context.Appointments.FirstOrDefault(x => x.SlotDate == item && x.StartTime == item2);
+                    if (Appointment == null)
+                    {
+                        Appointment = new Appointment
+                        {
+                            SlotDate = item,
+                            StartTime = item2,
+                            IsAvailable = true
+                        };
+                        _context.Appointments.Add(Appointment);
+                        _context.SaveChanges(); // Id alabilmek için kaydet
+                        _logger.LogInformation($"Yeni randevu slotu oluşturuldu: {item} {item2}");
+                    }
+
+                    // Doktora bağla (zaten bağlı değilse)
+                    bool zatenBagli = _context.AppointmentToDoktors
+                        .Any(x => x.DoktorFk == doktorId && x.AppointmentFk == Appointment.Id);
+
+                    if (!zatenBagli)
                     {
                         _context.AppointmentToDoktors.Add(new AppointmentToDoktor
                         {
@@ -61,10 +89,6 @@ namespace Hastane_Otomasyonu.Business
                             AppointmentFk = Appointment.Id
                         });
                         _logger.LogInformation($"Mesai saati eklendi: {item} {item2}");
-                    }
-                    else if (Appointment == null)
-                    {
-                        _logger.LogWarning($"Randevu slotu bulunamadı: {item} {item2}");
                     }
                 }
             }

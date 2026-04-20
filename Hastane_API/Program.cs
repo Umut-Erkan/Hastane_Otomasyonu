@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using dotenv.net;
 using Hastane_Otomasyonu.Business;
 using Hastane_Otomasyonu.Filters;
+using Hastane_Otomasyonu.Middlewares;
 using Hastane_Otomasyonu.Redis.Interfaces;
 using Hastane_Otomasyonu.Redis.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -124,7 +125,33 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-
+// SEED VERI
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<HastaneContext>();
+    if (!context.Ilacs.Any()) // Eğer tablo boşsa
+    {
+        context.Ilacs.AddRange(new List<Ilac>
+        {
+            new Ilac { IlacName = "Roaccutane",                  KullanımAlanı = "Cildiye" },
+            new Ilac { IlacName = "Aspirin",                     KullanımAlanı = "Kardiyoloji" },
+            new Ilac { IlacName = "Lansor",                      KullanımAlanı = "Gastroenteroloji" },
+            new Ilac { IlacName = "Metformin",                   KullanımAlanı = "Endokrinoloji" },
+            new Ilac { IlacName = "Parasetamol (Minoset/Parol)", KullanımAlanı = "Dahiliye" },
+            new Ilac { IlacName = "Ventolin",                    KullanımAlanı = "Göğüs Hastalıkları" },
+            new Ilac { IlacName = "Xanax",                       KullanımAlanı = "Psikiyatri" },
+            new Ilac { IlacName = "Amoksisilin (Antibiyotik)",   KullanımAlanı = "Enfeksiyon Hastalıkları" },
+            new Ilac { IlacName = "Voltaren",                    KullanımAlanı = "Ortopedi" },
+            new Ilac { IlacName = "Zyrtec",                      KullanımAlanı = "Alerji" },
+            new Ilac { IlacName = "Beloc",                       KullanımAlanı = "Kardiyoloji" },
+            new Ilac { IlacName = "Euthyrox",                    KullanımAlanı = "Endokrinoloji" },
+            new Ilac { IlacName = "Arveles",                     KullanımAlanı = "Genel Cerrahi" },
+            new Ilac { IlacName = "Fucidin",                     KullanımAlanı = "Cildiye" },
+            new Ilac { IlacName = "Metformin",                   KullanımAlanı = "Dahiliye" },
+        });
+        context.SaveChanges();
+    }
+}
 
 
 if (!app.Environment.IsDevelopment())
@@ -141,7 +168,10 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+//app.UseMiddleware<AccessTokenMiddleware>();
+
 app.MapControllers();
+app.UseMiddleware<AuditLoggingMiddleware>();
 
 
 if (app.Environment.IsDevelopment())

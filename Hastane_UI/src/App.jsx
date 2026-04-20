@@ -17,6 +17,7 @@ import ResepsiyonistRandevuGoster from './Resepsiyonist/ResepsiyonistRandevuGost
 import AdminPanel from './Admin/Admin_Panel.jsx';
 import CreateDoktor from './Admin/Create_Doktor.jsx';
 import CreateResepsiyonist from './Admin/Create_Resepsiyonist.jsx';
+import LogsView from './Admin/Logs_View.jsx';
 
 // Sol üst: bir önceki sayfaya geri döner
 function BackButton() {
@@ -85,6 +86,16 @@ function AdminCreateResepsiyonistPage() {
     <div className="page-wrapper fade-in">
       <NavBar />
       <CreateResepsiyonist />
+    </div>
+  );
+}
+
+// Sistem Logları (Admin) Wrapper
+function AdminLogsPage() {
+  return (
+    <div className="page-wrapper fade-in">
+      <NavBar />
+      <LogsView />
     </div>
   );
 }
@@ -234,6 +245,10 @@ const router = createBrowserRouter([
   {
     path: "/admin/resepsiyonist-ekle",
     element: <AdminCreateResepsiyonistPage />,
+  },
+  {
+    path: "/admin/logs",
+    element: <AdminLogsPage />,
   },
   {
     path: "/hasta",

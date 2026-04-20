@@ -33,8 +33,12 @@ function Hasta_recete_goster() {
           throw new Error(`Bu sayfayı görüntüleme yetkiniz yok (HTTP ${response.status})`);
         }
 
+        if (response.status === 404) {
+          setReceteler([]);
+          return;
+        }
+
         if (!response.ok) {
-          // Eger backend 404 gibi bir sonuc dönerse hatayı yakala
           const errText = await response.text();
           throw new Error(`Sunucu hatası: ${errText} (HTTP ${response.status})`);
         }

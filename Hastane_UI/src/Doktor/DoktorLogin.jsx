@@ -37,6 +37,7 @@ function DoktorLogin() {
 
             if (data.accessToken != null) {
                 localStorage.setItem('doktorToken', data.accessToken);
+                localStorage.setItem('doktorUserId', data.id);
             }
 
             setMesaj("Giriş başarılı! Yönlendiriliyorsunuz...");

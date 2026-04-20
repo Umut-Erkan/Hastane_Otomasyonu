@@ -10,13 +10,32 @@ function DoktorRandevuGoster() {
     const [hata, setHata] = useState(null);
 
     const location = useLocation();
-    const userId = location.state?.userId;
+
+    const getDoktorUserId = () => {
+        // 1. location.state'ten
+        if (location.state?.userId) return location.state.userId;
+        // 2. localStorage'dan
+        const stored = localStorage.getItem('doktorUserId');
+        if (stored) return stored;
+        // 3. JWT token'dan çözümle
+        try {
+            const token = localStorage.getItem('doktorToken');
+            if (token) {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const id = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+                if (id) return id;
+            }
+        } catch (e) { console.error("Token çözümlenemedi:", e); }
+        return null;
+    };
+
+    const userId = getDoktorUserId();
 
     useEffect(() => {
         const fetchRandevular = async () => {
             try {
                 const token = localStorage.getItem('doktorToken');
-                console.log(`Token ile giriş yapıldı ${userId}`);
+                console.log(`Token ile giriş yapıldı, userId: ${userId}`);
 
                 if (token === null) {
                     throw new Error("Token bulunamadı. Lütfen önce giriş yapın.");
@@ -26,13 +45,14 @@ function DoktorRandevuGoster() {
                     throw new Error("Doktor bilgisi bulunamadı.");
                 }
 
-                const response = await fetch(`http://localhost:5160/api/Doktor/RandevuGoster?userId=${userId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Authorization": `Bearer ${token}`,
-                    }
-                });
+                const response = await fetch(`http://localhost:5160/api/Doktor/RandevuGoster?userId=${userId}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            "Authorization": `Bearer ${token}`,
+                        }
+                    });
 
                 if (response.status === 401) {
                     throw new Error(`Giriş yapmanız gerekiyor: HTTP ${response.status}`);
@@ -94,7 +114,7 @@ function DoktorRandevuGoster() {
                                     <strong>Saat:</strong> {randevu.saat || randevu.Saat || "Belirtilmemiş"}
                                 </div>
                                 <button
-                                    onClick={() => navigate('/doktor-panel/tedavi-yaz', { state: { randevuId: randevu.id || randevu.Id, hastaId: randevu.hastaId || randevu.HastaId } })}
+                                    onClick={() => navigate('/doktor-panel/tedavi-yaz', { state: { randevuId: randevu.id || randevu.Id, hastaId: randevu.hastaId || randevu.HastaId, userId: userId } })}
                                     style={{ padding: '5px 15px', cursor: 'pointer', borderRadius: '4px', border: 'none', backgroundColor: '#007bff', color: 'white', fontWeight: 'bold' }}
                                     title="Tedavi Yaz"
                                 >

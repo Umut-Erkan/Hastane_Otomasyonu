@@ -1,42 +1,67 @@
-version: '3.8'
-
 services:
-  # 1. SQL VERİTABANI SERVİSİ (Hazır imaj kullanır, Dockerfile gerekmez)
+# SQL
   sql-db:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: hastane_sql_server # Compose sql-db servisi için yukardaki imageyi çeker sonra sql-db servisinden container üretir, adında hastane_sql_server der
+    container_name: hastane_sql_server
     environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD= ${SQL_PASSWORD} # Kendi şifreni belirle
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${SQL_PASSWORD}
     ports:
       - "1433:1433"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$${MSSQL_SA_PASSWORD}\" -Q \"SELECT 1\" -C || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     volumes:
-      - sql_data:/var/opt/mssql # Konteyner silinse bile verilerin silinmemesi için
+      - sql_data:/var/opt/mssql
 
-  # 2. API SERVİSİ (Senin hazırladığın Dockerfile'ı kullanır)
-  hastane-api:
-    image: busgn162/hastane_api:v2
-    build:
-      context: ./Hastane_API # Dockerfile'ının bulunduğu klasör
-      dockerfile: Dockerfile
-    env_file: 
+# MIGARITON
+  db-migrator:
+    image: mcr.microsoft.com/dotnet/sdk:9.0
+    working_dir: /src
+    volumes:
+      - ./Hastane_API:/src
+    env_file:
       - .env
     environment:
-      ConnectionStrings__DefaultConnection: Server=sql-db;Database=HastaneDB;User Id=sa;Password=${SQL_PASSWORD};TrustServerCertificate=True;
-      JwtSettings__jwtKey: ${JWT_KEY}
-      AdminSecurity__SecretKey: ${ADMIN_SECRET_KEY}
-      RedisConnection__EndPoints: ${REDIS_ENDPOINTS}
-      RedisConnection__Username: ${REDIS_USERNAME}
-      RedisConnection__Password: ${REDIS_PASSWORD}
+      ConnectionStrings__DefaultConnection: "Server=sql-db,1433;Database=Hastane;User Id=sa;Password=${SQL_PASSWORD};TrustServerCertificate=True;Encrypt=False;"
+    depends_on:
+      sql-db:
+        condition: service_healthy
+    command: >
+      bash -lc "set -e;
+      dotnet tool install --global dotnet-ef --version 9.0.*;
+      export PATH=\"$$PATH:/root/.dotnet/tools\";
+      dotnet restore;
+      dotnet ef database update"
+
+# API
+  hastane_api:
+    image: busgn162/hastane_api:v8
+    build:
+      context: ./Hastane_API
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=sql-db,1433;Database=Hastane;User Id=sa;Password=${SQL_PASSWORD};TrustServerCertificate=True;Encrypt=False;"
+      JwtSettings__Secret: ${JwtSettings__Secret}
+      JwtSettings__jwtKey: ${JwtSettings__jwtKey}
+      RedisConnection__EndPoints: ${RedisConnection__EndPoints}
+      RedisConnection__Username: ${RedisConnection__Username}
+      RedisConnection__Password: ${RedisConnection__Password}
     container_name: hastane_api_server
     ports:
-      - "5000:8080" # Dışarıdan 5000 portu ile API'ye erişeceğiz
+      - "5160:8080"
     depends_on:
-      - sql-db # "Önce sql-db ayağa kalksın, sonra ben kalkayım" der
-    
-  #3. UI SERVİSİ (UI Dockerfile'ı kullanmak.)
+      db-migrator:
+        condition: service_completed_successfully
+
+# UI
   hastane_ui:
-    image: busgn162/hastane_ui:v2
+    image: busgn162/hastane_ui:v8
     build:
       context: ./Hastane_UI
       dockerfile: Dockerfile
@@ -44,7 +69,7 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - hastane-api
-    
+      - hastane_api
+
 volumes:
-  sql_data: # Kalıcı veri alanı tanımlaması
+  sql_data:
