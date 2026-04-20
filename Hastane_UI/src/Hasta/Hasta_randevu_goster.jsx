@@ -89,7 +89,7 @@ function HastaRandevuGoster() {
                         {randevular.map((randevu, index) => (
                             <li key={index} style={{ padding: '10px', border: '1px solid #ccc', margin: '5px 0', borderRadius: '5px' }}>
                                 <strong>Randevu ID:</strong> {randevu.id} <br />
-                                <strong>Doktor:</strong> {randevu.doktorName} <br />
+                                <strong>Doktor:</strong> {randevu.doktorName} {randevu.doktorSurname} <br />
                                 <strong>Tarih:</strong> {randevu.Tarih || randevu.tarih || "Belirtilmemiş"} <br />
                                 <strong>Saat:</strong> {randevu.Saat || randevu.saat || "Belirtilmemiş"}
                             </li>
