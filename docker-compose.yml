@@ -47,11 +47,11 @@ services:
       - .env
     environment:
       ConnectionStrings__DefaultConnection: "Server=sql-db,1433;Database=Hastane;User Id=sa;Password=${SQL_PASSWORD};TrustServerCertificate=True;Encrypt=False;"
-      JwtSettings__jwtKey: "${JWT_KEY:-}"
-      AdminSecurity__SecretKey: "${ADMIN_SECRET_KEY:-}"
-      RedisConnection__EndPoints: "${REDIS_ENDPOINTS:-}"
-      RedisConnection__Username: "${REDIS_USERNAME:-}"
-      RedisConnection__Password: "${REDIS_PASSWORD:-}"
+      JwtSettings__Secret: ${JwtSettings__Secret}
+      JwtSettings__jwtKey: ${JwtSettings__jwtKey}
+      RedisConnection__EndPoints: ${RedisConnection__EndPoints}
+      RedisConnection__Username: ${RedisConnection__Username}
+      RedisConnection__Password: ${RedisConnection__Password}
     container_name: hastane_api_server
     ports:
       - "5160:8080"
