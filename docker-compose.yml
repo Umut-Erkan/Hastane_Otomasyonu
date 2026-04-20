@@ -39,7 +39,7 @@ services:
 
 # API
   hastane_api:
-    image: busgn162/hastane_api:v2
+    image: busgn162/hastane_api:v8
     build:
       context: ./Hastane_API
       dockerfile: Dockerfile
@@ -61,7 +61,7 @@ services:
 
 # UI
   hastane_ui:
-    image: busgn162/hastane_ui:v2
+    image: busgn162/hastane_ui:v8
     build:
       context: ./Hastane_UI
       dockerfile: Dockerfile
