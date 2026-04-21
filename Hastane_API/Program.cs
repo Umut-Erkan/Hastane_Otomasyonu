@@ -26,12 +26,29 @@ var builder = WebApplication.CreateBuilder(args);
 
 var AppPolicy = "AppPolicy";
 
+var allowedUiOrigins = new[]
+{
+    // Vite dev server (default)
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+
+    // Vite preview (default)
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+
+    // Docker/Nginx UI (docker-compose maps to host :80)
+    "http://localhost",
+    "http://127.0.0.1",
+    "http://localhost:80",
+    "http://127.0.0.1:80",
+};
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: AppPolicy,
         policy =>
         {
-            policy.SetIsOriginAllowed(origin => true)
+            policy.WithOrigins(allowedUiOrigins)
                   .AllowAnyHeader()
                   .AllowAnyMethod()
                   .AllowCredentials();
